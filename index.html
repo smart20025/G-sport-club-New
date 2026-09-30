@@ -232,6 +232,14 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
             <div class="field"><label>الرقم القومي</label><input type="text" id="xNid" data-kind="nid" maxlength="14" inputmode="numeric"><div class="msg-err">الرقم القومي لازم يكون 14 رقم</div></div>
             <div class="field" id="xPhoneF"><label>التليفون</label><input type="tel" id="xPhone" data-kind="phone" maxlength="11" inputmode="numeric"><div class="msg-err">اكتب رقم موبايل مصري صحيح (11 رقم)</div></div>
           </div>
+            <div class="field" id="xGenderF">
+            <label>النوع</label>
+            <select id="xGender">
+              <option value="">غير محدد</option>
+              <option value="ذكر">ذكر</option>
+              <option value="أنثى">أنثى</option>
+            </select>
+          </div>
           <div id="xExtraF">
             <div class="grid">
               <div class="field"><label>المهنة</label><input type="text" id="xJob"></div>
@@ -271,7 +279,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
     <div class="chips" id="gamesList"></div>
   </details>
 
-  <div class="ver">نسخة 6 (Firebase)</div>
+  <div class="ver">Data analyst: Mohamed Abd-Elfttah</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -429,6 +437,15 @@ function childHtml(title, removable) {
       <input type="text" class="c-name" required placeholder="مثال: يوسف">
       <div class="msg-err">اكتب اسم الابن</div>
       <div class="hint">الاسم الكامل: <b class="c-full">—</b></div>
+    </div>
+        <div class="field">
+      <label>النوع *</label>
+      <select class="c-gender" required>
+        <option value="">اختر...</option>
+        <option value="ذكر">ذكر</option>
+        <option value="أنثى">أنثى</option>
+      </select>
+      <div class="msg-err">اختر نوع الابن</div>
     </div>
     <div class="field">
       <label>الرقم القومي للابن (اختياري)</label>
@@ -604,6 +621,7 @@ function childData(c) {
   return {
     rel: 'ابن',
     name: fullChildName(c.querySelector('.c-name').value),
+    gender: c.querySelector('.c-gender').value,
     nid: c.querySelector('.c-nid').value.trim(),
     phone: '',
     sport: g.length ? (type === 'single' ? 'لعبة فردية' : g.length === 2 ? 'لعبتين جماعيتين' : 'لعبة جماعية') : '',
@@ -778,6 +796,7 @@ function openEdit(i) {
   $('xExtraF').classList.toggle('hidden', !(isMain || m.rel === 'زوجة'));
   $('xJob').value = m.job || ''; $('xQual').value = m.qual || ''; $('xAddr').value = m.addr || '';
   $('xGamesF').classList.toggle('hidden', !isKid);
+  $('xGender').value = m.gender || '';
   if (isKid) {
     const g = m.games ? m.games.split(' + ') : [];
     $('xSport').value = !g.length ? 'none' : m.sport === 'لعبة فردية' ? 'single' : 'team';
@@ -808,6 +827,7 @@ $('editSave').addEventListener('click', () => {
     if (g.length === 2 && g[0] === g[1]) { toast('❌ اختر لعبتين مختلفتين', false); return; }
     m.sport = g.length ? (t === 'single' ? 'لعبة فردية' : g.length === 2 ? 'لعبتين جماعيتين' : 'لعبة جماعية') : '';
     m.games = g.join(' + ');
+    m.gender = $('xGender').value;
   } else m.phone = $('xPhone').value.trim();
   const list = found.members.map((x, i) => i === editIdx ? m : x);
   const upd = { members: list };
