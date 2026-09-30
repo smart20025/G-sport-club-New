@@ -121,6 +121,20 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
             <div class="msg-err">اكتب رقم موبايل مصري صحيح (11 رقم)</div>
           </div>
         </div>
+        <div class="grid">
+          <div class="field">
+            <label>المهنة (اختياري)</label>
+            <input type="text" id="mJob">
+          </div>
+          <div class="field">
+            <label>المؤهل (اختياري)</label>
+            <input type="text" id="mQual">
+          </div>
+        </div>
+        <div class="field">
+          <label>العنوان (اختياري)</label>
+          <input type="text" id="mAddr">
+        </div>
       </div>
 
       <label class="check"><input type="checkbox" id="hasWife"> يوجد زوجة؟</label>
@@ -142,6 +156,20 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
             <input type="tel" id="wPhone" data-kind="phone" maxlength="11" inputmode="numeric" placeholder="01xxxxxxxxx">
             <div class="msg-err">اكتب رقم موبايل مصري صحيح (11 رقم)</div>
           </div>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label>المهنة (اختياري)</label>
+            <input type="text" id="wJob">
+          </div>
+          <div class="field">
+            <label>المؤهل (اختياري)</label>
+            <input type="text" id="wQual">
+          </div>
+        </div>
+        <div class="field">
+          <label>العنوان (اختياري)</label>
+          <input type="text" id="wAddr">
         </div>
       </div>
 
@@ -204,6 +232,13 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
             <div class="field"><label>الرقم القومي</label><input type="text" id="xNid" data-kind="nid" maxlength="14" inputmode="numeric"><div class="msg-err">الرقم القومي لازم يكون 14 رقم</div></div>
             <div class="field" id="xPhoneF"><label>التليفون</label><input type="tel" id="xPhone" data-kind="phone" maxlength="11" inputmode="numeric"><div class="msg-err">اكتب رقم موبايل مصري صحيح (11 رقم)</div></div>
           </div>
+          <div id="xExtraF">
+            <div class="grid">
+              <div class="field"><label>المهنة</label><input type="text" id="xJob"></div>
+              <div class="field"><label>المؤهل</label><input type="text" id="xQual"></div>
+            </div>
+            <div class="field"><label>العنوان</label><input type="text" id="xAddr"></div>
+          </div>
           <div class="field" id="xDateF"><label>تاريخ العضوية *</label><input type="date" id="xDate" required><div class="msg-err">اختر التاريخ</div></div>
           <div id="xGamesF">
             <div class="field"><label>اشتراك الألعاب</label><select id="xSport"><option value="none">بدون ألعاب</option><option value="team">جماعية</option><option value="single">فردية</option></select></div>
@@ -236,7 +271,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
     <div class="chips" id="gamesList"></div>
   </details>
 
-  <div class="ver">نسخة 5 (Firebase)</div>
+  <div class="ver">نسخة 6 (Firebase)</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -578,10 +613,12 @@ function childData(c) {
 function collect() {
   const code = $('code').value.trim();
   const members = [{ sub: code, rel: 'عضو أساسي', name: $('mName').value.trim(),
-    nid: $('mNid').value.trim(), phone: $('mPhone').value.trim(), sport: '', games: '' }];
+    nid: $('mNid').value.trim(), phone: $('mPhone').value.trim(), sport: '', games: '',
+    job: $('mJob').value.trim(), qual: $('mQual').value.trim(), addr: $('mAddr').value.trim() }];
   if ($('hasWife').checked) {
     members.push({ sub: code + '-B', rel: 'زوجة', name: $('wName').value.trim(),
-      nid: $('wNid').value.trim(), phone: $('wPhone').value.trim(), sport: '', games: '' });
+      nid: $('wNid').value.trim(), phone: $('wPhone').value.trim(), sport: '', games: '',
+      job: $('wJob').value.trim(), qual: $('wQual').value.trim(), addr: $('wAddr').value.trim() });
   }
   let kidsCount = 0;
   if ($('hasKids').checked) {
@@ -738,6 +775,8 @@ function openEdit(i) {
   ['xName', 'xNid', 'xPhone', 'xDate'].forEach(id => $(id).classList.remove('invalid'));
   $('xDateF').classList.toggle('hidden', !isMain);
   $('xPhoneF').classList.toggle('hidden', isKid);
+  $('xExtraF').classList.toggle('hidden', !(isMain || m.rel === 'زوجة'));
+  $('xJob').value = m.job || ''; $('xQual').value = m.qual || ''; $('xAddr').value = m.addr || '';
   $('xGamesF').classList.toggle('hidden', !isKid);
   if (isKid) {
     const g = m.games ? m.games.split(' + ') : [];
@@ -762,6 +801,7 @@ $('editSave').addEventListener('click', () => {
   if (!validate(box)) { scrollToFirstError(box); return; }
   const old = found.members[editIdx], m = { ...old }, isMain = old.sub === found.code;
   m.name = $('xName').value.trim(); m.nid = $('xNid').value.trim();
+  if (isMain || old.rel === 'زوجة') { m.job = $('xJob').value.trim(); m.qual = $('xQual').value.trim(); m.addr = $('xAddr').value.trim(); }
   if (old.rel === 'ابن') {
     const t = $('xSport').value;
     const g = t === 'none' ? [] : [$('xG1').value, t === 'team' ? $('xG2').value : ''].filter(Boolean);
