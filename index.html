@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تسجيل الأعضاء</title>
+<link rel="icon" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--main:#0f766e;--main2:#14b8a6;--text:#0f172a;--err:#dc2626;--soft:#f0fdfa}
+*{box-sizing:border-box;font-family:'Cairo',sans-serif}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f766e,#14b8a6 50%,#5eead4);padding:20px}
+.card{width:100%;max-width:520px;background:#fff;border-radius:24px;padding:32px;box-shadow:0 25px 60px rgba(0,0,0,.25)}
+.logo{display:block;width:100%;max-width:220px;height:auto;margin:0 auto 18px}
+h1{margin:0 0 6px;color:var(--text);font-size:26px}
+p.sub{margin:0 0 20px;color:#64748b}
+.ver{text-align:center;font-size:11px;color:#94a3b8;margin-top:14px}
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tab{flex:1;padding:11px;font-size:15px;background:#f1f5f9;color:#475569}
+.tab.active{background:linear-gradient(90deg,var(--main),var(--main2));color:#fff}
+.tab:hover{transform:none;box-shadow:none}
+.sec{border:2px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:18px}
+.sec h2{margin:0 0 14px;font-size:18px;color:var(--main);display:flex;align-items:center;gap:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+.field{margin-bottom:16px}
+label{display:block;margin-bottom:6px;font-weight:600;color:var(--text);font-size:14px}
+input,select{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12px;font-size:15px;background:#f8fafc;transition:.25s;outline:none}
+input:focus,select:focus{border-color:var(--main2);background:#fff;box-shadow:0 0 0 4px rgba(20,184,166,.15)}
+.invalid{border-color:var(--err)!important}
+.msg-err{color:var(--err);font-size:12px;margin-top:4px;display:none}
+.invalid+.msg-err{display:block}
+.sport-err{color:var(--err);font-size:12px;margin-top:4px;display:none}
+.hint{font-size:12px;color:#64748b;margin-top:4px}
+.check{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;cursor:pointer;background:var(--soft);border:2px solid #ccfbf1;font-weight:700;margin-bottom:18px}
+.check input,.radios input{width:20px;height:20px;padding:0;accent-color:var(--main)}
+.radios{display:flex;gap:10px;flex-wrap:wrap}
+.radios label{display:flex;align-items:center;gap:8px;padding:10px 14px;margin:0;border:2px solid #e2e8f0;border-radius:12px;cursor:pointer}
+.badge{background:var(--main);color:#fff;padding:3px 12px;border-radius:20px;font-size:13px;font-weight:700;direction:ltr;display:inline-block}
+.child{border:2px dashed #99f6e4;background:#f8fffe;border-radius:16px;padding:16px;margin-bottom:14px}
+.child-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:700}
+details summary{cursor:pointer;font-weight:700;color:var(--main)}
+.games-box{margin-top:18px}
+.add-row{display:grid;grid-template-columns:2fr 1fr auto;gap:10px;margin-top:14px;align-items:start}
+@media(max-width:560px){.add-row{grid-template-columns:1fr}}
+.find-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start}
+.fam-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:14px}
+.fam-rel{margin-inline-start:auto;color:#64748b;font-size:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{padding:5px 12px;border-radius:20px;font-size:13px}
+.chip.team{background:#ccfbf1}.chip.single{background:#fef3c7}
+button{width:100%;padding:14px;border:none;border-radius:12px;cursor:pointer;background:linear-gradient(90deg,var(--main),var(--main2));color:#fff;font-size:17px;font-weight:700;transition:.25s}
+button:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(15,118,110,.35)}
+button:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-sm{width:auto;padding:12px 22px;font-size:15px}
+.btn-outline{background:#fff;color:var(--main);border:2px solid var(--main);font-size:15px;padding:12px}
+.btn-outline:hover{background:var(--soft);box-shadow:none}
+.rm{width:auto;padding:4px 12px;font-size:14px;background:#fee2e2;color:var(--err);border-radius:10px}
+.rm:hover{box-shadow:none;transform:none}
+.hidden{display:none!important}
+#login{position:fixed;inset:0;background:linear-gradient(135deg,#0f766e,#14b8a6);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+#login .box{width:100%;max-width:360px;background:#fff;border-radius:20px;padding:28px}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(120px);padding:14px 26px;border-radius:12px;color:#fff;font-weight:600;transition:.4s;z-index:200;max-width:92%;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{background:#16a34a}.toast.bad{background:var(--err)}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="box">
+    <h2 style="margin-top:0">🔐 تسجيل الدخول</h2>
+    <div class="field"><input id="lEmail" type="email" placeholder="الإيميل"></div>
+    <div class="field"><input id="lPass" type="password" placeholder="الباسورد"></div>
+    <button type="button" id="lBtn">دخول</button>
+  </div>
+</div>
+
+<div class="card">
+  <img src="logo.png" alt="G1 Sports Club" class="logo">
+  <h1>تسجيل بيانات الأعضاء 📝</h1>
+  <p class="sub">سجّل العضو الأساسي وأسرته، وكل شخص هيتسجل في صف مستقل</p>
+
+  <div class="tabs">
+    <button type="button" class="tab active" id="tabNew">تسجيل عضو جديد</button>
+    <button type="button" class="tab" id="tabAdd">إضافة لعضو مسجل</button>
+  </div>
+
+  <div id="newMode">
+    <form id="memberForm" novalidate>
+      <div class="sec">
+        <h2>👤 العضو الأساسي</h2>
+        <div class="field">
+          <label>كود العضو *</label>
+          <input type="text" id="code" required autocomplete="off" placeholder="مثال: 1025">
+          <div class="msg-err">اكتب كود العضو</div>
+        </div>
+        <div class="field">
+          <label>اسم العضو بالكامل *</label>
+          <input type="text" id="mName" required placeholder="مثال: محمد أحمد علي">
+          <div class="msg-err">اكتب الاسم</div>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label>الرقم القومي *</label>
+            <input type="text" id="mNid" required data-kind="nid" maxlength="14" inputmode="numeric" placeholder="14 رقم">
+            <div class="msg-err">الرقم القومي لازم يكون 14 رقم</div>
+          </div>
+          <div class="field">
+            <label>رقم التليفون *</label>
+            <input type="tel" id="mPhone" required data-kind="phone" maxlength="11" inputmode="numeric" placeholder="01xxxxxxxxx">
+            <div class="msg-err">اكتب رقم موبايل مصري صحيح (11 رقم)</div>
+          </div>
+        </div>
+      </div>
+
+      <label class="check"><input type="checkbox" id="hasWife"> يوجد زوجة؟</label>
+      <div class="sec hidden" id="wifeBox">
+        <h2>💍 بيانات الزوجة <span class="badge" id="wifeCode">-B</span></h2>
+        <div class="field">
+          <label>اسم الزوجة بالكامل *</label>
+          <input type="text" id="wName" required>
+          <div class="msg-err">اكتب اسم الزوجة</div>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label>الرقم القومي (اختياري)</label>
+            <input type="text" id="wNid" data-kind="nid" maxlength="14" inputmode="numeric" placeholder="14 رقم">
+            <div class="msg-err">الرقم القومي لازم يكون 14 رقم</div>
+          </div>
+          <div class="field">
+            <label>رقم التليفون (اختياري)</label>
+            <input type="tel" id="wPhone" data-kind="phone" maxlength="11" inputmode="numeric" placeholder="01xxxxxxxxx">
+            <div class="msg-err">اكتب رقم موبايل مصري صحيح (11 رقم)</div>
+          </div>
+        </div>
+      </div>
+
+      <label class="check"><input type="checkbox" id="hasKids"> يوجد أبناء؟</label>
+      <div class="sec hidden" id="kidsBox">
+        <h2>👶 الأبناء</h2>
+        <div class="field">
+          <label>عدد الأبناء *</label>
+          <input type="number" id="kidsCount" required data-kind="count" min="1" max="20" inputmode="numeric" placeholder="من 1 إلى 20">
+          <div class="msg-err">اكتب عدد من 1 إلى 20</div>
+        </div>
+        <div id="kids"></div>
+      </div>
+
+      <label class="check"><input type="checkbox" id="hasExtra"> يوجد عضو إضافي؟</label>
+      <div class="sec hidden" id="extraBox">
+        <h2>➕ بيانات العضو الإضافي <span class="badge" id="extraCode">-C</span></h2>
+        <div class="field">
+          <label>الاسم بالكامل *</label>
+          <input type="text" id="eName" required>
+          <div class="msg-err">اكتب اسم العضو الإضافي</div>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label>الرقم القومي (اختياري)</label>
+            <input type="text" id="eNid" data-kind="nid" maxlength="14" inputmode="numeric" placeholder="14 رقم">
+            <div class="msg-err">الرقم القومي لازم يكون 14 رقم</div>
+          </div>
+          <div class="field">
+            <label>رقم التليفون (اختياري)</label>
+            <input type="tel" id="ePhone" data-kind="phone" maxlength="11" inputmode="numeric" placeholder="01xxxxxxxxx">
+            <div class="msg-err">اكتب رقم موبايل مصري صحيح (11 رقم)</div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" id="btn">تسجيل</button>
+    </form>
+  </div>
+
+  <div id="addMode" class="hidden">
+    <form id="addForm" novalidate>
+      <div class="sec">
+        <h2>🔎 البحث عن العضو</h2>
+        <div class="find-row">
+          <input type="text" id="aCode" autocomplete="off" placeholder="كود العضو الأساسي">
+          <button type="button" class="btn-sm" id="findBtn">بحث</button>
+        </div>
+      </div>
+      <div class="sec hidden" id="foundBox">
+        <h2>👨‍👩‍👧 المسجلين على الكود <span class="badge" id="foundCode"></span></h2>
+        <div id="foundList"></div>
+        <div class="hint">الكود التالي المتاح: <b id="nextHint"></b></div>
+      </div>
+      <div class="hidden" id="addActions">
+        <div class="grid" style="margin-bottom:16px">
+          <button type="button" class="btn-outline" id="addKidBtn">➕ إضافة ابن</button>
+          <button type="button" class="btn-outline" id="addExtraBtn">➕ إضافة عضو إضافي</button>
+        </div>
+        <div id="newPeople"></div>
+        <button type="submit" id="addSubmit" class="hidden">حفظ الإضافات</button>
+      </div>
+    </form>
+  </div>
+
+  <details class="sec games-box">
+    <summary>⚽ إدارة قائمة الألعاب (إضافة لعبة جديدة)</summary>
+    <div class="add-row">
+      <input type="text" id="gName" placeholder="اسم اللعبة">
+      <select id="gType"><option>جماعية</option><option>فردية</option></select>
+      <button type="button" class="btn-sm" id="addGameBtn">إضافة</button>
+    </div>
+    <div class="chips" id="gamesList"></div>
+  </details>
+
+  <div class="ver">نسخة 5 (Firebase)</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
+         doc, getDoc, setDoc, updateDoc, arrayUnion, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+/* ====== الصق هنا الـ firebaseConfig بتاعك ====== */
+const firebaseConfig = {
+  apiKey: "AIzaSyB7K2cDgqSkizcBrhw5dIG4H16YTJlaR2c",
+  authDomain: "g-sport-8c847.firebaseapp.com",
+  projectId: "g-sport-8c847",
+  storageBucket: "g-sport-8c847.firebasestorage.app",
+  messagingSenderId: "692091871949",
+  appId: "1:692091871949:web:1798111f31e0160dcbff84"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+});
+const auth = getAuth(app);
+const FAM = code => doc(db, 'families', code);
+
+const $ = id => document.getElementById(id);
+const form = $('memberForm');
+let games = [], uid = 0, mode = 'new', found = null, codeDup = false, codeCheck = Promise.resolve();
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function toast(text, ok = true, ms = 4000) {
+  const t = $('toast');
+  t.textContent = text;
+  t.className = 'toast show ' + (ok ? 'ok' : 'bad');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => t.className = 'toast', ms);
+}
+function toLatinDigits(s) {
+  return s.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+}
+
+/* ====== تسجيل الدخول ====== */
+onAuthStateChanged(auth, u => {
+  $('login').classList.toggle('hidden', !!u);
+  if (u) loadGames();
+});
+$('lBtn').onclick = () =>
+  signInWithEmailAndPassword(auth, $('lEmail').value.trim(), $('lPass').value)
+    .catch(() => toast('❌ بيانات الدخول غلط', false));
+$('lPass').addEventListener('keydown', e => { if (e.key === 'Enter') $('lBtn').click(); });
+
+/* ====== Firestore ====== */
+async function codeExists(code) {
+  try { return (await getDoc(FAM(code))).exists(); } catch (e) { return false; }
+}
+// الحرف التالي المتاح (B محجوز للزوجة، فأول ابن C)
+function nextLetterOf(code, members) {
+  let max = 66;
+  members.forEach(m => {
+    const c = m.sub.slice(code.length + 1).charCodeAt(0) || 0;
+    if (c > max) max = c;
+  });
+  return max >= 90 ? null : String.fromCharCode(max + 1);
+}
+
+/* ====== الأكواد والأسماء ====== */
+const letterOf = i => String.fromCharCode(67 + i);
+const mainNameNow = () => mode === 'add' ? (found ? found.mainName : '') : $('mName').value.trim();
+// الابن ياخد اسمه الأول + اسم أبوه بالكامل
+const fullChildName = first => (first.trim() + ' ' + mainNameNow()).trim();
+
+function updateNames() {
+  document.querySelectorAll('.child[data-type="child"]').forEach(c => {
+    const f = c.querySelector('.c-name').value;
+    c.querySelector('.c-full').textContent = f.trim() ? fullChildName(f) : '—';
+  });
+}
+function updateCodes() {
+  const code = $('code').value.trim();
+  $('wifeCode').textContent = code + '-B';
+  const kids = document.querySelectorAll('#kids .child');
+  kids.forEach((c, i) => { c.querySelector('.p-code').textContent = code + '-' + letterOf(i); });
+  $('extraCode').textContent = code + '-' + letterOf(kids.length);
+  updateAddCodes();
+}
+function updateAddCodes() {
+  if (!found || !found.nextLetter) return;
+  const base = found.nextLetter.charCodeAt(0);
+  document.querySelectorAll('#newPeople .person').forEach((p, k) => {
+    p.querySelector('.p-code').textContent = found.code + '-' + String.fromCharCode(base + k);
+  });
+}
+
+/* ====== الألعاب ====== */
+function refreshSelects() {
+  document.querySelectorAll('select[data-gtype]').forEach(sel => {
+    const old = sel.value;
+    const list = games.filter(g => g.type === sel.dataset.gtype);
+    sel.innerHTML = '<option value="">' + (list.length ? 'اختر...' : 'أضف ألعاب أولاً') + '</option>' +
+      list.map(g => `<option value="${esc(g.name)}">${esc(g.name)}</option>`).join('');
+    sel.value = old;
+  });
+}
+function renderGames() {
+  $('gamesList').innerHTML = games.length
+    ? games.map(g => `<span class="chip ${g.type === 'جماعية' ? 'team' : 'single'}">${esc(g.name)} · ${g.type}</span>`).join('')
+    : '<span class="hint">مفيش ألعاب لسه، أضف أول لعبة من فوق</span>';
+  refreshSelects();
+}
+async function loadGames() {
+  try {
+    const s = await getDoc(doc(db, 'settings', 'games'));
+    games = s.exists() ? s.data().list : [];
+    renderGames();
+  } catch (e) { toast('❌ تعذر تحميل قائمة الألعاب', false); }
+}
+function addGame() {
+  const name = $('gName').value.trim(), type = $('gType').value;
+  if (!name) { toast('اكتب اسم اللعبة', false); return; }
+  if (games.some(g => g.name === name && g.type === type)) { toast('اللعبة موجودة بالفعل', false); return; }
+  games = [...games, { name, type }];
+  setDoc(doc(db, 'settings', 'games'), { list: games }).catch(() => toast('❌ اللعبة مااتسجلتش على السيرفر', false));
+  renderGames();
+  $('gName').value = '';
+  toast('✅ تمت إضافة اللعبة');
+}
+
+/* ====== القوالب ====== */
+function childHtml(title, removable) {
+  const n = ++uid;
+  return `
+  <div class="child person" data-type="child">
+    <div class="child-head">
+      <span>${title} <span class="badge p-code"></span></span>
+      ${removable ? '<button type="button" class="rm" title="حذف">✕</button>' : ''}
+    </div>
+    <div class="field">
+      <label>اسم الابن (الاسم الأول فقط) *</label>
+      <input type="text" class="c-name" required placeholder="مثال: يوسف">
+      <div class="msg-err">اكتب اسم الابن</div>
+      <div class="hint">الاسم الكامل: <b class="c-full">—</b></div>
+    </div>
+    <div class="field">
+      <label>الرقم القومي للابن (اختياري)</label>
+      <input type="text" class="c-nid" data-kind="nid" maxlength="14" inputmode="numeric" placeholder="14 رقم">
+      <div class="msg-err">الرقم القومي لازم يكون 14 رقم</div>
+    </div>
+    <div class="field">
+      <label>اشتراك الألعاب *</label>
+      <div class="radios">
+        <label><input type="radio" name="sport${n}" value="team"> لعبتين جماعيتين</label>
+        <label><input type="radio" name="sport${n}" value="single"> لعبة فردية</label>
+      </div>
+      <div class="sport-err">اختر نوع الاشتراك</div>
+    </div>
+    <div class="grid box-team hidden">
+      <div class="field">
+        <label>اللعبة الجماعية الأولى *</label>
+        <select class="c-t1" data-gtype="جماعية" required></select>
+        <div class="msg-err">اختر اللعبة الأولى</div>
+      </div>
+      <div class="field">
+        <label>اللعبة الجماعية الثانية *</label>
+        <select class="c-t2" data-gtype="جماعية" required></select>
+        <div class="msg-err">اختر لعبة مختلفة عن الأولى</div>
+      </div>
+    </div>
+    <div class="field box-single hidden">
+      <label>اللعبة الفردية *</label>
+      <select class="c-s1" data-gtype="فردية" required></select>
+      <div class="msg-err">اختر اللعبة</div>
+    </div>
+  </div>`;
+}
+function extraHtml(removable) {
+  return `
+  <div class="child person" data-type="extra">
+    <div class="child-head">
+      <span>عضو إضافي <span class="badge p-code"></span></span>
+      ${removable ? '<button type="button" class="rm" title="حذف">✕</button>' : ''}
+    </div>
+    <div class="field">
+      <label>الاسم بالكامل *</label>
+      <input type="text" class="x-name" required>
+      <div class="msg-err">اكتب الاسم</div>
+    </div>
+    <div class="grid">
+      <div class="field">
+        <label>الرقم القومي (اختياري)</label>
+        <input type="text" class="x-nid" data-kind="nid" maxlength="14" inputmode="numeric" placeholder="14 رقم">
+        <div class="msg-err">الرقم القومي لازم يكون 14 رقم</div>
+      </div>
+      <div class="field">
+        <label>رقم التليفون (اختياري)</label>
+        <input type="tel" class="x-phone" data-kind="phone" maxlength="11" inputmode="numeric" placeholder="01xxxxxxxxx">
+        <div class="msg-err">اكتب رقم موبايل مصري صحيح (11 رقم)</div>
+      </div>
+    </div>
+  </div>`;
+}
+function syncKids(n) {
+  const wrap = $('kids');
+  while (wrap.children.length > n) wrap.lastElementChild.remove();
+  while (wrap.children.length < n) wrap.insertAdjacentHTML('beforeend', childHtml('الابن رقم ' + (wrap.children.length + 1), false));
+  refreshSelects(); updateCodes(); updateNames();
+}
+
+/* ====== التبويبات ====== */
+function setMode(m) {
+  mode = m;
+  $('newMode').classList.toggle('hidden', m !== 'new');
+  $('addMode').classList.toggle('hidden', m !== 'add');
+  $('tabNew').classList.toggle('active', m === 'new');
+  $('tabAdd').classList.toggle('active', m === 'add');
+  updateNames();
+}
+$('tabNew').addEventListener('click', () => setMode('new'));
+$('tabAdd').addEventListener('click', () => setMode('add'));
+
+/* ====== أحداث التسجيل الجديد ====== */
+$('hasWife').addEventListener('change', e => $('wifeBox').classList.toggle('hidden', !e.target.checked));
+$('hasExtra').addEventListener('change', e => $('extraBox').classList.toggle('hidden', !e.target.checked));
+$('hasKids').addEventListener('change', e => {
+  $('kidsBox').classList.toggle('hidden', !e.target.checked);
+  if (!e.target.checked) { $('kids').innerHTML = ''; $('kidsCount').value = ''; updateCodes(); }
+});
+$('kidsCount').addEventListener('input', () => {
+  syncKids(Math.min(20, Math.max(0, parseInt($('kidsCount').value) || 0)));
+});
+document.addEventListener('change', e => {
+  if (e.target.type !== 'radio') return;
+  const c = e.target.closest('.child');
+  if (!c) return;
+  c.querySelector('.box-team').classList.toggle('hidden', e.target.value !== 'team');
+  c.querySelector('.box-single').classList.toggle('hidden', e.target.value !== 'single');
+  c.querySelector('.sport-err').style.display = 'none';
+});
+
+function onInput(e) {
+  const el = e.target;
+  el.classList.remove('invalid');
+  if (el.dataset.kind === 'nid' || el.dataset.kind === 'phone') {
+    el.value = toLatinDigits(el.value).replace(/\D/g, '');
+  }
+  if (el.id === 'code') {
+    el.value = el.value.replace(/[\s\/]/g, '');
+    codeDup = false;
+    el.nextElementSibling.textContent = 'اكتب كود العضو';
+    updateCodes();
+  }
+  if (el.id === 'aCode') { el.value = el.value.replace(/[\s\/]/g, ''); found = null; hideFound(); }
+  if (el.id === 'mName' || el.classList.contains('c-name')) updateNames();
+}
+form.addEventListener('input', onInput);
+$('addForm').addEventListener('input', onInput);
+
+function markCodeDup() {
+  const c = $('code');
+  c.classList.add('invalid');
+  c.nextElementSibling.textContent = 'الكود ده مسجل قبل كده';
+}
+$('code').addEventListener('change', () => {
+  const v = $('code').value.trim();
+  if (!v) return;
+  codeCheck = codeExists(v).then(ex => {
+    if (ex && $('code').value.trim() === v) { codeDup = true; markCodeDup(); }
+  });
+});
+
+/* ====== التحقق ====== */
+function fieldOk(el) {
+  const v = el.value.trim();
+  if (el.required && !v) return false;
+  if (!v) return true;
+  switch (el.dataset.kind) {
+    case 'nid': return /^\d{14}$/.test(v);
+    case 'phone': return /^01[0125]\d{8}$/.test(v);
+    case 'count': return /^([1-9]|1\d|20)$/.test(v);
+  }
+  return true;
+}
+function validate(root) {
+  let ok = true;
+  root.querySelectorAll('input, select').forEach(el => {
+    if (el.type === 'radio' || el.type === 'checkbox') return;
+    if (el.closest('.hidden')) return;
+    const bad = !fieldOk(el);
+    el.classList.toggle('invalid', bad);
+    if (bad) ok = false;
+  });
+  root.querySelectorAll('.child[data-type="child"]').forEach(c => {
+    const picked = c.querySelector('input[type=radio]:checked');
+    c.querySelector('.sport-err').style.display = picked ? 'none' : 'block';
+    if (!picked) { ok = false; return; }
+    if (picked.value === 'team') {
+      const a = c.querySelector('.c-t1'), b = c.querySelector('.c-t2');
+      if (a.value && a.value === b.value) { b.classList.add('invalid'); ok = false; }
+    }
+  });
+  if (root === form && codeDup) { markCodeDup(); ok = false; }
+  return ok;
+}
+function scrollToFirstError(root) {
+  const first = root.querySelector('.invalid') || root.querySelector('.sport-err[style*="block"]');
+  if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/* ====== تجميع البيانات ====== */
+function childData(c) {
+  const type = c.querySelector('input[type=radio]:checked').value;
+  const list = type === 'team'
+    ? c.querySelector('.c-t1').value + ' + ' + c.querySelector('.c-t2').value
+    : c.querySelector('.c-s1').value;
+  return {
+    rel: 'ابن',
+    name: fullChildName(c.querySelector('.c-name').value),
+    nid: c.querySelector('.c-nid').value.trim(),
+    phone: '',
+    sport: type === 'team' ? 'لعبتين جماعيتين' : 'لعبة فردية',
+    games: list
+  };
+}
+function collect() {
+  const code = $('code').value.trim();
+  const members = [{ sub: code, rel: 'عضو أساسي', name: $('mName').value.trim(),
+    nid: $('mNid').value.trim(), phone: $('mPhone').value.trim(), sport: '', games: '' }];
+  if ($('hasWife').checked) {
+    members.push({ sub: code + '-B', rel: 'زوجة', name: $('wName').value.trim(),
+      nid: $('wNid').value.trim(), phone: $('wPhone').value.trim(), sport: '', games: '' });
+  }
+  let kidsCount = 0;
+  if ($('hasKids').checked) {
+    document.querySelectorAll('#kids .child').forEach((c, i) => {
+      members.push({ sub: code + '-' + letterOf(i), ...childData(c) });
+      kidsCount++;
+    });
+  }
+  if ($('hasExtra').checked) {
+    members.push({ sub: code + '-' + letterOf(kidsCount), rel: 'عضو إضافي', name: $('eName').value.trim(),
+      nid: $('eNid').value.trim(), phone: $('ePhone').value.trim(), sport: '', games: '' });
+  }
+  return { code, members };
+}
+function resetAll() {
+  form.reset();
+  ['wifeBox', 'kidsBox', 'extraBox'].forEach(id => $(id).classList.add('hidden'));
+  $('kids').innerHTML = '';
+  codeDup = false;
+  updateCodes();
+}
+
+/* ====== حفظ التسجيل الجديد ====== */
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  await codeCheck;
+  if (!validate(form)) { scrollToFirstError(form); return; }
+  const data = collect();
+
+  // من غير await: بيتحفظ محلياً فوراً ويتبعت للسيرفر في الخلفية
+  setDoc(FAM(data.code), {
+    code: data.code, mainName: data.members[0].name,
+    members: data.members, createdAt: serverTimestamp()
+  })
+    .then(() => toast('✅ اتأكد تسجيل الكود ' + data.code + ' على السيرفر'))
+    .catch(err => toast('❌ الكود ' + data.code + ' مااتسجلش (' + err.code + ') — راجع وسجله تاني', false, 15000));
+
+  toast('✅ اتحفظ ' + data.code + ' (' + data.members.length + ' أشخاص)');
+  resetAll();
+});
+
+/* ====== وضع الإضافة لعضو مسجل ====== */
+function hideFound() {
+  $('foundBox').classList.add('hidden');
+  $('addActions').classList.add('hidden');
+  $('newPeople').innerHTML = '';
+  $('addSubmit').classList.add('hidden');
+}
+function renderFound() {
+  $('foundCode').textContent = found.code;
+  $('foundList').innerHTML = found.members.map(m =>
+    `<div class="fam-row"><span class="badge">${esc(m.sub)}</span><span>${esc(m.name)}</span><span class="fam-rel">${esc(m.rel)}</span></div>`
+  ).join('');
+  $('nextHint').textContent = found.nextLetter ? found.code + '-' + found.nextLetter : 'لا يوجد كود متاح';
+  $('addKidBtn').disabled = $('addExtraBtn').disabled = !found.nextLetter;
+  $('foundBox').classList.remove('hidden');
+  $('addActions').classList.remove('hidden');
+  updateNames();
+}
+async function findFamily() {
+  const code = $('aCode').value.trim();
+  if (!code) { toast('اكتب كود العضو الأساسي', false); return; }
+  const b = $('findBtn');
+  b.disabled = true;
+  try {
+    const s = await getDoc(FAM(code));
+    if (!s.exists()) { found = null; hideFound(); toast('❌ الكود ده مش مسجل', false); }
+    else {
+      const d = s.data();
+      found = { code, mainName: d.mainName, members: d.members, nextLetter: nextLetterOf(code, d.members) };
+      hideFound(); renderFound();
+    }
+  } catch (e) { toast('❌ تعذر الاتصال بالسيرفر (' + (e.code || '') + ')', false); }
+  b.disabled = false;
+}
+function addPerson(type) {
+  if (!found || !found.nextLetter) return;
+  const wrap = $('newPeople');
+  if (found.nextLetter.charCodeAt(0) + wrap.children.length > 90) {
+    toast('❌ وصلت لآخر كود متاح لهذا العضو', false); return;
+  }
+  wrap.insertAdjacentHTML('beforeend', type === 'child' ? childHtml('ابن جديد', true) : extraHtml(true));
+  refreshSelects(); updateAddCodes(); updateNames();
+  $('addSubmit').classList.remove('hidden');
+  wrap.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+$('findBtn').addEventListener('click', findFamily);
+$('aCode').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); findFamily(); } });
+$('addKidBtn').addEventListener('click', () => addPerson('child'));
+$('addExtraBtn').addEventListener('click', () => addPerson('extra'));
+$('newPeople').addEventListener('click', e => {
+  if (!e.target.classList.contains('rm')) return;
+  e.target.closest('.person').remove();
+  updateAddCodes();
+  if (!$('newPeople').children.length) $('addSubmit').classList.add('hidden');
+});
+
+function collectAdd() {
+  const members = [];
+  document.querySelectorAll('#newPeople .person').forEach(p => {
+    if (p.dataset.type === 'child') members.push(childData(p));
+    else members.push({ rel: 'عضو إضافي', name: p.querySelector('.x-name').value.trim(),
+      nid: p.querySelector('.x-nid').value.trim(), phone: p.querySelector('.x-phone').value.trim(),
+      sport: '', games: '' });
+  });
+  return members;
+}
+$('addForm').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!found) { toast('ابحث عن العضو الأول', false); return; }
+  const wrap = $('newPeople');
+  if (!wrap.children.length) { toast('ضيف ابن أو عضو إضافي الأول', false); return; }
+  if (!validate(wrap)) { scrollToFirstError(wrap); return; }
+
+  const base = found.nextLetter.charCodeAt(0);
+  const added = collectAdd().map((m, i) => ({ ...m, sub: found.code + '-' + String.fromCharCode(base + i) }));
+  const code = found.code;
+
+  updateDoc(FAM(code), { members: arrayUnion(...added), updatedAt: serverTimestamp() })
+    .then(() => toast('✅ اتأكدت الإضافة على السيرفر'))
+    .catch(err => toast('❌ الإضافة مااتسجلتش (' + err.code + ') — راجع وأضفها تاني', false, 15000));
+
+  found.members = [...found.members, ...added];
+  found.nextLetter = nextLetterOf(code, found.members);
+  wrap.innerHTML = '';
+  $('addSubmit').classList.add('hidden');
+  renderFound();
+  toast('✅ تمت الإضافة (' + added.length + ')');
+});
+
+/* ====== إدارة الألعاب ====== */
+$('addGameBtn').addEventListener('click', addGame);
+$('gName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addGame(); } });
+
+updateCodes();
+</script>
+</body>
+</html>
