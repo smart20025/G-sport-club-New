@@ -57,6 +57,9 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .btn-outline:hover{background:var(--soft);box-shadow:none}
 .rm{width:auto;padding:4px 12px;font-size:14px;background:#fee2e2;color:var(--err);border-radius:10px}
 .rm:hover{box-shadow:none;transform:none}
+.ic{width:auto;padding:4px 10px;font-size:14px;background:#f1f5f9;color:var(--text);border-radius:8px}
+.ic:hover{box-shadow:none;transform:none}
+.userbar{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:#64748b;margin-bottom:12px}
 .hidden{display:none!important}
 #login{position:fixed;inset:0;background:linear-gradient(135deg,#0f766e,#14b8a6);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
 #login .box{width:100%;max-width:360px;background:#fff;border-radius:20px;padding:28px}
@@ -77,9 +80,10 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 </div>
 
 <div class="card">
+  <div class="userbar"><span id="who"></span><button type="button" class="btn-sm btn-outline" id="logoutBtn" style="padding:6px 14px;font-size:13px">🚪 خروج</button></div>
   <img src="logo.png" alt="G1 Sports Club" class="logo">
   <h1>تسجيل بيانات الأعضاء 📝</h1>
-  <p class="sub">سجّل العضو الأساسي وأسرته</p>
+  <p class="sub">سجّل العضو الأساسي وأسرته، وكل شخص هيتسجل في صف مستقل</p>
 
   <div class="tabs">
     <button type="button" class="tab active" id="tabNew">تسجيل عضو جديد</button>
@@ -99,6 +103,11 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
           <label>اسم العضو بالكامل *</label>
           <input type="text" id="mName" required placeholder="مثال: محمد أحمد علي">
           <div class="msg-err">اكتب الاسم</div>
+        </div>
+        <div class="field">
+          <label>تاريخ العضوية *</label>
+          <input type="date" id="mDate" required>
+          <div class="msg-err">اختر تاريخ العضوية</div>
         </div>
         <div class="grid">
           <div class="field">
@@ -185,7 +194,26 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
       <div class="sec hidden" id="foundBox">
         <h2>👨‍👩‍👧 المسجلين على الكود <span class="badge" id="foundCode"></span></h2>
         <div id="foundList"></div>
+        <div class="hint">تاريخ العضوية: <b id="memDate"></b></div>
         <div class="hint">الكود التالي المتاح: <b id="nextHint"></b></div>
+        <button type="button" class="rm hidden" id="delFamBtn" style="margin-top:10px;padding:8px 14px">🗑 حذف العائلة كلها</button>
+        <div id="editBox" class="child hidden" style="margin-top:14px">
+          <div class="child-head"><span id="eTitle"></span><button type="button" class="rm" id="editCancel">✕</button></div>
+          <div class="field"><label>الاسم بالكامل *</label><input type="text" id="xName" required><div class="msg-err">اكتب الاسم</div></div>
+          <div class="grid">
+            <div class="field"><label>الرقم القومي</label><input type="text" id="xNid" data-kind="nid" maxlength="14" inputmode="numeric"><div class="msg-err">الرقم القومي لازم يكون 14 رقم</div></div>
+            <div class="field" id="xPhoneF"><label>التليفون</label><input type="tel" id="xPhone" data-kind="phone" maxlength="11" inputmode="numeric"><div class="msg-err">اكتب رقم موبايل مصري صحيح (11 رقم)</div></div>
+          </div>
+          <div class="field" id="xDateF"><label>تاريخ العضوية *</label><input type="date" id="xDate" required><div class="msg-err">اختر التاريخ</div></div>
+          <div id="xGamesF">
+            <div class="field"><label>اشتراك الألعاب</label><select id="xSport"><option value="none">بدون ألعاب</option><option value="team">جماعية</option><option value="single">فردية</option></select></div>
+            <div class="grid">
+              <div class="field" id="xG1F"><select id="xG1" data-gtype="جماعية"></select></div>
+              <div class="field" id="xG2F"><select id="xG2" data-gtype="جماعية"></select></div>
+            </div>
+          </div>
+          <button type="button" id="editSave">حفظ التعديل</button>
+        </div>
       </div>
       <div class="hidden" id="addActions">
         <div class="grid" style="margin-bottom:16px">
@@ -198,7 +226,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
     </form>
   </div>
 
-  <details class="sec games-box">
+  <details class="sec games-box" id="gamesBox">
     <summary>⚽ إدارة قائمة الألعاب (إضافة لعبة جديدة)</summary>
     <div class="add-row">
       <input type="text" id="gName" placeholder="اسم اللعبة">
@@ -208,7 +236,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
     <div class="chips" id="gamesList"></div>
   </details>
 
-  <div class="ver">Data Analysis :Mohamed Abd-Elfttah </div>
+  <div class="ver">نسخة 5 (Firebase)</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -216,9 +244,9 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-         doc, getDoc, setDoc, updateDoc, arrayUnion, serverTimestamp }
+         doc, getDoc, setDoc, updateDoc, deleteDoc, arrayUnion, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged }
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 /* ====== الصق هنا الـ firebaseConfig بتاعك ====== */
@@ -230,6 +258,10 @@ const firebaseConfig = {
   messagingSenderId: "692091871949",
   appId: "1:692091871949:web:1798111f31e0160dcbff84"
 };
+
+/* ====== إيميلات الأدمن (بحروف صغيرة) — لازم تطابق اللي في القواعد ====== */
+const ADMIN_EMAILS = ['admin@g1.com'];
+let isAdmin = false;
 
 const app = initializeApp(firebaseConfig);
 const db = initializeFirestore(app, {
@@ -258,9 +290,15 @@ function toLatinDigits(s) {
 
 /* ====== تسجيل الدخول ====== */
 onAuthStateChanged(auth, u => {
+  isAdmin = !!u && ADMIN_EMAILS.includes((u.email || '').toLowerCase());
   $('login').classList.toggle('hidden', !!u);
+  $('gamesBox').classList.toggle('hidden', !isAdmin);
+  $('who').textContent = u ? '👤 ' + u.email + ' — ' + (isAdmin ? 'أدمن' : 'تسجيل وبحث') : '';
   if (u) loadGames();
+  else { found = null; hideFound(); resetAll(); $('aCode').value = ''; $('lPass').value = ''; games = []; }
+  if (u && found) renderFound();
 });
+$('logoutBtn').onclick = () => signOut(auth);
 $('lBtn').onclick = () =>
   signInWithEmailAndPassword(auth, $('lEmail').value.trim(), $('lPass').value)
     .catch(() => toast('❌ بيانات الدخول غلط', false));
@@ -363,8 +401,9 @@ function childHtml(title, removable) {
       <div class="msg-err">الرقم القومي لازم يكون 14 رقم</div>
     </div>
     <div class="field">
-      <label>اشتراك الألعاب *</label>
+      <label>اشتراك الألعاب (اختياري)</label>
       <div class="radios">
+        <label><input type="radio" name="sport${n}" value="none" checked> بدون</label>
         <label><input type="radio" name="sport${n}" value="team"> لعبتين جماعيتين</label>
         <label><input type="radio" name="sport${n}" value="single"> لعبة فردية</label>
       </div>
@@ -372,19 +411,19 @@ function childHtml(title, removable) {
     </div>
     <div class="grid box-team hidden">
       <div class="field">
-        <label>اللعبة الجماعية الأولى *</label>
-        <select class="c-t1" data-gtype="جماعية" required></select>
+        <label>اللعبة الجماعية الأولى</label>
+        <select class="c-t1" data-gtype="جماعية"></select>
         <div class="msg-err">اختر اللعبة الأولى</div>
       </div>
       <div class="field">
-        <label>اللعبة الجماعية الثانية *</label>
-        <select class="c-t2" data-gtype="جماعية" required></select>
+        <label>اللعبة الجماعية الثانية</label>
+        <select class="c-t2" data-gtype="جماعية"></select>
         <div class="msg-err">اختر لعبة مختلفة عن الأولى</div>
       </div>
     </div>
     <div class="field box-single hidden">
-      <label>اللعبة الفردية *</label>
-      <select class="c-s1" data-gtype="فردية" required></select>
+      <label>اللعبة الفردية</label>
+      <select class="c-s1" data-gtype="فردية"></select>
       <div class="msg-err">اختر اللعبة</div>
     </div>
   </div>`;
@@ -525,16 +564,15 @@ function scrollToFirstError(root) {
 /* ====== تجميع البيانات ====== */
 function childData(c) {
   const type = c.querySelector('input[type=radio]:checked').value;
-  const list = type === 'team'
-    ? c.querySelector('.c-t1').value + ' + ' + c.querySelector('.c-t2').value
-    : c.querySelector('.c-s1').value;
+  const g = (type === 'team' ? [c.querySelector('.c-t1').value, c.querySelector('.c-t2').value]
+    : type === 'single' ? [c.querySelector('.c-s1').value] : []).filter(Boolean);
   return {
     rel: 'ابن',
     name: fullChildName(c.querySelector('.c-name').value),
     nid: c.querySelector('.c-nid').value.trim(),
     phone: '',
-    sport: type === 'team' ? 'لعبتين جماعيتين' : 'لعبة فردية',
-    games: list
+    sport: g.length ? (type === 'single' ? 'لعبة فردية' : g.length === 2 ? 'لعبتين جماعيتين' : 'لعبة جماعية') : '',
+    games: g.join(' + ')
   };
 }
 function collect() {
@@ -556,14 +594,18 @@ function collect() {
     members.push({ sub: code + '-' + letterOf(kidsCount), rel: 'عضو إضافي', name: $('eName').value.trim(),
       nid: $('eNid').value.trim(), phone: $('ePhone').value.trim(), sport: '', games: '' });
   }
-  return { code, members };
+  return { code, members, memberDate: $('mDate').value };
 }
 function resetAll() {
   form.reset();
   ['wifeBox', 'kidsBox', 'extraBox'].forEach(id => $(id).classList.add('hidden'));
   $('kids').innerHTML = '';
   codeDup = false;
+  setToday();
   updateCodes();
+}
+function setToday() {
+  $('mDate').value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 }
 
 /* ====== حفظ التسجيل الجديد ====== */
@@ -576,7 +618,7 @@ form.addEventListener('submit', async e => {
   // من غير await: بيتحفظ محلياً فوراً ويتبعت للسيرفر في الخلفية
   setDoc(FAM(data.code), {
     code: data.code, mainName: data.members[0].name,
-    members: data.members, createdAt: serverTimestamp()
+    members: data.members, memberDate: data.memberDate, createdAt: serverTimestamp()
   })
     .then(() => toast('✅ اتأكد تسجيل الكود ' + data.code + ' على السيرفر'))
     .catch(err => toast('❌ الكود ' + data.code + ' مااتسجلش (' + err.code + ') — راجع وسجله تاني', false, 15000));
@@ -587,6 +629,7 @@ form.addEventListener('submit', async e => {
 
 /* ====== وضع الإضافة لعضو مسجل ====== */
 function hideFound() {
+  closeEdit();
   $('foundBox').classList.add('hidden');
   $('addActions').classList.add('hidden');
   $('newPeople').innerHTML = '';
@@ -594,9 +637,12 @@ function hideFound() {
 }
 function renderFound() {
   $('foundCode').textContent = found.code;
-  $('foundList').innerHTML = found.members.map(m =>
-    `<div class="fam-row"><span class="badge">${esc(m.sub)}</span><span>${esc(m.name)}</span><span class="fam-rel">${esc(m.rel)}</span></div>`
+  $('foundList').innerHTML = found.members.map((m, i) =>
+    `<div class="fam-row"><span class="badge">${esc(m.sub)}</span><span>${esc(m.name)}</span><span class="fam-rel">${esc(m.rel)}</span>` +
+    (isAdmin ? `<button type="button" class="ic" data-act="edit" data-i="${i}">✏️</button><button type="button" class="rm" data-act="del" data-i="${i}">🗑</button>` : '') + `</div>`
   ).join('');
+  $('memDate').textContent = found.memberDate || '—';
+  $('delFamBtn').classList.toggle('hidden', !isAdmin);
   $('nextHint').textContent = found.nextLetter ? found.code + '-' + found.nextLetter : 'لا يوجد كود متاح';
   $('addKidBtn').disabled = $('addExtraBtn').disabled = !found.nextLetter;
   $('foundBox').classList.remove('hidden');
@@ -613,7 +659,7 @@ async function findFamily() {
     if (!s.exists()) { found = null; hideFound(); toast('❌ الكود ده مش مسجل', false); }
     else {
       const d = s.data();
-      found = { code, mainName: d.mainName, members: d.members, nextLetter: nextLetterOf(code, d.members) };
+      found = { code, mainName: d.mainName, memberDate: d.memberDate || '', members: d.members, nextLetter: nextLetterOf(code, d.members) };
       hideFound(); renderFound();
     }
   } catch (e) { toast('❌ تعذر الاتصال بالسيرفر (' + (e.code || '') + ')', false); }
@@ -674,10 +720,89 @@ $('addForm').addEventListener('submit', e => {
   toast('✅ تمت الإضافة (' + added.length + ')');
 });
 
+/* ====== التعديل والحذف (للأدمن بس) ====== */
+let editIdx = -1;
+function closeEdit() { $('editBox').classList.add('hidden'); editIdx = -1; }
+function syncEditGames() {
+  const t = $('xSport').value;
+  $('xG1').dataset.gtype = t === 'single' ? 'فردية' : 'جماعية';
+  $('xG1F').classList.toggle('hidden', t === 'none');
+  $('xG2F').classList.toggle('hidden', t !== 'team');
+  refreshSelects();
+}
+function openEdit(i) {
+  const m = found.members[i], isMain = m.sub === found.code, isKid = m.rel === 'ابن';
+  editIdx = i;
+  $('eTitle').textContent = 'تعديل ' + m.sub;
+  $('xName').value = m.name; $('xNid').value = m.nid || ''; $('xPhone').value = m.phone || ''; $('xDate').value = found.memberDate || '';
+  ['xName', 'xNid', 'xPhone', 'xDate'].forEach(id => $(id).classList.remove('invalid'));
+  $('xDateF').classList.toggle('hidden', !isMain);
+  $('xPhoneF').classList.toggle('hidden', isKid);
+  $('xGamesF').classList.toggle('hidden', !isKid);
+  if (isKid) {
+    const g = m.games ? m.games.split(' + ') : [];
+    $('xSport').value = !g.length ? 'none' : m.sport === 'لعبة فردية' ? 'single' : 'team';
+    syncEditGames();
+    $('xG1').value = g[0] || ''; $('xG2').value = g[1] || '';
+  }
+  $('editBox').classList.remove('hidden');
+  $('editBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function saveFamily(upd, msg) {
+  const code = found.code;
+  updateDoc(FAM(code), { ...upd, updatedAt: serverTimestamp() })
+    .then(() => toast('✅ اتأكد على السيرفر'))
+    .catch(err => toast('❌ العملية مااتسجلتش (' + err.code + ')', false, 15000));
+  Object.assign(found, upd);
+  found.nextLetter = nextLetterOf(code, found.members);
+  closeEdit(); renderFound(); toast(msg);
+}
+$('editSave').addEventListener('click', () => {
+  const box = $('editBox');
+  if (!validate(box)) { scrollToFirstError(box); return; }
+  const old = found.members[editIdx], m = { ...old }, isMain = old.sub === found.code;
+  m.name = $('xName').value.trim(); m.nid = $('xNid').value.trim();
+  if (old.rel === 'ابن') {
+    const t = $('xSport').value;
+    const g = t === 'none' ? [] : [$('xG1').value, t === 'team' ? $('xG2').value : ''].filter(Boolean);
+    if (g.length === 2 && g[0] === g[1]) { toast('❌ اختر لعبتين مختلفتين', false); return; }
+    m.sport = g.length ? (t === 'single' ? 'لعبة فردية' : g.length === 2 ? 'لعبتين جماعيتين' : 'لعبة جماعية') : '';
+    m.games = g.join(' + ');
+  } else m.phone = $('xPhone').value.trim();
+  const list = found.members.map((x, i) => i === editIdx ? m : x);
+  const upd = { members: list };
+  if (isMain) {
+    upd.mainName = m.name; upd.memberDate = $('xDate').value;
+    const o = found.mainName;   // الأبناء اللي اسمهم بينتهي باسم الأب القديم ياخدوا الاسم الجديد
+    list.forEach((x, i) => { if (x.rel === 'ابن' && o && x.name.endsWith(' ' + o)) list[i] = { ...x, name: x.name.slice(0, -o.length) + m.name }; });
+  }
+  saveFamily(upd, '✅ تم التعديل');
+});
+$('foundList').addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]');
+  if (!b || !isAdmin) return;
+  const i = +b.dataset.i, m = found.members[i];
+  if (b.dataset.act === 'edit') return openEdit(i);
+  if (m.sub === found.code) { toast('❌ العضو الأساسي مينفعش يتحذف لوحده، احذف العائلة كلها', false); return; }
+  if (confirm('حذف ' + m.name + ' (' + m.sub + ') ؟')) saveFamily({ members: found.members.filter((_, k) => k !== i) }, '✅ تم الحذف');
+});
+$('delFamBtn').addEventListener('click', () => {
+  if (!isAdmin || !found || !confirm('حذف العائلة كلها (' + found.code + ' — ' + found.members.length + ' أشخاص) نهائياً؟')) return;
+  const code = found.code;
+  deleteDoc(FAM(code))
+    .then(() => toast('✅ اتأكد حذف ' + code + ' على السيرفر'))
+    .catch(err => toast('❌ الحذف مااتسجلش (' + err.code + ')', false, 15000));
+  found = null; hideFound(); $('aCode').value = '';
+  toast('✅ تم حذف ' + code);
+});
+$('editCancel').addEventListener('click', closeEdit);
+$('xSport').addEventListener('change', syncEditGames);
+
 /* ====== إدارة الألعاب ====== */
 $('addGameBtn').addEventListener('click', addGame);
 $('gName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addGame(); } });
 
+setToday();
 updateCodes();
 </script>
 </body>
