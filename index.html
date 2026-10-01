@@ -66,6 +66,14 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(120px);padding:14px 26px;border-radius:12px;color:#fff;font-weight:600;transition:.4s;z-index:200;max-width:92%;text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.ok{background:#16a34a}.toast.bad{background:var(--err)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.kpi{background:var(--soft);border:2px solid #ccfbf1;border-radius:14px;padding:14px;text-align:center}
+.kpi b{display:block;font-size:26px;color:var(--main)}
+.kpi span{font-size:13px;color:#475569}
+.bar-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px}
+.bar-l{width:95px;flex-shrink:0}
+.bar{flex:1;height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--main),var(--main2))}
 </style>
 </head>
 <body>
@@ -88,6 +96,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
   <div class="tabs">
     <button type="button" class="tab active" id="tabNew">تسجيل عضو جديد</button>
     <button type="button" class="tab" id="tabAdd">إضافة لعضو مسجل</button>
+    <button type="button" class="tab hidden" id="tabDash">📊 لوحة التحكم</button>
   </div>
 
   <div id="newMode">
@@ -269,6 +278,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
       </div>
     </form>
   </div>
+    <div id="dashMode" class="hidden"></div>
   <details class="sec games-box hidden" id="logBox">
     <summary>📜 سجل العمليات (أدمن)</summary>
     <button type="button" class="btn-outline" id="logBtn" style="margin-top:12px">تحديث السجل</button>
@@ -401,10 +411,12 @@ onAuthStateChanged(auth, u => {
   $('gamesBox').classList.toggle('hidden', !isAdmin);
   $('who').textContent = u ? '👤 ' + u.email + ' — ' + (isAdmin ? 'أدمن' : 'تسجيل وبحث') : '';
    $('logBox').classList.toggle('hidden', !isAdmin);
+    $('tabDash').classList.toggle('hidden', !isAdmin);
+  if (!isAdmin && mode === 'dash') setMode('new');
   if (u) {
     loadGames();
     if (!unsubFams) unsubFams = onSnapshot(collection(db, 'families'),
-      s => { allFams = new Map(s.docs.map(d => [d.id, d.data()])); }, () => {});
+       s => { allFams = new Map(s.docs.map(d => [d.id, d.data()])); if (mode === 'dash') renderDash(); }, () => {});
   } else {
     if (unsubFams) { unsubFams(); unsubFams = null; }
     allFams = new Map(); found = null; hideFound(); resetAll(); $('aCode').value = ''; $('lPass').value = ''; games = [];
@@ -588,12 +600,55 @@ function setMode(m) {
   mode = m;
   $('newMode').classList.toggle('hidden', m !== 'new');
   $('addMode').classList.toggle('hidden', m !== 'add');
+  $('dashMode').classList.toggle('hidden', m !== 'dash');
   $('tabNew').classList.toggle('active', m === 'new');
   $('tabAdd').classList.toggle('active', m === 'add');
+  $('tabDash').classList.toggle('active', m === 'dash');
+  if (m === 'dash') renderDash();
   updateNames();
 }
 $('tabNew').addEventListener('click', () => setMode('new'));
 $('tabAdd').addEventListener('click', () => setMode('add'));
+$('tabDash').addEventListener('click', () => setMode('dash'));
+
+/* ====== لوحة التحكم ====== */
+function renderDash() {
+  const fams = [...allFams.values()], people = [];
+  fams.forEach(d => (d.members || []).forEach(m => people.push(m)));
+  const kids = people.filter(m => m.rel === 'ابن');
+  const gen = m => m.gender || (parseNid(m.nid || '') || {}).gender || '';
+  const count = (arr, f) => { const o = {}; arr.forEach(x => { const k = f(x); if (k) o[k] = (o[k] || 0) + 1; }); return o; };
+  const sorted = o => Object.entries(o).sort((a, b) => b[1] - a[1]);
+  const bars = rows => {
+    const mx = Math.max(1, ...rows.map(r => r[1]));
+    return rows.length ? rows.map(([k, n]) => `<div class="bar-row"><span class="bar-l">${esc(k)}</span><div class="bar"><i style="width:${n / mx * 100}%"></i></div><b>${n}</b></div>`).join('')
+      : '<div class="hint">مفيش بيانات لسه</div>';
+  };
+  const kpi = (n, t) => `<div class="kpi"><b>${n}</b><span>${t}</span></div>`;
+  const sec = (t, h) => `<div class="sec"><h2>${t}</h2>${h}</div>`;
+
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
+    months.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+  }
+  const byMonth = months.map(k => [k, fams.filter(d => (d.memberDate || '').startsWith(k)).length]);
+  const order = ['أقل من 12', '12 – 17', '18 – 29', '30 – 49', '50+'];
+  const grp = a => a < 12 ? order[0] : a < 18 ? order[1] : a < 30 ? order[2] : a < 50 ? order[3] : order[4];
+  const ages = count(people, m => { const p = parseNid(m.nid || ''); return p ? grp(p.age) : ''; });
+  const gamesCnt = {};
+  kids.forEach(m => (m.games ? m.games.split(' + ') : []).forEach(g => gamesCnt[g] = (gamesCnt[g] || 0) + 1));
+  const noPhone = fams.filter(d => !((d.members || [])[0] || {}).phone).length;
+
+  $('dashMode').innerHTML = !fams.length ? '<div class="hint">مفيش بيانات لسه، أو لسه بيتحمّل...</div>' :
+    `<div class="kpis">${kpi(fams.length, 'أسرة')}${kpi(people.length, 'فرد')}${kpi(kids.length, 'ابن')}${kpi(byMonth[5][1], 'أسرة جديدة الشهر ده')}</div>` +
+    sec('📅 التسجيل في آخر 6 شهور', bars(byMonth)) +
+    sec('⚥ النوع', bars(sorted(count(people, gen)))) +
+    sec('🎂 الفئات العمرية (من الرقم القومي)', bars(order.filter(k => ages[k]).map(k => [k, ages[k]]))) +
+    sec('⚽ المشتركين في الألعاب', bars(sorted(gamesCnt))) +
+    sec('💼 أعلى المهن', bars(sorted(count(people, m => (m.job || '').trim())).slice(0, 5))) +
+    sec('🧹 جودة البيانات', bars([['أسر بدون تليفون', noPhone], ['أفراد بدون رقم قومي', people.filter(m => !m.nid).length], ['أبناء بدون نوع', kids.filter(m => !gen(m)).length]]));
+}
 
 /* ====== أحداث التسجيل الجديد ====== */
 $('hasWife').addEventListener('change', e => $('wifeBox').classList.toggle('hidden', !e.target.checked));
