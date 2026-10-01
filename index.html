@@ -483,7 +483,8 @@ function refreshSelects() {
 }
 function renderGames() {
   $('gamesList').innerHTML = games.length
-    ? games.map(g => `<span class="chip ${g.type === 'جماعية' ? 'team' : 'single'}">${esc(g.name)} · ${g.type}</span>`).join('')
+      ? games.map((g, i) => `<span class="chip ${g.type === 'جماعية' ? 'team' : 'single'}">${esc(g.name)} · ${g.type}` +
+        (isAdmin ? `<button type="button" class="rm" data-del="${i}" style="margin-inline-start:6px;padding:0 8px">✕</button>` : '') + `</span>`).join('')
     : '<span class="hint">مفيش ألعاب لسه، أضف أول لعبة من فوق</span>';
   refreshSelects();
 }
@@ -504,7 +505,17 @@ function addGame() {
   $('gName').value = '';
   toast('✅ تمت إضافة اللعبة');
 }
-
+$('gamesList').addEventListener('click', e => {
+  const b = e.target.closest('button[data-del]');
+  if (!b || !isAdmin) return;
+  const k = +b.dataset.del, g = games[k];
+  if (!confirm('حذف لعبة ' + g.name + ' (' + g.type + ') من القائمة؟')) return;
+  games = games.filter((_, i) => i !== k);
+  setDoc(doc(db, 'settings', 'games'), { list: games }).catch(() => toast('❌ الحذف مااتسجلش على السيرفر', false));
+  logAudit('حذف لعبة', '—', g.name + ' (' + g.type + ')');
+  renderGames();
+  toast('✅ تم حذف اللعبة');
+});
 /* ====== القوالب ====== */
 function childHtml(title, removable) {
   const n = ++uid;
