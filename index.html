@@ -215,9 +215,10 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
       <div class="sec">
         <h2>🔎 البحث عن العضو</h2>
         <div class="find-row">
-          <input type="text" id="aCode" autocomplete="off" placeholder="كود العضو الأساسي">
+          <input type="text" id="aCode" autocomplete="off" placeholder="كود أو اسم أو رقم قومي أو تليفون">
           <button type="button" class="btn-sm" id="findBtn">بحث</button>
         </div>
+        <div id="results"></div>
       </div>
       <div class="sec hidden" id="foundBox">
         <h2>👨‍👩‍👧 المسجلين على الكود <span class="badge" id="foundCode"></span></h2>
@@ -268,7 +269,11 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
       </div>
     </form>
   </div>
-
+  <details class="sec games-box hidden" id="logBox">
+    <summary>📜 سجل العمليات (أدمن)</summary>
+    <button type="button" class="btn-outline" id="logBtn" style="margin-top:12px">تحديث السجل</button>
+    <div id="logList"></div>
+  </details>
   <details class="sec games-box" id="gamesBox">
     <summary>⚽ إدارة قائمة الألعاب (إضافة لعبة جديدة)</summary>
     <div class="add-row">
@@ -285,9 +290,9 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 <div class="toast" id="toast"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-         doc, getDoc, setDoc, updateDoc, deleteDoc, arrayUnion, serverTimestamp }
+         doc, getDoc, setDoc, updateDoc, deleteDoc, arrayUnion, serverTimestamp,
+         collection, onSnapshot, addDoc, getDocs, query, orderBy, limit }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -312,6 +317,63 @@ const db = initializeFirestore(app, {
 });
 const auth = getAuth(app);
 const FAM = code => doc(db, 'families', code);
+  let allFams = new Map(), unsubFams = null;   // كل العائلات في الذاكرة للبحث ومنع التكرار
+
+// تسجيل العملية في سجل العمليات (من غير ما يعطّل الشغل لو فشل)
+function logAudit(action, code, details) {
+  addDoc(collection(db, 'audit'), {
+    at: serverTimestamp(), by: (auth.currentUser && auth.currentUser.email) || '',
+    action, code, details: details || ''
+  }).catch(() => {});
+}
+// الاسم بعد توحيد الحروف العربية للبحث
+const norm = s => toLatinDigits(String(s || '')).toLowerCase()
+  .replace(/[\u064B-\u0652\u0640]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي')
+  .replace(/\s+/g, ' ').trim();
+// قراءة تاريخ الميلاد والنوع من الرقم القومي
+function parseNid(v) {
+  if (!/^[23]\d{13}$/.test(v)) return null;
+  const y = (v[0] === '2' ? 1900 : 2000) + +v.slice(1, 3), mo = +v.slice(3, 5), d = +v.slice(5, 7);
+  const dt = new Date(y, mo - 1, d);
+  if (dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d || dt > new Date()) return null;
+  return { birth: dt, age: Math.floor((Date.now() - dt) / 31557600000), gender: (+v[12] % 2) ? 'ذكر' : 'أنثى' };
+}
+// مين صاحب الرقم القومي ده (مع استثناء شخص بعينه وقت التعديل)
+function nidOwner(nid, exceptSub) {
+  for (const [code, d] of allFams) {
+    for (const m of (d.members || [])) if (m.nid === nid && m.sub !== exceptSub) return { code, sub: m.sub, name: m.name };
+  }
+  return null;
+}
+function checkNidDups(root, exceptSub) {
+  let ok = true; const seen = new Set();
+  root.querySelectorAll('input[data-kind="nid"]').forEach(el => {
+    const v = el.value.trim();
+    if (el.closest('.hidden') || !parseNid(v)) return;
+    const o = nidOwner(v, exceptSub);
+    const msg = o ? 'الرقم القومي ده مسجل قبل كده على ' + o.sub + ' (' + o.name + ')' : seen.has(v) ? 'الرقم القومي مكرر في نفس الفورم' : '';
+    seen.add(v);
+    if (msg) { el.classList.add('invalid'); el.nextElementSibling.textContent = msg; ok = false; }
+  });
+  return ok;
+}
+function searchPeople(q) {
+  const n = norm(q), out = [];
+  if (!n) return out;
+  allFams.forEach((d, code) => (d.members || []).forEach(m => {
+    if (norm(m.name).includes(n) || (m.nid || '').includes(n) || (m.phone || '').includes(n)) out.push({ code, m });
+  }));
+  return out.slice(0, 20);
+}
+async function loadLog() {
+  try {
+    const s = await getDocs(query(collection(db, 'audit'), orderBy('at', 'desc'), limit(50)));
+    $('logList').innerHTML = s.docs.map(d => {
+      const x = d.data(), t = x.at ? x.at.toDate().toLocaleString('en-GB') : '...';
+      return `<div class="fam-row" style="flex-wrap:wrap"><span class="badge">${esc(x.code)}</span><b>${esc(x.action)}</b><span class="fam-rel">${esc(x.by)} · ${t}</span><div class="hint" style="width:100%">${esc(x.details)}</div></div>`;
+    }).join('') || '<span class="hint">السجل فاضي</span>';
+  } catch (e) { toast('❌ تعذر تحميل السجل (' + (e.code || '') + ')', false); }
+}
 
 const $ = id => document.getElementById(id);
 const form = $('memberForm');
@@ -337,8 +399,15 @@ onAuthStateChanged(auth, u => {
   $('login').classList.toggle('hidden', !!u);
   $('gamesBox').classList.toggle('hidden', !isAdmin);
   $('who').textContent = u ? '👤 ' + u.email + ' — ' + (isAdmin ? 'أدمن' : 'تسجيل وبحث') : '';
-  if (u) loadGames();
-  else { found = null; hideFound(); resetAll(); $('aCode').value = ''; $('lPass').value = ''; games = []; }
+   $('logBox').classList.toggle('hidden', !isAdmin);
+  if (u) {
+    loadGames();
+    if (!unsubFams) unsubFams = onSnapshot(collection(db, 'families'),
+      s => { allFams = new Map(s.docs.map(d => [d.id, d.data()])); }, () => {});
+  } else {
+    if (unsubFams) { unsubFams(); unsubFams = null; }
+    allFams = new Map(); found = null; hideFound(); resetAll(); $('aCode').value = ''; $('lPass').value = ''; games = [];
+  }
   if (u && found) renderFound();
 });
 $('logoutBtn').onclick = () => signOut(auth);
@@ -550,13 +619,22 @@ function onInput(e) {
   if (el.dataset.kind === 'nid' || el.dataset.kind === 'phone') {
     el.value = toLatinDigits(el.value).replace(/\D/g, '');
   }
+  if (el.dataset.kind === 'nid') {
+    el.nextElementSibling.textContent = 'الرقم القومي لازم يكون 14 رقم';
+    let h = el.parentElement.querySelector('.nid-hint');
+    if (!h) { h = document.createElement('div'); h.className = 'hint nid-hint'; el.parentElement.appendChild(h); }
+    const p = parseNid(el.value);
+    h.textContent = p ? p.gender + ' · ' + p.age + ' سنة · مواليد ' + p.birth.toLocaleDateString('en-GB') : '';
+    const g = el.id === 'xNid' ? $('xGender') : el.closest('.child') && el.closest('.child').querySelector('.c-gender');
+    if (p && g && !g.value) g.value = p.gender;   // اختيار النوع تلقائياً لو لسه فاضي
+  }
   if (el.id === 'code') {
     el.value = el.value.replace(/[\s\/]/g, '');
     codeDup = false;
     el.nextElementSibling.textContent = 'اكتب كود العضو';
     updateCodes();
   }
-  if (el.id === 'aCode') { el.value = el.value.replace(/[\s\/]/g, ''); found = null; hideFound(); }
+  if (el.id === 'aCode') { found = null; hideFound(); }
   if (el.id === 'mName' || el.classList.contains('c-name')) updateNames();
 }
 form.addEventListener('input', onInput);
@@ -581,7 +659,7 @@ function fieldOk(el) {
   if (el.required && !v) return false;
   if (!v) return true;
   switch (el.dataset.kind) {
-    case 'nid': return /^\d{14}$/.test(v);
+    case 'nid': return !!parseNid(v);
     case 'phone': return /^01[0125]\d{8}$/.test(v);
     case 'count': return /^([1-9]|1\d|20)$/.test(v);
   }
@@ -593,9 +671,11 @@ function validate(root) {
     if (el.type === 'radio' || el.type === 'checkbox') return;
     if (el.closest('.hidden')) return;
     const bad = !fieldOk(el);
-    el.classList.toggle('invalid', bad);
+        el.classList.toggle('invalid', bad);
+    if (bad && el.dataset.kind === 'nid' && el.value.trim().length === 14) el.nextElementSibling.textContent = 'الرقم القومي غير صحيح، راجع الرقم';
     if (bad) ok = false;
   });
+  if (!checkNidDups(root, root === $('editBox') ? found.members[editIdx].sub : '')) ok = false;
   root.querySelectorAll('.child[data-type="child"]').forEach(c => {
     const picked = c.querySelector('input[type=radio]:checked');
     c.querySelector('.sport-err').style.display = picked ? 'none' : 'block';
@@ -677,7 +757,7 @@ form.addEventListener('submit', async e => {
   })
     .then(() => toast('✅ اتأكد تسجيل الكود ' + data.code + ' على السيرفر'))
     .catch(err => toast('❌ الكود ' + data.code + ' مااتسجلش (' + err.code + ') — راجع وسجله تاني', false, 15000));
-
+  logAudit('تسجيل عائلة', data.code, data.members.length + ' أشخاص');
   toast('✅ اتحفظ ' + data.code + ' (' + data.members.length + ' أشخاص)');
   resetAll();
 });
@@ -685,6 +765,7 @@ form.addEventListener('submit', async e => {
 /* ====== وضع الإضافة لعضو مسجل ====== */
 function hideFound() {
   closeEdit();
+  $('results').innerHTML = '';
   $('foundBox').classList.add('hidden');
   $('addActions').classList.add('hidden');
   $('newPeople').innerHTML = '';
@@ -705,21 +786,36 @@ function renderFound() {
   updateNames();
 }
 async function findFamily() {
-  const code = $('aCode').value.trim();
-  if (!code) { toast('اكتب كود العضو الأساسي', false); return; }
+  const q = $('aCode').value.trim();
+  if (!q) { toast('اكتب كود أو اسم أو رقم قومي أو تليفون', false); return; }
+  $('results').innerHTML = '';
+  if (!allFams.has(q)) {
+    const r = searchPeople(q);
+    if (r.length) {
+      $('results').innerHTML = r.map(x =>
+        `<div class="fam-row" style="cursor:pointer" data-code="${esc(x.code)}"><span class="badge">${esc(x.m.sub)}</span><span>${esc(x.m.name)}</span><span class="fam-rel">${esc(x.m.rel)}</span></div>`
+      ).join('') + (r.length === 20 ? '<div class="hint">اتعرض أول 20 نتيجة، دقّق البحث</div>' : '');
+      return;
+    }
+  }
   const b = $('findBtn');
   b.disabled = true;
   try {
-    const s = await getDoc(FAM(code));
-    if (!s.exists()) { found = null; hideFound(); toast('❌ الكود ده مش مسجل', false); }
+    const s = await getDoc(FAM(q));
+    if (!s.exists()) { found = null; hideFound(); toast('❌ مفيش نتيجة للبحث ده', false); }
     else {
       const d = s.data();
-      found = { code, mainName: d.mainName, memberDate: d.memberDate || '', members: d.members, nextLetter: nextLetterOf(code, d.members) };
+      found = { code: q, mainName: d.mainName, memberDate: d.memberDate || '', members: d.members, nextLetter: nextLetterOf(q, d.members) };
       hideFound(); renderFound();
     }
   } catch (e) { toast('❌ تعذر الاتصال بالسيرفر (' + (e.code || '') + ')', false); }
   b.disabled = false;
 }
+$('results').addEventListener('click', e => {
+  const r = e.target.closest('[data-code]');
+  if (r) { $('aCode').value = r.dataset.code; findFamily(); }
+});
+$('logBtn').addEventListener('click', loadLog);
 function addPerson(type) {
   if (!found || !found.nextLetter) return;
   const wrap = $('newPeople');
@@ -766,7 +862,7 @@ $('addForm').addEventListener('submit', e => {
   updateDoc(FAM(code), { members: arrayUnion(...added), updatedAt: serverTimestamp() })
     .then(() => toast('✅ اتأكدت الإضافة على السيرفر'))
     .catch(err => toast('❌ الإضافة مااتسجلتش (' + err.code + ') — راجع وأضفها تاني', false, 15000));
-
+  logAudit('إضافة أفراد', code, added.map(m => m.sub).join(', '));
   found.members = [...found.members, ...added];
   found.nextLetter = nextLetterOf(code, found.members);
   wrap.innerHTML = '';
@@ -806,11 +902,12 @@ function openEdit(i) {
   $('editBox').classList.remove('hidden');
   $('editBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
-function saveFamily(upd, msg) {
+function saveFamily(upd, msg, act, det) {
   const code = found.code;
   updateDoc(FAM(code), { ...upd, updatedAt: serverTimestamp() })
     .then(() => toast('✅ اتأكد على السيرفر'))
     .catch(err => toast('❌ العملية مااتسجلتش (' + err.code + ')', false, 15000));
+  logAudit(act, code, det);
   Object.assign(found, upd);
   found.nextLetter = nextLetterOf(code, found.members);
   closeEdit(); renderFound(); toast(msg);
@@ -836,7 +933,9 @@ $('editSave').addEventListener('click', () => {
     const o = found.mainName;   // الأبناء اللي اسمهم بينتهي باسم الأب القديم ياخدوا الاسم الجديد
     list.forEach((x, i) => { if (x.rel === 'ابن' && o && x.name.endsWith(' ' + o)) list[i] = { ...x, name: x.name.slice(0, -o.length) + m.name }; });
   }
-  saveFamily(upd, '✅ تم التعديل');
+    const keys = ['name', 'nid', 'phone', 'job', 'qual', 'addr', 'gender', 'sport', 'games'];
+  const diff = keys.filter(k => (old[k] || '') !== (m[k] || '')).map(k => k + ': ' + (old[k] || '—') + ' ← ' + (m[k] || '—')).join(' | ');
+  saveFamily(upd, '✅ تم التعديل', 'تعديل', old.sub + ' — ' + (diff || 'بدون تغيير في البيانات'));
 });
 $('foundList').addEventListener('click', e => {
   const b = e.target.closest('button[data-act]');
@@ -844,11 +943,12 @@ $('foundList').addEventListener('click', e => {
   const i = +b.dataset.i, m = found.members[i];
   if (b.dataset.act === 'edit') return openEdit(i);
   if (m.sub === found.code) { toast('❌ العضو الأساسي مينفعش يتحذف لوحده، احذف العائلة كلها', false); return; }
-  if (confirm('حذف ' + m.name + ' (' + m.sub + ') ؟')) saveFamily({ members: found.members.filter((_, k) => k !== i) }, '✅ تم الحذف');
+  if (confirm('حذف ' + m.name + ' (' + m.sub + ') ؟')) saveFamily({ members: found.members.filter((_, k) => k !== i) }, '✅ تم الحذف', 'حذف فرد', m.sub + ' — ' + m.name);
 });
 $('delFamBtn').addEventListener('click', () => {
   if (!isAdmin || !found || !confirm('حذف العائلة كلها (' + found.code + ' — ' + found.members.length + ' أشخاص) نهائياً؟')) return;
   const code = found.code;
+  logAudit('حذف عائلة', code, found.mainName + ' — ' + found.members.length + ' أشخاص');
   deleteDoc(FAM(code))
     .then(() => toast('✅ اتأكد حذف ' + code + ' على السيرفر'))
     .catch(err => toast('❌ الحذف مااتسجلش (' + err.code + ')', false, 15000));
