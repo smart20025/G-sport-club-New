@@ -74,6 +74,30 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .bar-l{width:95px;flex-shrink:0}
 .bar{flex:1;height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--main),var(--main2))}
+  #printArea{display:none}
+.pf{direction:rtl;font-size:12px;color:#000}
+.pf-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:3px solid #0f766e;padding-bottom:10px;margin-bottom:12px}
+.pf-head img{height:80px;width:auto}
+.pf-title{text-align:center;flex:1}
+.pf-title h1{font-size:24px;margin:0;color:#0f766e}
+.pf-meta{font-size:12px;line-height:1.9}
+.pf h3{margin:14px 0 6px;font-size:14px;background:#0f766e;color:#fff;padding:4px 10px;border-radius:4px}
+.pf-grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid #999}
+.pf-grid>div{padding:6px 10px;border-bottom:1px solid #ccc}
+.pf-grid>.pf-full{grid-column:1/-1;border-bottom:0}
+.pf table{width:100%;border-collapse:collapse;font-size:11px}
+.pf th,.pf td{border:1px solid #999;padding:5px 6px;text-align:center}
+.pf th{background:#e6f4f1}
+.pf tr{break-inside:avoid}
+.pf-sign{margin-top:40px;width:50%;break-inside:avoid}
+.pf-line{border-top:1px solid #000;margin-top:50px;padding-top:6px;text-align:center;font-weight:700}
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff!important;display:block;padding:0;min-height:0}
+  .card,#login,.toast{display:none!important}
+  #printArea{display:block}
+  .pf h3,.pf th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
@@ -234,6 +258,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
         <div id="foundList"></div>
         <div class="hint">تاريخ العضوية: <b id="memDate"></b></div>
         <div class="hint">الكود التالي المتاح: <b id="nextHint"></b></div>
+         <button type="button" class="btn-outline" id="printBtn" style="margin-top:10px">🖨 طباعة الاستمارة</button>
         <button type="button" class="rm hidden" id="delFamBtn" style="margin-top:10px;padding:8px 14px">🗑 حذف العائلة كلها</button>
         <div id="editBox" class="child hidden" style="margin-top:14px">
           <div class="child-head"><span id="eTitle"></span><button type="button" class="rm" id="editCancel">✕</button></div>
@@ -298,6 +323,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 </div>
 
 <div class="toast" id="toast"></div>
+  <div id="printArea"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -1024,7 +1050,40 @@ $('delFamBtn').addEventListener('click', () => {
 });
 $('editCancel').addEventListener('click', closeEdit);
 $('xSport').addEventListener('change', syncEditGames);
+/* ====== طباعة الاستمارة العائلية ====== */
+function printFamily() {
+  if (!found) return;
+  const mem = found.members;
+  const main = mem.find(m => m.sub === found.code) || mem[0];
+  const wife = mem.find(m => m.rel === 'زوجة');
+  const gen = m => m.gender || (parseNid(m.nid || '') || {}).gender || '';
+  const birth = m => { const p = parseNid(m.nid || ''); return p ? p.birth.toLocaleDateString('en-GB') : ''; };
+  const v = x => esc(x || '') || '—';
+  const cell = (l, x) => `<div><b>${l}:</b> ${v(x)}</div>`;
+  const block = (title, m, extra) =>
+    `<h3>${title}</h3><div class="pf-grid">` +
+    cell('الكود', m.sub) + cell('الاسم', m.name) + extra +
+    cell('الرقم القومي', m.nid) + cell('التليفون', m.phone) + cell('المهنة', m.job) + cell('المؤهل', m.qual) +
+    `<div class="pf-full"><b>العنوان:</b> ${v(m.addr)}</div></div>`;
+  const rows = mem.map(m =>
+    `<tr><td dir="ltr">${esc(m.sub)}</td><td>${v(m.name)}</td><td>${v(m.rel)}</td><td>${gen(m) || '—'}</td>` +
+    `<td>${v(m.nid)}</td><td>${birth(m) || '—'}</td><td>${v(m.phone)}</td><td>${v(m.games)}</td></tr>`).join('');
 
+  $('printArea').innerHTML = `<div class="pf">
+    <div class="pf-head">
+      <img src="logo.png" alt="">
+      <div class="pf-title"><h1>استمارة بيانات أسرة</h1></div>
+      <div class="pf-meta">كود العضو: <b>${esc(found.code)}</b><br>تاريخ العضوية: ${v(found.memberDate)}<br>تاريخ الطباعة: ${new Date().toLocaleDateString('en-GB')}</div>
+    </div>
+    ${block('بيانات العضو الأساسي', main, cell('تاريخ العضوية', found.memberDate))}
+    ${wife ? block('بيانات الزوجة', wife, '') : ''}
+    <h3>أفراد الأسرة (${mem.length})</h3>
+    <table><thead><tr><th>الكود</th><th>الاسم</th><th>الصلة</th><th>النوع</th><th>الرقم القومي</th><th>تاريخ الميلاد</th><th>التليفون</th><th>الألعاب</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="pf-sign">أقر بصحة البيانات الواردة أعلاه.<div class="pf-line">توقيع العضو الأساسي<br>${esc(main.name)}</div></div>
+  </div>`;
+  window.print();
+}
+$('printBtn').addEventListener('click', printFamily);
 /* ====== إدارة الألعاب ====== */
 $('addGameBtn').addEventListener('click', addGame);
 $('gName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addGame(); } });
