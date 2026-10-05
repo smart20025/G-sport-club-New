@@ -710,7 +710,7 @@ function onInput(e) {
   const el = e.target;
   el.classList.remove('invalid');
   if (el.dataset.kind === 'nid' || el.dataset.kind === 'phone') {
-    el.value = toLatinDigits(el.value).replace(/\D/g, '');
+    el.value = el.value.replace(/\//g, '');
   }
   if (el.dataset.kind === 'nid') {
     el.nextElementSibling.textContent = 'الرقم القومي لازم يكون 14 رقم';
