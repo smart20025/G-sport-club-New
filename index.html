@@ -74,7 +74,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .bar-l{width:95px;flex-shrink:0}
 .bar{flex:1;height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--main),var(--main2))}
-  #printArea{display:none}
+#printArea{display:none}
 .pf{direction:rtl;font-size:12px;color:#000}
 .pf-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:3px solid #0f766e;padding-bottom:10px;margin-bottom:12px}
 .pf-head img{height:80px;width:auto}
@@ -127,6 +127,13 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
     <form id="memberForm" novalidate>
       <div class="sec">
         <h2>👤 العضو الأساسي</h2>
+        <div class="field">
+          <label>العضوية باسم *</label>
+          <div class="radios">
+            <label><input type="radio" name="holder" value="husband" checked> الزوج</label>
+            <label><input type="radio" name="holder" value="wife"> الزوجة</label>
+          </div>
+        </div>
         <div class="field">
           <label>كود العضو *</label>
           <input type="text" id="code" required autocomplete="off" placeholder="مثال: 1025">
@@ -471,16 +478,31 @@ function nextLetterOf(code, members) {
 
 /* ====== الأكواد والأسماء ====== */
 const letterOf = i => String.fromCharCode(67 + i);
+// العضوية باسم مين: الزوج (الافتراضي) أو الزوجة
+const holder = () => (document.querySelector('input[name="holder"]:checked') || {}).value || 'husband';
+const isWifeHolder = () => mode === 'add' ? !!(found && found.holder === 'wife') : holder() === 'wife';
 const mainNameNow = () => mode === 'add' ? (found ? found.mainName : '') : $('mName').value.trim();
-// الابن ياخد اسمه الأول + اسم أبوه بالكامل
-const fullChildName = first => (first.trim() + ' ' + mainNameNow()).trim();
+// لو العضوية للزوج: الابن ياخد اسمه الأول + اسم أبوه بالكامل. لو للزوجة: الاسم بيتكتب كامل من غير إضافة
+const fullChildName = first => isWifeHolder() ? first.trim() : (first.trim() + ' ' + mainNameNow()).trim();
 
 function updateNames() {
+  const w = isWifeHolder();
   document.querySelectorAll('.child[data-type="child"]').forEach(c => {
     const f = c.querySelector('.c-name').value;
     c.querySelector('.c-full').textContent = f.trim() ? fullChildName(f) : '—';
+    c.querySelector('.c-lbl').textContent = w ? 'اسم الابن بالكامل *' : 'اسم الابن (الاسم الأول فقط) *';
+    c.querySelector('.c-hint').classList.toggle('hidden', w);
   });
 }
+function applyHolder() {
+  const w = holder() === 'wife';
+  if (w) { $('hasWife').checked = false; $('wifeBox').classList.add('hidden'); }
+  $('hasWife').closest('.check').classList.toggle('hidden', w);
+  $('mName').placeholder = w ? 'اسم الزوجة بالكامل' : 'مثال: محمد أحمد علي';
+  updateNames();
+}
+form.addEventListener('change', e => { if (e.target.name === 'holder') applyHolder(); });
+
 function updateCodes() {
   const code = $('code').value.trim();
   $('wifeCode').textContent = code + '-B';
@@ -552,10 +574,10 @@ function childHtml(title, removable) {
       ${removable ? '<button type="button" class="rm" title="حذف">✕</button>' : ''}
     </div>
     <div class="field">
-      <label>اسم الابن (الاسم الأول فقط) *</label>
+      <label class="c-lbl">اسم الابن (الاسم الأول فقط) *</label>
       <input type="text" class="c-name" required placeholder="مثال: يوسف">
       <div class="msg-err">اكتب اسم الابن</div>
-      <div class="hint">الاسم الكامل: <b class="c-full">—</b></div>
+      <div class="hint c-hint">الاسم الكامل: <b class="c-full">—</b></div>
     </div>
         <div class="field">
       <label>النوع *</label>
@@ -805,6 +827,7 @@ function collect() {
   const code = $('code').value.trim();
   const members = [{ sub: code, rel: 'عضو أساسي', name: $('mName').value.trim(),
     nid: $('mNid').value.trim(), phone: $('mPhone').value.trim(), sport: '', games: '',
+    gender: holder() === 'wife' ? 'أنثى' : '',
     job: $('mJob').value.trim(), qual: $('mQual').value.trim(), addr: $('mAddr').value.trim() }];
   if ($('hasWife').checked) {
     members.push({ sub: code + '-B', rel: 'زوجة', name: $('wName').value.trim(),
@@ -822,10 +845,11 @@ function collect() {
     members.push({ sub: code + '-' + letterOf(kidsCount), rel: 'عضو إضافي', name: $('eName').value.trim(),
       nid: $('eNid').value.trim(), phone: $('ePhone').value.trim(), sport: '', games: '' });
   }
-  return { code, members, memberDate: $('mDate').value };
+  return { code, members, memberDate: $('mDate').value, holder: holder() };
 }
 function resetAll() {
   form.reset();
+  applyHolder();
   ['wifeBox', 'kidsBox', 'extraBox'].forEach(id => $(id).classList.add('hidden'));
   $('kids').innerHTML = '';
   codeDup = false;
@@ -845,7 +869,7 @@ form.addEventListener('submit', async e => {
 
   // من غير await: بيتحفظ محلياً فوراً ويتبعت للسيرفر في الخلفية
   setDoc(FAM(data.code), {
-    code: data.code, mainName: data.members[0].name,
+    code: data.code, mainName: data.members[0].name, holder: data.holder,
     members: data.members, memberDate: data.memberDate, createdAt: serverTimestamp()
   })
     .then(() => toast('✅ اتأكد تسجيل الكود ' + data.code + ' على السيرفر'))
@@ -898,7 +922,7 @@ async function findFamily() {
     if (!s.exists()) { found = null; hideFound(); toast('❌ مفيش نتيجة للبحث ده', false); }
     else {
       const d = s.data();
-      found = { code: q, mainName: d.mainName, memberDate: d.memberDate || '', members: d.members, nextLetter: nextLetterOf(q, d.members) };
+      found = { code: q, mainName: d.mainName, holder: d.holder || 'husband', memberDate: d.memberDate || '', members: d.members, nextLetter: nextLetterOf(q, d.members) };
       hideFound(); renderFound();
     }
   } catch (e) { toast('❌ تعذر الاتصال بالسيرفر (' + (e.code || '') + ')', false); }
@@ -1023,8 +1047,8 @@ $('editSave').addEventListener('click', () => {
   const upd = { members: list };
   if (isMain) {
     upd.mainName = m.name; upd.memberDate = $('xDate').value;
-    const o = found.mainName;   // الأبناء اللي اسمهم بينتهي باسم الأب القديم ياخدوا الاسم الجديد
-    list.forEach((x, i) => { if (x.rel === 'ابن' && o && x.name.endsWith(' ' + o)) list[i] = { ...x, name: x.name.slice(0, -o.length) + m.name }; });
+    const o = found.mainName;   // الأبناء اللي اسمهم بينتهي باسم الأب القديم ياخدوا الاسم الجديد (للزوج بس)
+    list.forEach((x, i) => { if (found.holder !== 'wife' && x.rel === 'ابن' && o && x.name.endsWith(' ' + o)) list[i] = { ...x, name: x.name.slice(0, -o.length) + m.name }; });
   }
     const keys = ['name', 'nid', 'phone', 'job', 'qual', 'addr', 'gender', 'sport', 'games'];
   const diff = keys.filter(k => (old[k] || '') !== (m[k] || '')).map(k => k + ': ' + (old[k] || '—') + ' ← ' + (m[k] || '—')).join(' | ');
@@ -1090,6 +1114,7 @@ $('gName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.prevent
 
 setToday();
 updateCodes();
+applyHolder();
 </script>
 </body>
 </html>
