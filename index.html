@@ -177,13 +177,13 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
         </div>
       </div>
 
-      <label class="check"><input type="checkbox" id="hasWife"> يوجد زوجة؟</label>
+      <label class="check"><input type="checkbox" id="hasWife"> <span id="spouseQ">يوجد زوجة؟</span></label>
       <div class="sec hidden" id="wifeBox">
-        <h2>💍 بيانات الزوجة <span class="badge" id="wifeCode">-B</span></h2>
+        <h2>💍 <span id="spouseTitle">بيانات الزوجة</span> <span class="badge" id="wifeCode">-B</span></h2>
         <div class="field">
-          <label>اسم الزوجة بالكامل *</label>
+          <label id="spouseNameLbl">اسم الزوجة بالكامل *</label>
           <input type="text" id="wName" required>
-          <div class="msg-err">اكتب اسم الزوجة</div>
+          <div class="msg-err" id="spouseErr">اكتب اسم الزوجة</div>
         </div>
         <div class="grid">
           <div class="field">
@@ -496,8 +496,11 @@ function updateNames() {
 }
 function applyHolder() {
   const w = holder() === 'wife';
-  if (w) { $('hasWife').checked = false; $('wifeBox').classList.add('hidden'); }
-  $('hasWife').closest('.check').classList.toggle('hidden', w);
+  // لو العضوية للزوجة، الخانة دي بتبقى للزوج (على كود -B)، ولو للزوج بتبقى للزوجة
+  $('spouseQ').textContent = w ? 'يوجد زوج؟' : 'يوجد زوجة؟';
+  $('spouseTitle').textContent = w ? 'بيانات الزوج' : 'بيانات الزوجة';
+  $('spouseNameLbl').textContent = w ? 'اسم الزوج بالكامل *' : 'اسم الزوجة بالكامل *';
+  $('spouseErr').textContent = w ? 'اكتب اسم الزوج' : 'اكتب اسم الزوجة';
   $('mName').placeholder = w ? 'اسم الزوجة بالكامل' : 'مثال: محمد أحمد علي';
   updateNames();
 }
@@ -830,7 +833,7 @@ function collect() {
     gender: holder() === 'wife' ? 'أنثى' : '',
     job: $('mJob').value.trim(), qual: $('mQual').value.trim(), addr: $('mAddr').value.trim() }];
   if ($('hasWife').checked) {
-    members.push({ sub: code + '-B', rel: 'زوجة', name: $('wName').value.trim(),
+    members.push({ sub: code + '-B', rel: holder() === 'wife' ? 'زوج' : 'زوجة', gender: holder() === 'wife' ? 'ذكر' : 'أنثى', name: $('wName').value.trim(),
       nid: $('wNid').value.trim(), phone: $('wPhone').value.trim(), sport: '', games: '',
       job: $('wJob').value.trim(), qual: $('wQual').value.trim(), addr: $('wAddr').value.trim() });
   }
@@ -1006,7 +1009,7 @@ function openEdit(i) {
   ['xName', 'xNid', 'xPhone', 'xDate'].forEach(id => $(id).classList.remove('invalid'));
   $('xDateF').classList.toggle('hidden', !isMain);
   $('xPhoneF').classList.toggle('hidden', isKid);
-  $('xExtraF').classList.toggle('hidden', !(isMain || m.rel === 'زوجة'));
+  $('xExtraF').classList.toggle('hidden', !(isMain || m.rel === 'زوجة' || m.rel === 'زوج'));
   $('xJob').value = m.job || ''; $('xQual').value = m.qual || ''; $('xAddr').value = m.addr || '';
   $('xGamesF').classList.toggle('hidden', !isKid);
   $('xGender').value = m.gender || '';
@@ -1034,7 +1037,7 @@ $('editSave').addEventListener('click', () => {
   if (!validate(box)) { scrollToFirstError(box); return; }
   const old = found.members[editIdx], m = { ...old }, isMain = old.sub === found.code;
   m.name = $('xName').value.trim(); m.nid = $('xNid').value.trim();
-  if (isMain || old.rel === 'زوجة') { m.job = $('xJob').value.trim(); m.qual = $('xQual').value.trim(); m.addr = $('xAddr').value.trim(); }
+  if (isMain || old.rel === 'زوجة' || old.rel === 'زوج') { m.job = $('xJob').value.trim(); m.qual = $('xQual').value.trim(); m.addr = $('xAddr').value.trim(); }
   if (old.rel === 'ابن') {
     const t = $('xSport').value;
     const g = t === 'none' ? [] : [$('xG1').value, t === 'team' ? $('xG2').value : ''].filter(Boolean);
@@ -1079,7 +1082,7 @@ function printFamily() {
   if (!found) return;
   const mem = found.members;
   const main = mem.find(m => m.sub === found.code) || mem[0];
-  const wife = mem.find(m => m.rel === 'زوجة');
+  const wife = mem.find(m => m.rel === 'زوجة' || m.rel === 'زوج');
   const gen = m => m.gender || (parseNid(m.nid || '') || {}).gender || '';
   const birth = m => { const p = parseNid(m.nid || ''); return p ? p.birth.toLocaleDateString('en-GB') : ''; };
   const v = x => esc(x || '') || '—';
@@ -1100,7 +1103,7 @@ function printFamily() {
       <div class="pf-meta">كود العضو: <b>${esc(found.code)}</b><br>تاريخ العضوية: ${v(found.memberDate)}<br>تاريخ الطباعة: ${new Date().toLocaleDateString('en-GB')}</div>
     </div>
     ${block('بيانات العضو الأساسي', main, cell('تاريخ العضوية', found.memberDate))}
-    ${wife ? block('بيانات الزوجة', wife, '') : ''}
+    ${wife ? block(wife.rel === 'زوج' ? 'بيانات الزوج' : 'بيانات الزوجة', wife, '') : ''}
     <h3>أفراد الأسرة (${mem.length})</h3>
     <table><thead><tr><th>الكود</th><th>الاسم</th><th>الصلة</th><th>النوع</th><th>الرقم القومي</th><th>تاريخ الميلاد</th><th>التليفون</th><th>الألعاب</th></tr></thead><tbody>${rows}</tbody></table>
     <div class="pf-sign">أقر بصحة البيانات الواردة أعلاه.<div class="pf-line">توقيع العضو الأساسي<br>${esc(main.name)}</div></div>
