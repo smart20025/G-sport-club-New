@@ -16,7 +16,7 @@ h1{margin:0 0 6px;color:var(--text);font-size:26px}
 p.sub{margin:0 0 20px;color:#64748b}
 .ver{text-align:center;font-size:11px;color:#94a3b8;margin-top:14px}
 .tabs{display:flex;gap:8px;margin-bottom:20px}
-.tab{flex:1;padding:11px;font-size:15px;background:#f1f5f9;color:#475569}
+.tab{flex:1 1 auto;min-width:120px;padding:11px;font-size:14px;background:#f1f5f9;color:#475569}
 .tab.active{background:linear-gradient(90deg,var(--main),var(--main2));color:#fff}
 .tab:hover{transform:none;box-shadow:none}
 .sec{border:2px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:18px}
@@ -155,6 +155,26 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .rp-chips span{border:1px solid #cbd5e1;border-radius:4px;padding:2px 6px;font-size:10px}
 .rp-end{text-align:center;margin-top:16px;font-size:10px;color:#64748b;border-top:1px solid #cbd5e1;padding-top:6px}
 @page{@bottom-center{content:"صفحة " counter(page) " من " counter(pages);font-size:9px;color:#64748b}}
+.tabs{flex-wrap:wrap}
+.mt-f{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.mt-f input,.mt-f select{padding:10px 12px;font-size:14px}
+.mt-f input{grid-column:1/-1}
+.mt-info{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:13px;color:#475569}
+.mt-wrap{overflow-x:auto}
+.mt th.sortable{cursor:pointer;white-space:nowrap;user-select:none}
+.mt th.sortable:hover{color:var(--main)}
+.mt td.nw{white-space:nowrap}
+.pager{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:14px;font-size:14px}
+.pager button{padding:8px 16px;font-size:14px}
+.st{padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap}
+.st-ok{background:#dcfce7;color:#166534}.st-warn{background:#fef3c7;color:#92400e}.st-bad{background:#fee2e2;color:#991b1b}.st-na{background:#f1f5f9;color:#64748b}
+.ic.wa{background:#dcfce7;color:#166534;margin-inline-end:4px}
+.att-row{cursor:pointer}
+.att-row input{width:20px;height:20px;padding:0;accent-color:var(--main)}
+.add-row2{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:10px}
+textarea{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12px;font-size:15px;background:#f8fafc;outline:none;resize:vertical}
+#waModal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:160;display:flex;align-items:center;justify-content:center;padding:20px}
+.wa-box{width:100%;max-width:420px;background:#fff;border-radius:20px;padding:24px}
 </style>
 </head>
 <body>
@@ -177,6 +197,8 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
   <div class="tabs">
     <button type="button" class="tab active" id="tabNew">تسجيل عضو جديد</button>
     <button type="button" class="tab" id="tabAdd">إضافة لعضو مسجل</button>
+    <button type="button" class="tab" id="tabMem">👥 الأعضاء</button>
+    <button type="button" class="tab" id="tabAtt">📋 الحضور</button>
     <button type="button" class="tab hidden" id="tabDash">📊 لوحة التحكم</button>
   </div>
 
@@ -205,6 +227,10 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
           <label>تاريخ العضوية *</label>
           <input type="date" id="mDate" required>
           <div class="msg-err">اختر تاريخ العضوية</div>
+        </div>
+        <div class="field">
+          <label>تاريخ انتهاء العضوية (اختياري)</label>
+          <input type="date" id="mExpiry">
         </div>
         <div class="grid">
           <div class="field">
@@ -340,6 +366,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
         <h2>👨‍👩‍👧 المسجلين على الكود <span class="badge" id="foundCode"></span></h2>
         <div id="foundList"></div>
         <div class="hint">تاريخ العضوية: <b id="memDate"></b></div>
+        <div class="hint">انتهاء العضوية: <b id="expDate"></b></div>
         <div class="hint">الكود التالي المتاح: <b id="nextHint"></b></div>
          <button type="button" class="btn-outline" id="printBtn" style="margin-top:10px">🖨 طباعة الاستمارة</button>
         <button type="button" class="rm hidden" id="delFamBtn" style="margin-top:10px;padding:8px 14px">🗑 حذف العائلة كلها</button>
@@ -367,6 +394,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
             <div class="field"><label>العنوان</label><input type="text" id="xAddr"></div>
           </div>
           <div class="field" id="xDateF"><label>تاريخ العضوية *</label><input type="date" id="xDate" required><div class="msg-err">اختر التاريخ</div></div>
+          <div class="field" id="xExpF"><label>تاريخ انتهاء العضوية (اختياري)</label><input type="date" id="xExpiry"></div>
           <div id="xGamesF">
             <div class="field"><label>اشتراك الألعاب</label><select id="xSport"><option value="none">بدون ألعاب</option><option value="team">جماعية</option><option value="single">فردية</option></select></div>
             <div class="grid">
@@ -388,10 +416,18 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
     </form>
   </div>
     <div id="dashMode" class="hidden"></div>
+  <div id="membersMode" class="hidden"></div>
+  <div id="attMode" class="hidden"></div>
   <details class="sec games-box hidden" id="logBox">
     <summary>📜 سجل العمليات (أدمن)</summary>
     <button type="button" class="btn-outline" id="logBtn" style="margin-top:12px">تحديث السجل</button>
     <div id="logList"></div>
+  </details>
+  <details class="sec games-box hidden" id="backupBox">
+    <summary>💾 النسخ الاحتياطي والاسترجاع (أدمن)</summary>
+    <div class="grid" style="margin-top:12px"><button type="button" id="bkExport">⬇ تصدير نسخة (JSON)</button><button type="button" class="btn-outline" id="bkImportBtn">⬆ استرجاع من ملف</button></div>
+    <input type="file" id="bkFile" accept=".json,application/json" class="hidden">
+    <div class="hint" style="margin-top:8px">النسخة بتشمل الأسر والألعاب وسجلات الحضور. الاسترجاع بيكتب فوق الأسر اللي بنفس الكود ومبيحذفش أي حاجة.</div>
   </details>
   <details class="sec games-box" id="gamesBox">
     <summary>⚽ إدارة قائمة الألعاب (إضافة لعبة جديدة)</summary>
@@ -400,6 +436,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
       <select id="gType"><option>جماعية</option><option>فردية</option></select>
       <button type="button" class="btn-sm" id="addGameBtn">إضافة</button>
     </div>
+    <div class="add-row2"><input type="text" id="gCoach" placeholder="اسم المدرب (اختياري)"><input type="number" id="gMax" min="0" placeholder="الحد الأقصى"></div>
     <div class="chips" id="gamesList"></div>
   </details>
 
@@ -410,6 +447,12 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
   <div class="rp-bar"><b>👁 معاينة التقرير</b><span><button type="button" id="rpPrint">🖨 طباعة / حفظ PDF</button><button type="button" class="btn-outline" id="rpClose">✕ إغلاق</button></span></div>
   <div class="rp-scroll" id="rpScroll"><div id="rpPaper"></div></div>
 </div>
+<div id="waModal" class="hidden"><div class="wa-box">
+  <h2 style="margin-top:0">💬 رسالة واتساب</h2>
+  <div class="field"><label>القالب</label><select id="waT"><option value="renew">تذكير بتجديد العضوية</option><option value="bday">تهنئة عيد ميلاد</option><option value="game">تذكير بموعد التدريب</option><option value="free">رسالة حرة</option></select></div>
+  <div class="field"><label>نص الرسالة (تقدر تعدّله)</label><textarea id="waMsg" rows="6"></textarea></div>
+  <div class="grid"><button type="button" id="waSend">إرسال عبر واتساب</button><button type="button" class="btn-outline" id="waClose">إلغاء</button></div>
+</div></div>
 <div class="toast" id="toast"></div>
   <div id="printArea"></div>
 
@@ -417,7 +460,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
          doc, getDoc, setDoc, updateDoc, deleteDoc, arrayUnion, serverTimestamp,
-         collection, onSnapshot, addDoc, getDocs, query, orderBy, limit }
+         collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, where, writeBatch }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -525,12 +568,13 @@ onAuthStateChanged(auth, u => {
   $('gamesBox').classList.toggle('hidden', !isAdmin);
   $('who').textContent = u ? '👤 ' + u.email + ' — ' + (isAdmin ? 'أدمن' : 'تسجيل وبحث') : '';
    $('logBox').classList.toggle('hidden', !isAdmin);
+   $('backupBox').classList.toggle('hidden', !isAdmin);
     $('tabDash').classList.toggle('hidden', !isAdmin);
   if (!isAdmin && mode === 'dash') setMode('new');
   if (u) {
     loadGames();
     if (!unsubFams) unsubFams = onSnapshot(collection(db, 'families'),
-       s => { allFams = new Map(s.docs.map(d => [d.id, d.data()])); if (mode === 'dash') renderDash(); }, () => {});
+       s => { allFams = new Map(s.docs.map(d => [d.id, d.data()])); if (mode === 'dash') renderDash(); if (mode === 'members') renderMembers(); if (mode === 'att') renderRoster(); renderGames(); }, () => {});
   } else {
     if (unsubFams) { unsubFams(); unsubFams = null; }
     allFams = new Map(); found = null; hideFound(); resetAll(); $('aCode').value = ''; $('lPass').value = ''; games = [];
@@ -610,14 +654,14 @@ function refreshSelects() {
     const old = sel.value;
     const list = games.filter(g => g.type === sel.dataset.gtype);
     sel.innerHTML = '<option value="">' + (list.length ? 'اختر...' : 'أضف ألعاب أولاً') + '</option>' +
-      list.map(g => `<option value="${esc(g.name)}">${esc(g.name)}</option>`).join('');
+      list.map(g => `<option value="${esc(g.name)}">${esc(g.name)}${g.max ? ' (' + gameCount(g.name) + '/' + g.max + ')' : ''}</option>`).join('');
     sel.value = old;
   });
 }
 function renderGames() {
   $('gamesList').innerHTML = games.length
-      ? games.map((g, i) => `<span class="chip ${g.type === 'جماعية' ? 'team' : 'single'}">${esc(g.name)} · ${g.type}` +
-        (isAdmin ? `<button type="button" class="rm" data-del="${i}" style="margin-inline-start:6px;padding:0 8px">✕</button>` : '') + `</span>`).join('')
+      ? games.map((g, i) => `<span class="chip ${g.type === 'جماعية' ? 'team' : 'single'}">${esc(g.name)} · ${g.type}${g.coach ? ' · 👨‍🏫 ' + esc(g.coach) : ''}${g.max ? ' · 👥 ' + gameCount(g.name) + '/' + g.max : ''}` +
+        (isAdmin ? `<button type="button" class="ic" data-edit="${i}" style="margin-inline-start:6px;padding:0 8px">✏️</button><button type="button" class="rm" data-del="${i}" style="margin-inline-start:6px;padding:0 8px">✕</button>` : '') + `</span>`).join('')
     : '<span class="hint">مفيش ألعاب لسه، أضف أول لعبة من فوق</span>';
   refreshSelects();
 }
@@ -632,10 +676,11 @@ function addGame() {
   const name = $('gName').value.trim(), type = $('gType').value;
   if (!name) { toast('اكتب اسم اللعبة', false); return; }
   if (games.some(g => g.name === name && g.type === type)) { toast('اللعبة موجودة بالفعل', false); return; }
-  games = [...games, { name, type }];
+  const coach = $('gCoach').value.trim(), max = parseInt($('gMax').value) || 0;
+  games = [...games, { name, type, ...(coach ? { coach } : {}), ...(max > 0 ? { max } : {}) }];
   setDoc(doc(db, 'settings', 'games'), { list: games }).catch(() => toast('❌ اللعبة مااتسجلتش على السيرفر', false));
   renderGames();
-  $('gName').value = '';
+  $('gName').value = ''; $('gCoach').value = ''; $('gMax').value = '';
   toast('✅ تمت إضافة اللعبة');
 }
 $('gamesList').addEventListener('click', e => {
@@ -747,14 +792,12 @@ function syncKids(n) {
 /* ====== التبويبات ====== */
 function setMode(m) {
   mode = m;
-  $('newMode').classList.toggle('hidden', m !== 'new');
-  $('addMode').classList.toggle('hidden', m !== 'add');
-  $('dashMode').classList.toggle('hidden', m !== 'dash');
-  $('tabNew').classList.toggle('active', m === 'new');
-  $('tabAdd').classList.toggle('active', m === 'add');
-  $('tabDash').classList.toggle('active', m === 'dash');
-  document.querySelector('.card').classList.toggle('wide', m === 'dash');
+  ['new', 'add', 'dash', 'members', 'att'].forEach(k => $(k + 'Mode').classList.toggle('hidden', m !== k));
+  [['tabNew', 'new'], ['tabAdd', 'add'], ['tabMem', 'members'], ['tabAtt', 'att'], ['tabDash', 'dash']].forEach(([id, k]) => $(id).classList.toggle('active', m === k));
+  document.querySelector('.card').classList.toggle('wide', m === 'dash' || m === 'members');
   if (m === 'dash') renderDash();
+  if (m === 'members') renderMembers();
+  if (m === 'att') renderAtt();
   updateNames();
 }
 $('tabNew').addEventListener('click', () => setMode('new'));
@@ -971,8 +1014,10 @@ function renderDash() {
     pn('🎓 المؤهلات', hbars(S.quals)) +
     pn('🧹 جودة البيانات', `<div class="donut">${ring(S.score)}<div class="legend">${S.issues.map(i => `<div class="lg"><i style="background:${i.items.length ? '#dc2626' : '#16a34a'}"></i>${esc(i.k)}<b>${i.items.length}</b></div>`).join('')}<button type="button" class="btn-outline" data-rp="quality" style="margin-top:8px;padding:8px;font-size:13px">📄 تقرير النواقص</button></div></div>`) +
     pn('🎉 أعياد ميلاد ' + MONTHS[new Date().getMonth()] + ' (' + bd.length + ')',
-      (bd.length ? bd.slice(0, 8).map(x => `<div class="fam-row"><span class="badge">${x.day}</span><span>${esc(x.m.name)}</span><span class="fam-rel">${x.turn} سنة</span></div>`).join('') + (bd.length > 8 ? `<div class="hint">+ ${bd.length - 8} آخرين</div>` : '') : '<div class="hint">مفيش أعياد ميلاد الشهر ده</div>') +
+      (bd.length ? bd.slice(0, 8).map(x => `<div class="fam-row"><span class="badge">${x.day}</span><span>${esc(x.m.name)}</span><span class="fam-rel">${x.turn} سنة</span>${waBtn(x.m.phone || parentPhone(x.d), x.m.name, 'bday')}</div>`).join('') + (bd.length > 8 ? `<div class="hint">+ ${bd.length - 8} آخرين</div>` : '') : '<div class="hint">مفيش أعياد ميلاد الشهر ده</div>') +
       `<button type="button" class="btn-outline" data-rp="birthdays" style="margin-top:10px;padding:8px;font-size:13px">📄 طباعة القائمة</button>`) +
+    pn('🪪 حالة العضوية', donut(['ساري', 'ينتهي قريبًا', 'منتهي', 'غير محدد'].map(k => [k, fams.filter(d => memStatus(d) === k).length]).filter(r => r[1]))) +
+    pn('⏳ عضويات تنتهي قريبًا / منتهية', (exp => exp.length ? exp.slice(0, 8).map(d => `<div class="fam-row"><span class="badge">${esc(d.code)}</span><span>${vv(d.mainName)}</span><span class="fam-rel">${esc(d.expiryDate)}</span>${waBtn(parentPhone(d), d.mainName, 'renew')}</div>`).join('') + (exp.length > 8 ? `<div class="hint">+ ${exp.length - 8} آخرين</div>` : '') : '<div class="hint">مفيش عضويات قاربت على الانتهاء</div>')(fams.filter(d => ['ينتهي قريبًا', 'منتهي'].includes(memStatus(d))).sort((a, b) => a.expiryDate.localeCompare(b.expiryDate)))) +
     pn('🆕 آخر التسجيلات', `<table class="mini"><thead><tr><th>الكود</th><th>العضو</th><th>الأفراد</th><th>التاريخ</th></tr></thead><tbody>${latest.map(d => `<tr><td>${esc(d.code)}</td><td>${vv(d.mainName)}</td><td>${(d.members || []).length}</td><td>${vv(d.memberDate)}</td></tr>`).join('')}</tbody></table>`) +
     pn('💡 ملخص ذكي', `<ul class="ins">${S.insights.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`, 'span2') +
     `</div>`;
@@ -1121,6 +1166,335 @@ function openReport(type) {
   logAudit('تقرير', '—', r.title);
 }
 
+/* ====== حالة العضوية + سعة الألعاب والمدرب ====== */
+function memStatus(d) {
+  const e = d.expiryDate;
+  if (!e) return 'غير محدد';
+  const t = ymd(new Date());
+  if (e < t) return 'منتهي';
+  return (new Date(e + 'T00:00:00') - new Date(t + 'T00:00:00')) / 864e5 <= 30 ? 'ينتهي قريبًا' : 'ساري';
+}
+const ST_CLS = { 'ساري': 'ok', 'ينتهي قريبًا': 'warn', 'منتهي': 'bad', 'غير محدد': 'na' };
+function gameInfo(name) { return games.find(g => g.name === name) || {}; }
+function gameCount(name, exceptSub) {
+  let n = 0;
+  allFams.forEach(d => (d.members || []).forEach(m => {
+    if (m.sub !== exceptSub && m.games && m.games.split(' + ').includes(name)) n++;
+  }));
+  return n;
+}
+function rosterOf(game) {
+  const out = [];
+  allFams.forEach(d => (d.members || []).forEach(m => { if (m.games && m.games.split(' + ').includes(game)) out.push({ m, d }); }));
+  return out.sort((a, b) => String(a.m.name).localeCompare(String(b.m.name), 'ar'));
+}
+function editGame(k) {
+  const g = games[k]; if (!g) return;
+  const coach = prompt('اسم المدرب لـ ' + g.name + ' (اتركه فاضي لو مفيش):', g.coach || '');
+  if (coach === null) return;
+  const mx = prompt('الحد الأقصى للمشتركين (0 = بدون حد):', g.max || 0);
+  if (mx === null) return;
+  const max = Math.max(0, parseInt(toLatinDigits(mx)) || 0);
+  games = games.map((x, i) => i !== k ? x : (({ coach: _c, max: _m, ...rest }) => ({ ...rest, ...(coach.trim() ? { coach: coach.trim() } : {}), ...(max ? { max } : {}) }))(x));
+  setDoc(doc(db, 'settings', 'games'), { list: games }).catch(() => toast('❌ التعديل مااتسجلش على السيرفر', false));
+  logAudit('تعديل لعبة', '—', g.name + ' — مدرب: ' + (coach.trim() || '—') + ' — حد أقصى: ' + (max || '—'));
+  renderGames(); toast('✅ تم تعديل اللعبة');
+}
+$('gamesList').addEventListener('click', e => {
+  const b = e.target.closest('button[data-edit]');
+  if (b && isAdmin) editGame(+b.dataset.edit);
+});
+
+/* ====== واتساب ====== */
+const WA_T = {
+  renew: 'السلام عليكم أ/ {name}،\nنود تذكيركم بقرب انتهاء عضويتكم في G1 Sports Club. برجاء التواصل مع الإدارة لتجديد العضوية.\nشكرًا لكم.',
+  bday: 'كل عام وأنتم بخير أ/ {name} 🎉🎂\nيتقدم لكم G1 Sports Club بأطيب التهاني بمناسبة عيد ميلادكم.',
+  game: 'السلام عليكم أ/ {name}،\nتذكير بموعد التدريب الخاص بكم. نراكم قريبًا 💪',
+  free: 'السلام عليكم أ/ {name}،\n'
+};
+let waCur = null;
+function waNumber(p) {
+  p = toLatinDigits(String(p || '')).replace(/\D/g, '');
+  if (/^01\d{9}$/.test(p)) return '2' + p;
+  if (/^201\d{9}$/.test(p)) return p;
+  return '';
+}
+const waBtn = (ph, name, kind = 'free') => ph ? `<button type="button" class="ic wa" data-wa="${esc(ph)}" data-name="${esc(name || '')}" data-kind="${kind}" title="واتساب">💬</button>` : '';
+function waFill() { $('waMsg').value = (WA_T[$('waT').value] || '').replace('{name}', waCur.name); }
+function openWa(phone, name, kind) {
+  const n = waNumber(phone);
+  if (!n) { toast('رقم التليفون غير صالح للواتساب', false); return; }
+  waCur = { n, name: name || '' };
+  $('waT').value = WA_T[kind] ? kind : 'free';
+  waFill();
+  $('waModal').classList.remove('hidden');
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-wa]');
+  if (b) openWa(b.dataset.wa, b.dataset.name, b.dataset.kind);
+});
+$('waT').addEventListener('change', waFill);
+$('waClose').addEventListener('click', () => $('waModal').classList.add('hidden'));
+$('waSend').addEventListener('click', () => {
+  if (!waCur) return;
+  window.open('https://wa.me/' + waCur.n + '?text=' + encodeURIComponent($('waMsg').value), '_blank');
+  $('waModal').classList.add('hidden');
+});
+
+/* ====== جدول الأعضاء المتقدم ====== */
+const mt = { q: '', gender: '', age: '', game: '', rel: '', status: '', sort: 'code', dir: 1, page: 1, size: 25 };
+function memberRows() {
+  const q = norm(mt.q), rows = [];
+  allFams.forEach((d, code) => {
+    const st = memStatus(d);
+    (d.members || []).forEach(m => {
+      const p = parseNid(m.nid || ''), age = p ? p.age : null, g = m.gender || (p ? p.gender : '');
+      if (q && !(norm(m.name).includes(q) || String(m.sub).toLowerCase().includes(q) || (m.nid || '').includes(q) || (m.phone || '').includes(q))) return;
+      if (mt.gender && g !== mt.gender) return;
+      if (mt.age && (age == null || ageGrp(age) !== mt.age)) return;
+      if (mt.game && !(m.games || '').split(' + ').includes(mt.game)) return;
+      if (mt.rel && m.rel !== mt.rel) return;
+      if (mt.status && st !== mt.status) return;
+      rows.push({ m, d, code, age, g, st });
+    });
+  });
+  const key = { code: r => r.m.sub, name: r => r.m.name, rel: r => r.m.rel, gender: r => r.g, age: r => r.age == null ? -1 : r.age, status: r => r.st }[mt.sort];
+  rows.sort((a, b) => {
+    const x = key(a), y = key(b);
+    return (typeof x === 'number' ? x - y : String(x).localeCompare(String(y), undefined, { numeric: true })) * mt.dir;
+  });
+  return rows;
+}
+function buildMembersShell() {
+  const opt = (arr, all) => `<option value="">${all}</option>` + arr.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join('');
+  $('membersMode').innerHTML = `<div class="sec"><h2>👥 جدول الأعضاء</h2>
+    <div class="mt-f">
+      <input type="text" id="mtQ" placeholder="بحث: اسم / كود / رقم قومي / تليفون" autocomplete="off">
+      <select id="mtGender">${opt(['ذكر', 'أنثى'], 'النوع: الكل')}</select>
+      <select id="mtAge">${opt(AGE_ORDER, 'السن: الكل')}</select>
+      <select id="mtGame"></select>
+      <select id="mtRel">${opt(['عضو أساسي', 'زوجة', 'زوج', 'ابن', 'عضو إضافي'], 'الصلة: الكل')}</select>
+      <select id="mtStatus">${opt(['ساري', 'ينتهي قريبًا', 'منتهي', 'غير محدد'], 'العضوية: الكل')}</select>
+      <select id="mtSize"><option value="25">25 / صفحة</option><option value="50">50 / صفحة</option><option value="100">100 / صفحة</option></select>
+    </div>
+    <div class="mt-info"><span id="mtCount"></span>
+      <span class="dbar-b"><button type="button" class="btn-sm btn-outline" id="mtReset">↺ مسح الفلاتر</button><button type="button" class="btn-sm btn-outline" id="mtCsv">⬇ Excel</button><button type="button" class="btn-sm" id="mtPdf">📄 PDF</button></span>
+    </div>
+    <div class="mt-wrap" id="mtTable"></div>
+    <div class="pager" id="mtPager"></div></div>`;
+}
+function renderMembers() {
+  if (!$('mtTable')) buildMembersShell();
+  const gs = $('mtGame'), old = mt.game;
+  gs.innerHTML = '<option value="">اللعبة: الكل</option>' + [...new Set(games.map(g => g.name))].map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  gs.value = old;
+  const rows = memberRows(), pages = Math.max(1, Math.ceil(rows.length / mt.size));
+  mt.page = Math.min(mt.page, pages);
+  const slice = rows.slice((mt.page - 1) * mt.size, mt.page * mt.size);
+  const th = (k, l) => `<th data-sort="${k}" class="sortable">${l}${mt.sort === k ? (mt.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`;
+  $('mtTable').innerHTML = `<table class="mini mt"><thead><tr>${th('code', 'الكود')}${th('name', 'الاسم')}${th('rel', 'الصلة')}${th('gender', 'النوع')}${th('age', 'السن')}<th>التليفون</th><th>الألعاب</th>${th('status', 'العضوية')}<th></th></tr></thead><tbody>` +
+    (slice.map(r => {
+      const ph = r.m.phone || parentPhone(r.d);
+      return `<tr><td dir="ltr">${esc(r.m.sub)}</td><td>${vv(r.m.name)}</td><td>${vv(r.m.rel)}</td><td>${r.g || '—'}</td><td>${r.age == null ? '—' : r.age}</td><td dir="ltr">${vv(r.m.phone)}</td><td>${vv(r.m.games)}</td><td><span class="st st-${ST_CLS[r.st]}">${r.st}</span></td><td class="nw">${waBtn(ph, r.m.rel === 'ابن' ? r.d.mainName : r.m.name)}<button type="button" class="ic" data-open="${esc(r.code)}" title="فتح الأسرة">📂</button></td></tr>`;
+    }).join('') || '<tr><td colspan="9" class="hint">مفيش نتائج</td></tr>') + '</tbody></table>';
+  let total = 0; allFams.forEach(d => { total += (d.members || []).length; });
+  $('mtCount').textContent = 'عرض ' + slice.length + ' من ' + rows.length + ' (إجمالي الأفراد ' + total + ')';
+  $('mtPager').innerHTML = `<button type="button" class="btn-sm btn-outline" data-pg="-1" ${mt.page <= 1 ? 'disabled' : ''}>› السابق</button><span>صفحة ${mt.page} من ${pages}</span><button type="button" class="btn-sm btn-outline" data-pg="1" ${mt.page >= pages ? 'disabled' : ''}>التالي ‹</button>`;
+}
+function downloadCsv(heads, rows, name) {
+  const csv = '\ufeff' + [heads, ...rows].map(r => r.map(c => '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
+$('membersMode').addEventListener('input', e => { if (e.target.id === 'mtQ') { mt.q = e.target.value; mt.page = 1; renderMembers(); } });
+$('membersMode').addEventListener('change', e => {
+  const k = { mtGender: 'gender', mtAge: 'age', mtGame: 'game', mtRel: 'rel', mtStatus: 'status', mtSize: 'size' }[e.target.id];
+  if (!k) return;
+  mt[k] = k === 'size' ? +e.target.value : e.target.value; mt.page = 1; renderMembers();
+});
+$('membersMode').addEventListener('click', e => {
+  const t = e.target;
+  const s = t.closest('th[data-sort]');
+  if (s) { mt.dir = mt.sort === s.dataset.sort ? -mt.dir : 1; mt.sort = s.dataset.sort; renderMembers(); return; }
+  const pg = t.closest('button[data-pg]');
+  if (pg) { mt.page += +pg.dataset.pg; renderMembers(); return; }
+  const op = t.closest('button[data-open]');
+  if (op) { $('aCode').value = op.dataset.open; setMode('add'); findFamily(); return; }
+  if (t.id === 'mtReset') {
+    Object.assign(mt, { q: '', gender: '', age: '', game: '', rel: '', status: '', page: 1 });
+    ['mtQ', 'mtGender', 'mtAge', 'mtGame', 'mtRel', 'mtStatus'].forEach(id => { $(id).value = ''; });
+    renderMembers(); return;
+  }
+  if (t.id === 'mtCsv') {
+    const rows = memberRows();
+    if (!rows.length) { toast('مفيش نتائج للتصدير', false); return; }
+    const txt = v => v ? '="' + v + '"' : '';
+    downloadCsv(['كود الأسرة', 'كود الفرد', 'الاسم', 'الصلة', 'النوع', 'السن', 'الرقم القومي', 'التليفون', 'الألعاب', 'حالة العضوية', 'تاريخ الانتهاء'],
+      rows.map(r => [txt(r.code), txt(r.m.sub), r.m.name, r.m.rel, r.g, r.age == null ? '' : r.age, txt(r.m.nid), txt(r.m.phone), r.m.games || '', r.st, r.d.expiryDate || '']),
+      'G1-members-filtered-' + ymd(new Date()) + '.csv');
+    toast('✅ تم تصدير ' + rows.length + ' فرد'); return;
+  }
+  if (t.id === 'mtPdf') {
+    const rows = memberRows();
+    if (!rows.length) { toast('مفيش نتائج للطباعة', false); return; }
+    const body = TB(['م', 'الكود', 'الاسم', 'الصلة', 'النوع', 'السن', 'التليفون', 'الألعاب', 'العضوية'],
+      rows.map((r, i) => [i + 1, num(r.m.sub), vv(r.m.name), vv(r.m.rel), r.g || '—', r.age == null ? '—' : r.age, num(r.m.phone), vv(r.m.games), r.st]));
+    showReport('كشف الأعضاء', 'عدد النتائج: ' + rows.length, body,
+      `تاريخ الإصدار: ${new Date().toLocaleDateString('en-GB')}<br>نتيجة الفلاتر الحالية<br>أصدره: ${esc((auth.currentUser || {}).email || '')}`);
+  }
+});
+
+/* ====== الحضور والغياب ====== */
+const attId = (date, game) => date + '__' + encodeURIComponent(game);
+let attToken = 0;
+function buildAttShell() {
+  $('attMode').innerHTML = `<div class="sec"><h2>📋 تسجيل الحضور</h2>
+    <div class="grid"><div class="field"><label>اللعبة</label><select id="aGame"></select></div>
+    <div class="field"><label>التاريخ</label><input type="date" id="aDate"></div></div>
+    <div class="hint" id="aInfo"></div>
+    <div class="hint"><b id="aCount"></b></div>
+    <div id="aRoster" style="margin-top:8px"></div>
+    <div class="grid" style="margin-top:12px"><button type="button" class="btn-outline" id="aAll">✔ تحديد الكل</button><button type="button" class="btn-outline" id="aNone">✖ إلغاء الكل</button></div>
+    <button type="button" id="aSave" style="margin-top:12px">💾 حفظ الحضور</button></div>
+    <div class="sec"><h2>📈 تقرير الحضور الشهري</h2>
+    <div class="grid"><div class="field"><label>اللعبة</label><select id="rGame"></select></div>
+    <div class="field"><label>الشهر</label><input type="month" id="rMonth"></div></div>
+    <button type="button" id="rBtn">📄 عرض التقرير</button></div>`;
+  $('aDate').value = ymd(new Date());
+  $('rMonth').value = ymd(new Date()).slice(0, 7);
+}
+function renderAtt() {
+  if (!$('aGame')) buildAttShell();
+  const names = [...new Set(games.map(g => g.name))], opts = names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  const a = $('aGame'), r = $('rGame'), oa = a.value, or = r.value;
+  a.innerHTML = opts || '<option value="">— أضف ألعاب أولًا —</option>';
+  r.innerHTML = '<option value="">كل الألعاب</option>' + opts;
+  if (names.includes(oa)) a.value = oa;
+  r.value = or;
+  renderRoster();
+}
+function updateAttCount() {
+  const b = document.querySelectorAll('#aRoster input[data-sub]');
+  $('aCount').textContent = b.length ? 'حاضر ' + [...b].filter(x => x.checked).length + ' من ' + b.length : '';
+}
+async function renderRoster() {
+  const game = $('aGame').value, date = $('aDate').value;
+  if (!game) { $('aRoster').innerHTML = '<div class="hint">أضف ألعاب أولًا من "إدارة قائمة الألعاب" (أدمن).</div>'; $('aInfo').textContent = ''; $('aCount').textContent = ''; return; }
+  const subs = rosterOf(game), info = gameInfo(game);
+  $('aInfo').textContent = 'المدرب: ' + (info.coach || '—') + ' · المشتركين: ' + subs.length + (info.max ? ' / ' + info.max : '');
+  const token = ++attToken;
+  let present = new Set();
+  try { const s = await getDoc(doc(db, 'attendance', attId(date, game))); if (s.exists()) present = new Set(s.data().present || []); } catch (e) { /* مفيش سجل أو مفيش صلاحية */ }
+  if (token !== attToken) return;
+  $('aRoster').innerHTML = subs.length
+    ? subs.map(x => `<label class="fam-row att-row"><input type="checkbox" data-sub="${esc(x.m.sub)}" ${present.has(x.m.sub) ? 'checked' : ''}><span class="badge">${esc(x.m.sub)}</span><span>${vv(x.m.name)}</span></label>`).join('')
+    : '<div class="hint">مفيش مشتركين في اللعبة دي.</div>';
+  updateAttCount();
+}
+async function attReport() {
+  const month = $('rMonth').value, sel = $('rGame').value;
+  if (!month) { toast('اختر الشهر', false); return; }
+  let snap;
+  try { snap = await getDocs(query(collection(db, 'attendance'), where('date', '>=', month + '-01'), where('date', '<=', month + '-31'))); }
+  catch (e) { toast('❌ تعذر تحميل الحضور (' + (e.code || '') + ') — راجع قواعد attendance', false, 8000); return; }
+  const recs = snap.docs.map(d => d.data());
+  const names = sel ? [sel] : [...new Set(recs.map(r => r.game))];
+  if (!names.length || !recs.some(r => names.includes(r.game))) { toast('مفيش حضور مسجل في الشهر ده', false); return; }
+  const bySub = new Map();
+  allFams.forEach(d => (d.members || []).forEach(m => bySub.set(m.sub, m)));
+  let body = '';
+  names.forEach(g => {
+    const sess = recs.filter(r => r.game === g).sort((a, b) => a.date.localeCompare(b.date));
+    if (!sess.length) return;
+    const ids = new Set(rosterOf(g).map(x => x.m.sub));
+    sess.forEach(s => (s.present || []).forEach(x => ids.add(x)));
+    const list = [...ids].map(sub => bySub.get(sub) || { sub, name: '(محذوف)' }).sort((a, b) => String(a.name).localeCompare(String(b.name), 'ar'));
+    const rows = list.map((m, i) => {
+      const pres = sess.map(s => (s.present || []).includes(m.sub)), n = pres.filter(Boolean).length;
+      return [i + 1, num(m.sub), vv(m.name), ...pres.map(p => p ? '<b style="color:#16a34a">✓</b>' : '<span style="color:#dc2626">✗</span>'), n, pct(n, sess.length) + '%'];
+    });
+    const avg = (sess.reduce((s, x) => s + (x.present || []).length, 0) / sess.length).toFixed(1);
+    body += `<div class="rp-sec" style="break-inside:auto"><h4>⚽ ${esc(g)} — المدرب: ${esc(gameInfo(g).coach || '—')} — الجلسات: ${sess.length} — متوسط الحضور: ${avg}</h4>` +
+      lineChart(sess.map(s => [s.date.slice(8), (s.present || []).length]), '#0f766e') +
+      `<div style="overflow-x:auto">` + TB(['م', 'الكود', 'الاسم', ...sess.map(s => s.date.slice(8)), 'حضور', '%'], rows) + '</div></div>';
+  });
+  showReport('تقرير الحضور الشهري', 'شهر ' + month, body,
+    `تاريخ الإصدار: ${new Date().toLocaleDateString('en-GB')}<br>الشهر: ${esc(month)}<br>أصدره: ${esc((auth.currentUser || {}).email || '')}`);
+}
+$('attMode').addEventListener('change', e => {
+  if (e.target.id === 'aGame' || e.target.id === 'aDate') renderRoster();
+  else if (e.target.matches('input[data-sub]')) updateAttCount();
+});
+$('attMode').addEventListener('click', e => {
+  const id = e.target.id;
+  if (id === 'aAll' || id === 'aNone') {
+    document.querySelectorAll('#aRoster input[data-sub]').forEach(x => { x.checked = id === 'aAll'; });
+    updateAttCount();
+  } else if (id === 'aSave') {
+    const game = $('aGame').value, date = $('aDate').value;
+    if (!game || !date) { toast('اختر اللعبة والتاريخ', false); return; }
+    const boxes = [...document.querySelectorAll('#aRoster input[data-sub]')];
+    if (!boxes.length) { toast('مفيش مشتركين لتسجيل حضورهم', false); return; }
+    const present = boxes.filter(x => x.checked).map(x => x.dataset.sub);
+    setDoc(doc(db, 'attendance', attId(date, game)), { date, game, present, total: boxes.length, by: (auth.currentUser || {}).email || '', at: serverTimestamp() })
+      .then(() => toast('✅ اتأكد حفظ الحضور على السيرفر'))
+      .catch(err => toast('❌ الحضور مااتسجلش (' + (err.code || '') + ') — راجع قواعد attendance', false, 12000));
+    logAudit('حضور', game, date + ' — ' + present.length + '/' + boxes.length);
+    toast('✅ تم حفظ الحضور (' + present.length + ' من ' + boxes.length + ')');
+  } else if (id === 'rBtn') attReport();
+});
+
+/* ====== النسخ الاحتياطي والاسترجاع (أدمن) ====== */
+const stripTs = o => { const c = { ...o }; delete c.createdAt; delete c.updatedAt; delete c.at; delete c.restoredAt; return c; };
+async function backupExport() {
+  if (!isAdmin) return;
+  const b = $('bkExport'); b.disabled = true; toast('جاري تجهيز النسخة...');
+  try {
+    const fams = (await getDocs(collection(db, 'families'))).docs.map(d => stripTs(d.data()));
+    let att = [];
+    try { att = (await getDocs(collection(db, 'attendance'))).docs.map(d => ({ id: d.id, ...stripTs(d.data()) })); }
+    catch (e) { toast('⚠ تعذر قراءة الحضور، النسخة هتكون بدونه', false); }
+    const gs = await getDoc(doc(db, 'settings', 'games'));
+    const data = { app: 'g1-members', version: 2, exportedAt: new Date().toISOString(), families: fams, games: gs.exists() ? gs.data().list : [], attendance: att };
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' }));
+    a.download = 'G1-backup-' + ymd(new Date()) + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    logAudit('نسخة احتياطية', '—', fams.length + ' أسرة، ' + att.length + ' سجل حضور');
+    toast('✅ تم تصدير ' + fams.length + ' أسرة و' + att.length + ' سجل حضور');
+  } catch (e) { toast('❌ فشل التصدير (' + (e.code || e.message) + ')', false); }
+  b.disabled = false;
+}
+async function backupRestore(file) {
+  if (!isAdmin || !file) return;
+  let data;
+  try { data = JSON.parse(await file.text()); } catch (e) { toast('❌ الملف مش JSON سليم', false); return; }
+  const okFam = f => f && typeof f.code === 'string' && f.code && !/\//.test(f.code) && Array.isArray(f.members);
+  if (!data || data.app !== 'g1-members' || !Array.isArray(data.families) || !data.families.every(okFam)) { toast('❌ الملف مش نسخة احتياطية صالحة للنظام', false); return; }
+  const att = Array.isArray(data.attendance) ? data.attendance.filter(a => a && typeof a.id === 'string' && !/\//.test(a.id)) : [];
+  const gl = Array.isArray(data.games) ? data.games : null;
+  if (!confirm('استرجاع ' + data.families.length + ' أسرة و' + att.length + ' سجل حضور' + (gl ? ' و' + gl.length + ' لعبة' : '') + '؟\nالأسر اللي بنفس الكود هتتكتب فوقها، ومفيش حاجة هتتحذف.')) return;
+  toast('جاري الاسترجاع...', true, 15000);
+  try {
+    const ops = [...data.families.map(f => [FAM(f.code), { ...f, restoredAt: serverTimestamp() }]), ...att.map(a => { const { id, ...rest } = a; return [doc(db, 'attendance', id), { ...rest, restoredAt: serverTimestamp() }]; })];
+    for (let i = 0; i < ops.length; i += 400) {
+      const wb = writeBatch(db);
+      ops.slice(i, i + 400).forEach(([ref, val]) => wb.set(ref, val));
+      await wb.commit();
+    }
+    if (gl) { await setDoc(doc(db, 'settings', 'games'), { list: gl }); games = gl; renderGames(); }
+    logAudit('استرجاع نسخة', '—', data.families.length + ' أسرة، ' + att.length + ' سجل حضور');
+    toast('✅ تم الاسترجاع: ' + data.families.length + ' أسرة', true, 8000);
+  } catch (e) { toast('❌ فشل الاسترجاع (' + (e.code || e.message) + ')', false, 12000); }
+}
+$('bkExport').addEventListener('click', backupExport);
+$('bkImportBtn').addEventListener('click', () => $('bkFile').click());
+$('bkFile').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; backupRestore(f); });
+
+$('tabMem').addEventListener('click', () => setMode('members'));
+$('tabAtt').addEventListener('click', () => setMode('att'));
+
 /* ====== أحداث التسجيل الجديد ====== */
 $('hasWife').addEventListener('change', e => $('wifeBox').classList.toggle('hidden', !e.target.checked));
 $('hasExtra').addEventListener('change', e => $('extraBox').classList.toggle('hidden', !e.target.checked));
@@ -1143,6 +1517,7 @@ document.addEventListener('change', e => {
 function onInput(e) {
   const el = e.target;
   el.classList.remove('invalid');
+  if (el.dataset.orig && el.nextElementSibling) { el.nextElementSibling.textContent = el.dataset.orig; delete el.dataset.orig; }
   if (el.dataset.kind === 'nid' || el.dataset.kind === 'phone') {
     el.value = el.value.replace(/\//g, '');
   }
@@ -1212,6 +1587,16 @@ function validate(root) {
       if (a.value && a.value === b.value) { b.classList.add('invalid'); ok = false; }
     }
   });
+  const pend = {};
+  root.querySelectorAll('.child[data-type="child"]').forEach(c => c.querySelectorAll('select[data-gtype]').forEach(sel => {
+    if (!sel.value || sel.closest('.hidden')) return;
+    const inf = gameInfo(sel.value);
+    if (inf.max && gameCount(sel.value) + (pend[sel.value] || 0) + 1 > inf.max) {
+      sel.classList.add('invalid'); sel.dataset.orig = sel.nextElementSibling.textContent;
+      sel.nextElementSibling.textContent = 'اللعبة مكتملة العدد (' + inf.max + ')'; ok = false;
+    }
+    pend[sel.value] = (pend[sel.value] || 0) + 1;
+  }));
   if (root === form && codeDup) { markCodeDup(); ok = false; }
   return ok;
 }
@@ -1257,7 +1642,7 @@ function collect() {
     members.push({ sub: code + '-' + letterOf(kidsCount), rel: 'عضو إضافي', gender: $('eGender').value, name: $('eName').value.trim(),
       nid: $('eNid').value.trim(), phone: $('ePhone').value.trim(), sport: '', games: '' });
   }
-  return { code, members, memberDate: $('mDate').value, holder: holder() };
+  return { code, members, memberDate: $('mDate').value, expiryDate: $('mExpiry').value, holder: holder() };
 }
 function resetAll() {
   form.reset();
@@ -1282,7 +1667,7 @@ form.addEventListener('submit', async e => {
   // من غير await: بيتحفظ محلياً فوراً ويتبعت للسيرفر في الخلفية
   setDoc(FAM(data.code), {
     code: data.code, mainName: data.members[0].name, holder: data.holder,
-    members: data.members, memberDate: data.memberDate, createdAt: serverTimestamp()
+    members: data.members, memberDate: data.memberDate, expiryDate: data.expiryDate || '', createdAt: serverTimestamp()
   })
     .then(() => toast('✅ اتأكد تسجيل الكود ' + data.code + ' على السيرفر'))
     .catch(err => toast('❌ الكود ' + data.code + ' مااتسجلش (' + err.code + ') — راجع وسجله تاني', false, 15000));
@@ -1303,10 +1688,11 @@ function hideFound() {
 function renderFound() {
   $('foundCode').textContent = found.code;
   $('foundList').innerHTML = found.members.map((m, i) =>
-    `<div class="fam-row"><span class="badge">${esc(m.sub)}</span><span>${esc(m.name)}</span><span class="fam-rel">${esc(m.rel)}</span>` +
+    `<div class="fam-row"><span class="badge">${esc(m.sub)}</span><span>${esc(m.name)}</span><span class="fam-rel">${esc(m.rel)}</span>${waBtn(m.phone || found.members[0].phone, m.rel === 'ابن' ? found.mainName : m.name)}` +
     (isAdmin ? `<button type="button" class="ic" data-act="edit" data-i="${i}">✏️</button><button type="button" class="rm" data-act="del" data-i="${i}">🗑</button>` : '') + `</div>`
   ).join('');
   $('memDate').textContent = found.memberDate || '—';
+  $('expDate').textContent = found.expiryDate ? found.expiryDate + ' (' + memStatus(found) + ')' : '—';
   $('delFamBtn').classList.toggle('hidden', !isAdmin);
   $('nextHint').textContent = found.nextLetter ? found.code + '-' + found.nextLetter : 'لا يوجد كود متاح';
   $('addKidBtn').disabled = $('addExtraBtn').disabled = !found.nextLetter;
@@ -1334,7 +1720,7 @@ async function findFamily() {
     if (!s.exists()) { found = null; hideFound(); toast('❌ مفيش نتيجة للبحث ده', false); }
     else {
       const d = s.data();
-      found = { code: q, mainName: d.mainName, holder: d.holder || 'husband', memberDate: d.memberDate || '', members: d.members, nextLetter: nextLetterOf(q, d.members) };
+      found = { code: q, mainName: d.mainName, holder: d.holder || 'husband', memberDate: d.memberDate || '', expiryDate: d.expiryDate || '', members: d.members, nextLetter: nextLetterOf(q, d.members) };
       hideFound(); renderFound();
     }
   } catch (e) { toast('❌ تعذر الاتصال بالسيرفر (' + (e.code || '') + ')', false); }
@@ -1417,6 +1803,7 @@ function openEdit(i) {
   $('xName').value = m.name; $('xNid').value = m.nid || ''; $('xPhone').value = m.phone || ''; $('xDate').value = found.memberDate || '';
   ['xName', 'xNid', 'xPhone', 'xDate'].forEach(id => $(id).classList.remove('invalid'));
   $('xDateF').classList.toggle('hidden', !isMain);
+  $('xExpF').classList.toggle('hidden', !isMain); $('xExpiry').value = found.expiryDate || '';
   $('xPhoneF').classList.toggle('hidden', isKid);
   $('xExtraF').classList.toggle('hidden', !(isMain || m.rel === 'زوجة' || m.rel === 'زوج'));
   $('xNat').value = m.nat || ''; $('xJob').value = m.job || ''; $('xQual').value = m.qual || ''; $('xAddr').value = m.addr || '';
@@ -1451,6 +1838,8 @@ $('editSave').addEventListener('click', () => {
     const t = $('xSport').value;
     const g = t === 'none' ? [] : [$('xG1').value, t === 'team' ? $('xG2').value : ''].filter(Boolean);
     if (g.length === 2 && g[0] === g[1]) { toast('❌ اختر لعبتين مختلفتين', false); return; }
+    const oldG = old.games ? old.games.split(' + ') : [];
+    for (const gn of g) { const inf = gameInfo(gn); if (!oldG.includes(gn) && inf.max && gameCount(gn, old.sub) + 1 > inf.max) { toast('❌ لعبة ' + gn + ' مكتملة العدد (' + inf.max + ')', false); return; } }
     m.sport = g.length ? (t === 'single' ? 'لعبة فردية' : g.length === 2 ? 'لعبتين جماعيتين' : 'لعبة جماعية') : '';
     m.games = g.join(' + ');
     m.gender = $('xGender').value;
@@ -1459,7 +1848,7 @@ $('editSave').addEventListener('click', () => {
   const list = found.members.map((x, i) => i === editIdx ? m : x);
   const upd = { members: list };
   if (isMain) {
-    upd.mainName = m.name; upd.memberDate = $('xDate').value;
+    upd.mainName = m.name; upd.memberDate = $('xDate').value; upd.expiryDate = $('xExpiry').value;
     const o = found.mainName;   // الأبناء اللي اسمهم بينتهي باسم الأب القديم ياخدوا الاسم الجديد (للزوج بس)
     list.forEach((x, i) => { if (found.holder !== 'wife' && x.rel === 'ابن' && o && x.name.endsWith(' ' + o)) list[i] = { ...x, name: x.name.slice(0, -o.length) + m.name }; });
   }
