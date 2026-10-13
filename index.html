@@ -71,7 +71,6 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .kpi b{display:block;font-size:26px;color:var(--main)}
 .kpi span{font-size:13px;color:#475569}
 .bar-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px}
-.bar-l{width:95px;flex-shrink:0}
 .bar{flex:1;height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--main),var(--main2))}
 #printArea{display:none}
@@ -94,10 +93,68 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 @media print{
   @page{size:A4;margin:12mm}
   body{background:#fff!important;display:block;padding:0;min-height:0}
-  .card,#login,.toast{display:none!important}
+  .card,#login,.toast,#rpModal{display:none!important}
   #printArea{display:block}
   .pf h3,.pf th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+.card.wide{max-width:1180px}
+.dbar{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;background:var(--soft);border:2px solid #ccfbf1;border-radius:16px;padding:14px;margin-bottom:18px}
+.dbar-f{flex:1;min-width:150px}.dbar-f label{margin-bottom:4px;font-size:12px}
+.dbar-b{display:flex;gap:8px;flex-wrap:wrap}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:18px}
+.kp{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,#fff,#fff7f2);border:1px solid #fed7aa;border-radius:18px;padding:16px;box-shadow:0 6px 18px rgba(255,85,0,.08)}
+.kp-ic{font-size:26px;width:48px;height:48px;border-radius:14px;background:#fff1e8;display:grid;place-items:center;flex-shrink:0}
+.kp b{display:block;font-size:26px;line-height:1.1;color:var(--text)}
+.kp span{font-size:13px;color:#64748b;display:block}
+.kp em{font-style:normal;font-size:11px;font-weight:700;display:block;margin-top:2px}
+.kp em.up{color:#16a34a}.kp em.dn{color:var(--err)}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:18px}
+@media(max-width:420px){.dgrid{grid-template-columns:1fr}}
+.pn{border:1px solid #e2e8f0;border-radius:18px;padding:16px;background:#fff;box-shadow:0 4px 14px rgba(15,23,42,.05);min-width:0}
+.pn h3{margin:0 0 12px;font-size:16px;color:var(--text)}
+.pn.span2{grid-column:1/-1}
+.ch{width:100%;height:auto;display:block}
+.donut{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center}
+.legend{flex:1;min-width:150px}
+.lg{display:flex;align-items:center;gap:8px;font-size:13px;padding:3px 0}
+.lg i{width:12px;height:12px;border-radius:4px;flex-shrink:0}
+.lg b{margin-inline-start:auto}.lg small{color:#94a3b8;width:34px;text-align:end}
+.ins{margin:0;padding:0 18px 0 0;line-height:2;font-size:14px}
+.mini{width:100%;border-collapse:collapse;font-size:13px}
+.mini th,.mini td{padding:8px;border-bottom:1px solid #f1f5f9;text-align:start}
+.mini th{color:#64748b;font-weight:600}
+.bar-l{width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.rp-card{display:flex;gap:12px;align-items:center;text-align:start;background:#fff;color:var(--text);border:2px solid #e2e8f0;padding:14px;font-size:14px;font-weight:700}
+.rp-card:hover{border-color:var(--main);box-shadow:0 8px 18px rgba(255,85,0,.15)}
+.rp-card .i{font-size:26px}.rp-card small{display:block;font-weight:400;color:#64748b;font-size:12px;margin-top:2px}
+#rpModal{position:fixed;inset:0;background:#334155;z-index:150;display:flex;flex-direction:column}
+#rpModal.hidden{display:none}
+.rp-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 16px;background:#1e293b;color:#fff;flex-wrap:wrap}
+.rp-bar span{display:flex;gap:8px}
+.rp-bar button{width:auto;padding:8px 16px;font-size:14px}
+.rp-bar .btn-outline{background:transparent;color:#fff;border-color:#94a3b8}
+.rp-scroll{flex:1;overflow:auto;padding:16px}
+#rpPaper{background:#fff;width:210mm;max-width:100%;margin:0 auto;padding:12mm;box-shadow:0 10px 40px rgba(0,0,0,.4);overflow-x:auto}
+.pf *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pf .num{direction:ltr;display:inline-block}
+.pf thead{display:table-header-group}
+.pf .bar-l{width:110px}
+.pf svg.ch{max-height:230px}
+.rp-sub{font-size:13px;color:#475569;margin-top:4px}
+.rp-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.rp-k{border:1px solid #cbd5e1;border-radius:8px;padding:10px;text-align:center;border-top:4px solid #ff5500}
+.rp-k b{display:block;font-size:22px;color:#0f766e}
+.rp-k span{font-size:11px;color:#475569}
+.rp-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.rp-2{grid-template-columns:1fr}.rp-kpis{grid-template-columns:1fr 1fr}}
+.rp-sec{border:1px solid #cbd5e1;border-radius:8px;padding:10px;margin-bottom:10px;break-inside:avoid;min-width:0}
+.rp-sec h4{margin:0 0 8px;font-size:13px;color:#0f766e;border-bottom:2px solid #e6f4f1;padding-bottom:4px}
+.rp-ins{margin:6px 0 10px;padding:8px 26px 8px 8px;background:#f8fafc;border-right:4px solid #ff5500;font-size:12px;line-height:1.9}
+.rp-chips{display:flex;flex-wrap:wrap;gap:4px}
+.rp-chips span{border:1px solid #cbd5e1;border-radius:4px;padding:2px 6px;font-size:10px}
+.rp-end{text-align:center;margin-top:16px;font-size:10px;color:#64748b;border-top:1px solid #cbd5e1;padding-top:6px}
+@page{@bottom-center{content:"صفحة " counter(page) " من " counter(pages);font-size:9px;color:#64748b}}
 </style>
 </head>
 <body>
@@ -172,6 +229,10 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
           </div>
         </div>
         <div class="field">
+          <label>الجنسية (اختياري)</label>
+          <input type="text" id="mNat" value="مصري">
+        </div>
+        <div class="field">
           <label>العنوان (اختياري)</label>
           <input type="text" id="mAddr">
         </div>
@@ -184,6 +245,16 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
           <label id="spouseNameLbl">اسم الزوجة بالكامل *</label>
           <input type="text" id="wName" required>
           <div class="msg-err" id="spouseErr">اكتب اسم الزوجة</div>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label>النوع</label>
+            <select id="wGender"><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
+          </div>
+          <div class="field">
+            <label>الجنسية (اختياري)</label>
+            <input type="text" id="wNat" value="مصري">
+          </div>
         </div>
         <div class="grid">
           <div class="field">
@@ -231,6 +302,11 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
           <label>الاسم بالكامل *</label>
           <input type="text" id="eName" required>
           <div class="msg-err">اكتب اسم العضو الإضافي</div>
+        </div>
+        <div class="field">
+          <label>النوع *</label>
+          <select id="eGender" required><option value="">اختر...</option><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
+          <div class="msg-err">اختر النوع</div>
         </div>
         <div class="grid">
           <div class="field">
@@ -287,6 +363,7 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
               <div class="field"><label>المهنة</label><input type="text" id="xJob"></div>
               <div class="field"><label>المؤهل</label><input type="text" id="xQual"></div>
             </div>
+            <div class="field"><label>الجنسية</label><input type="text" id="xNat"></div>
             <div class="field"><label>العنوان</label><input type="text" id="xAddr"></div>
           </div>
           <div class="field" id="xDateF"><label>تاريخ العضوية *</label><input type="date" id="xDate" required><div class="msg-err">اختر التاريخ</div></div>
@@ -329,6 +406,10 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
   <div class="ver">Data analyst: Mohamed Abd-Elfttah</div>
 </div>
 
+<div id="rpModal" class="hidden">
+  <div class="rp-bar"><b>👁 معاينة التقرير</b><span><button type="button" id="rpPrint">🖨 طباعة / حفظ PDF</button><button type="button" class="btn-outline" id="rpClose">✕ إغلاق</button></span></div>
+  <div class="rp-scroll" id="rpScroll"><div id="rpPaper"></div></div>
+</div>
 <div class="toast" id="toast"></div>
   <div id="printArea"></div>
 
@@ -501,6 +582,7 @@ function applyHolder() {
   $('spouseTitle').textContent = w ? 'بيانات الزوج' : 'بيانات الزوجة';
   $('spouseNameLbl').textContent = w ? 'اسم الزوج بالكامل *' : 'اسم الزوجة بالكامل *';
   $('spouseErr').textContent = w ? 'اكتب اسم الزوج' : 'اكتب اسم الزوجة';
+  $('wGender').value = w ? 'ذكر' : 'أنثى';
   $('mName').placeholder = w ? 'اسم الزوجة بالكامل' : 'مثال: محمد أحمد علي';
   updateNames();
 }
@@ -636,6 +718,11 @@ function extraHtml(removable) {
       <input type="text" class="x-name" required>
       <div class="msg-err">اكتب الاسم</div>
     </div>
+    <div class="field">
+      <label>النوع *</label>
+      <select class="x-gender" required><option value="">اختر...</option><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
+      <div class="msg-err">اختر النوع</div>
+    </div>
     <div class="grid">
       <div class="field">
         <label>الرقم القومي (اختياري)</label>
@@ -666,6 +753,7 @@ function setMode(m) {
   $('tabNew').classList.toggle('active', m === 'new');
   $('tabAdd').classList.toggle('active', m === 'add');
   $('tabDash').classList.toggle('active', m === 'dash');
+  document.querySelector('.card').classList.toggle('wide', m === 'dash');
   if (m === 'dash') renderDash();
   updateNames();
 }
@@ -673,43 +761,364 @@ $('tabNew').addEventListener('click', () => setMode('new'));
 $('tabAdd').addEventListener('click', () => setMode('add'));
 $('tabDash').addEventListener('click', () => setMode('dash'));
 
-/* ====== لوحة التحكم ====== */
-function renderDash() {
-  const fams = [...allFams.values()], people = [];
-  fams.forEach(d => (d.members || []).forEach(m => people.push(m)));
-  const kids = people.filter(m => m.rel === 'ابن');
+/* ====== لوحة التحكم الاحترافية + مركز التقارير ====== */
+const MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const PAL = ['#ff5500','#0f766e','#2563eb','#7c3aed','#f59e0b','#16a34a','#db2777','#64748b'];
+const AGE_ORDER = ['أقل من 6','6 – 11','12 – 17','18 – 29','30 – 49','50+'];
+const ageGrp = a => a < 6 ? AGE_ORDER[0] : a < 12 ? AGE_ORDER[1] : a < 18 ? AGE_ORDER[2] : a < 30 ? AGE_ORDER[3] : a < 50 ? AGE_ORDER[4] : AGE_ORDER[5];
+const dashF = { range: 'all', from: '', to: '' };
+const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const vv = x => (x == null || x === '' ? '' : esc(x)) || '—';
+const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+const sortCode = (a, b) => String(a.code).localeCompare(String(b.code), undefined, { numeric: true });
+const holderLbl = d => d.holder === 'wife' ? 'الزوجة' : 'الزوج';
+const parentPhone = d => ((d.members || [])[0] || {}).phone || '';
+const num = x => `<span class="num">${vv(x)}</span>`;
+
+/* ----- الفلتر والتحليل ----- */
+function rangeDates() {
+  const now = new Date(); let from = '', to = '';
+  const back = n => ymd(new Date(now.getFullYear(), now.getMonth() - n, 1));
+  if (dashF.range === 'month') { from = back(0); to = ymd(now); }
+  else if (dashF.range === '3m') { from = back(2); to = ymd(now); }
+  else if (dashF.range === '6m') { from = back(5); to = ymd(now); }
+  else if (dashF.range === 'year') { from = now.getFullYear() + '-01-01'; to = ymd(now); }
+  else if (dashF.range === 'custom') { from = dashF.from; to = dashF.to; }
+  return { from, to };
+}
+const rangeLabel = () => { const r = rangeDates(); return r.from || r.to ? 'الفترة: ' + (r.from || '…') + ' ← ' + (r.to || '…') : 'الفترة: كل البيانات'; };
+function filteredFams() {
+  const { from, to } = rangeDates();
+  return [...allFams.values()].filter(d => {
+    const x = d.memberDate || '';
+    if (from && x < from) return false;
+    if (to && x > to) return false;
+    return true;
+  });
+}
+function birthdaysOf(fams, month) {
+  const out = [];
+  fams.forEach(d => (d.members || []).forEach(m => {
+    const p = parseNid(m.nid || '');
+    if (p && p.birth.getMonth() === month) out.push({ m, d, day: p.birth.getDate(), turn: new Date().getFullYear() - p.birth.getFullYear() });
+  }));
+  return out.sort((a, b) => a.day - b.day);
+}
+function analyze(fams) {
+  const P = [];
+  fams.forEach(d => (d.members || []).forEach(m => P.push(m)));
+  const kids = P.filter(m => m.rel === 'ابن');
   const gen = m => m.gender || (parseNid(m.nid || '') || {}).gender || '';
-  const count = (arr, f) => { const o = {}; arr.forEach(x => { const k = f(x); if (k) o[k] = (o[k] || 0) + 1; }); return o; };
-  const sorted = o => Object.entries(o).sort((a, b) => b[1] - a[1]);
-  const bars = rows => {
-    const mx = Math.max(1, ...rows.map(r => r[1]));
-    return rows.length ? rows.map(([k, n]) => `<div class="bar-row"><span class="bar-l">${esc(k)}</span><div class="bar"><i style="width:${n / mx * 100}%"></i></div><b>${n}</b></div>`).join('')
-      : '<div class="hint">مفيش بيانات لسه</div>';
+  const age = m => { const p = parseNid(m.nid || ''); return p ? p.age : null; };
+  const by = (arr, f) => {
+    const o = new Map();
+    arr.forEach(x => { const raw = f(x); if (!raw) return; const k = norm(raw); const e = o.get(k) || [raw, 0]; e[1]++; o.set(k, e); });
+    return [...o.values()].sort((a, b) => b[1] - a[1]);
   };
-  const kpi = (n, t) => `<div class="kpi"><b>${n}</b><span>${t}</span></div>`;
-  const sec = (t, h) => `<div class="sec"><h2>${t}</h2>${h}</div>`;
+  const gcount = {};
+  P.forEach(m => (m.games ? m.games.split(' + ') : []).forEach(g => { gcount[g] = (gcount[g] || 0) + 1; }));
+  const gamesRows = Object.entries(gcount).sort((a, b) => b[1] - a[1]);
+  const kidSport = m => !m.games ? 'بدون ألعاب' : m.sport === 'لعبة فردية' ? 'فردية' : 'جماعية';
+  const sports = ['جماعية', 'فردية', 'بدون ألعاب'].map(k => [k, kids.filter(m => kidSport(m) === k).length]).filter(r => r[1]);
+  const kidsIn = kids.filter(m => m.games).length;
+  const sz = {};
+  fams.forEach(d => { const n = (d.members || []).length; const k = n >= 6 ? '6+' : String(n); sz[k] = (sz[k] || 0) + 1; });
+  const famSize = ['1', '2', '3', '4', '5', '6+'].filter(k => sz[k]).map(k => [k + (k === '1' ? ' فرد' : ' أفراد'), sz[k]]);
 
+  // الشهور
+  const { from, to } = rangeDates();
+  let end = to ? new Date(to + 'T00:00:00') : new Date();
+  let start = from ? new Date(from + 'T00:00:00') : new Date(end.getFullYear(), end.getMonth() - 11, 1);
+  start = new Date(start.getFullYear(), start.getMonth(), 1);
   const months = [];
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
-    months.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
-  }
-  const byMonth = months.map(k => [k, fams.filter(d => (d.memberDate || '').startsWith(k)).length]);
-  const order = ['أقل من 12', '12 – 17', '18 – 29', '30 – 49', '50+'];
-  const grp = a => a < 12 ? order[0] : a < 18 ? order[1] : a < 30 ? order[2] : a < 50 ? order[3] : order[4];
-  const ages = count(people, m => { const p = parseNid(m.nid || ''); return p ? grp(p.age) : ''; });
-  const gamesCnt = {};
-  kids.forEach(m => (m.games ? m.games.split(' + ') : []).forEach(g => gamesCnt[g] = (gamesCnt[g] || 0) + 1));
-  const noPhone = fams.filter(d => !((d.members || [])[0] || {}).phone).length;
+  for (let d = new Date(start); d <= end && months.length < 36; d.setMonth(d.getMonth() + 1)) months.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+  if (!months.length) months.push(ymd(new Date()).slice(0, 7));
+  let cum = fams.filter(d => d.memberDate && d.memberDate < months[0] + '-01').length;
+  const monthRows = months.map(k => {
+    const f = fams.filter(d => (d.memberDate || '').startsWith(k)); cum += f.length;
+    const [y, mo] = k.split('-');
+    return { k, label: MONTHS[+mo - 1] + ' ' + y.slice(2), fam: f.length, ppl: f.reduce((s, d) => s + (d.members || []).length, 0), cum };
+  });
 
-  $('dashMode').innerHTML = !fams.length ? '<div class="hint">مفيش بيانات لسه، أو لسه بيتحمّل...</div>' :
-    `<div class="kpis">${kpi(fams.length, 'أسرة')}${kpi(people.length, 'فرد')}${kpi(kids.length, 'ابن')}${kpi(byMonth[5][1], 'أسرة جديدة الشهر ده')}</div>` +
-    sec('📅 التسجيل في آخر 6 شهور', bars(byMonth)) +
-    sec('⚥ النوع', bars(sorted(count(people, gen)))) +
-    sec('🎂 الفئات العمرية (من الرقم القومي)', bars(order.filter(k => ages[k]).map(k => [k, ages[k]]))) +
-    sec('⚽ المشتركين في الألعاب', bars(sorted(gamesCnt))) +
-    sec('💼 أعلى المهن', bars(sorted(count(people, m => (m.job || '').trim())).slice(0, 5))) +
-    sec('🧹 جودة البيانات', bars([['أسر بدون تليفون', noPhone], ['أفراد بدون رقم قومي', people.filter(m => !m.nid).length], ['أبناء بدون نوع', kids.filter(m => !gen(m)).length]]));
+  // جودة البيانات
+  const main = d => (d.members || [])[0] || {};
+  const adults = P.filter(m => m.rel !== 'ابن');
+  const issues = [
+    { k: 'أسر بدون رقم تليفون', items: fams.filter(d => !main(d).phone).map(d => ({ code: d.code, name: d.mainName })) },
+    { k: 'أسر بدون مهنة للعضو الأساسي', items: fams.filter(d => !main(d).job).map(d => ({ code: d.code, name: d.mainName })) },
+    { k: 'أسر بدون عنوان', items: fams.filter(d => !main(d).addr).map(d => ({ code: d.code, name: d.mainName })) },
+    { k: 'بالغين بدون رقم قومي', items: adults.filter(m => !m.nid).map(m => ({ code: m.sub, name: m.name })) },
+    { k: 'أبناء بدون نوع', items: kids.filter(m => !gen(m)).map(m => ({ code: m.sub, name: m.name })) }
+  ];
+  const total = fams.length * 3 + adults.length + kids.length;
+  const bad = issues.reduce((s, i) => s + i.items.length, 0);
+  const score = total ? Math.max(0, Math.round((1 - bad / total) * 100)) : 100;
+
+  const genders = by(P, m => gen(m));
+  const top = [...monthRows].sort((a, b) => b.fam - a.fam)[0];
+  const avgSize = fams.length ? P.length / fams.length : 0;
+  const insights = [];
+  if (top && top.fam) insights.push(`أعلى شهر تسجيلًا: ${top.label} بعدد ${top.fam} أسرة.`);
+  insights.push(`متوسط حجم الأسرة ${avgSize.toFixed(1)} فرد، وإجمالي الأبناء ${kids.length}.`);
+  if (kids.length) insights.push(`${pct(kidsIn, kids.length)}% من الأبناء مشتركين في ألعاب (${kidsIn} من ${kids.length}).`);
+  if (gamesRows[0]) insights.push(`أكثر لعبة اشتراكًا: ${gamesRows[0][0]} (${gamesRows[0][1]} مشترك).`);
+  const gt = genders.reduce((s, g) => s + g[1], 0);
+  if (gt) insights.push('توزيع النوع: ' + genders.map(g => g[0] + ' ' + pct(g[1], gt) + '%').join(' — ') + '.');
+  insights.push(`جودة البيانات ${score}% ويوجد ${bad} نقطة تحتاج استكمال.`);
+
+  return { fams, people: P, kids, gen, age, nF: fams.length, nP: P.length, nK: kids.length, avgSize, genders,
+    ages: AGE_ORDER.map(k => [k, P.filter(m => { const a = age(m); return a != null && ageGrp(a) === k; }).length]),
+    games: gamesRows, sports, kidsIn, famSize, jobs: by(P, m => (m.job || '').trim()).slice(0, 6),
+    quals: by(P, m => (m.qual || '').trim()).slice(0, 6), monthRows, issues, score, insights };
+}
+
+/* ----- الرسوم (SVG / HTML بدون مكتبات) ----- */
+let gid = 0;
+function donut(rows) {
+  const tot = rows.reduce((s, r) => s + r[1], 0);
+  if (!tot) return '<div class="hint">مفيش بيانات لسه</div>';
+  const r = 54, c = 2 * Math.PI * r; let off = 0;
+  const arcs = rows.map((x, i) => {
+    const len = x[1] / tot * c;
+    const s = `<circle cx="70" cy="70" r="${r}" fill="none" stroke="${PAL[i % PAL.length]}" stroke-width="22" stroke-dasharray="${len} ${c - len}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"/>`;
+    off += len; return s;
+  }).join('');
+  const leg = rows.map((x, i) => `<div class="lg"><i style="background:${PAL[i % PAL.length]}"></i>${esc(x[0])}<b>${x[1]}</b><small>${pct(x[1], tot)}%</small></div>`).join('');
+  return `<div class="donut"><svg viewBox="0 0 140 140" width="150" height="150">${arcs}<text x="70" y="68" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">${tot}</text><text x="70" y="86" text-anchor="middle" font-size="10" fill="#64748b">الإجمالي</text></svg><div class="legend">${leg}</div></div>`;
+}
+function hbars(rows) {
+  const mx = Math.max(1, ...rows.map(r => r[1]));
+  return rows.length ? rows.map(([k, n]) => `<div class="bar-row"><span class="bar-l">${esc(k)}</span><div class="bar"><i style="width:${n / mx * 100}%"></i></div><b>${n}</b></div>`).join('') : '<div class="hint">مفيش بيانات لسه</div>';
+}
+function colBars(rows, color = '#ff5500') {
+  const W = 600, H = 200, pl = 10, pb = 34, pt = 24, n = rows.length, mx = Math.max(1, ...rows.map(r => r[1]));
+  const step = (W - pl * 2) / n, bw = Math.min(54, step * .6);
+  return `<svg class="ch" viewBox="0 0 ${W} ${H}">` + rows.map((r, i) => {
+    const h = (H - pt - pb) * r[1] / mx, x = pl + step * i + (step - bw) / 2, y = H - pb - h;
+    return `<rect x="${x}" y="${y}" width="${bw}" height="${Math.max(h, 2)}" rx="5" fill="${color}"/><text x="${x + bw / 2}" y="${y - 6}" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">${r[1]}</text><text x="${x + bw / 2}" y="${H - 12}" text-anchor="middle" font-size="12" fill="#475569">${esc(r[0])}</text>`;
+  }).join('') + '</svg>';
+}
+function lineChart(rows, color = '#ff5500') {
+  const W = 640, H = 210, pl = 34, pr = 14, pt = 18, pb = 30, n = rows.length, id = 'lg' + (++gid);
+  const mx = Math.max(1, ...rows.map(r => r[1])), top = Math.ceil(mx * 1.15);
+  const x = i => pl + (n < 2 ? (W - pl - pr) / 2 : i * (W - pl - pr) / (n - 1)), y = v => pt + (H - pt - pb) * (1 - v / top);
+  const grid = [0, 1, 2, 3, 4].map(t => { const val = top * t / 4, yy = y(val); return `<line x1="${pl}" x2="${W - pr}" y1="${yy}" y2="${yy}" stroke="#e2e8f0"/><text x="${pl - 6}" y="${yy + 4}" text-anchor="end" font-size="11" fill="#94a3b8">${Math.round(val)}</text>`; }).join('');
+  const pts = rows.map((r, i) => x(i) + ',' + y(r[1]));
+  const line = 'M' + pts.join(' L'), area = line + ` L${x(n - 1)},${H - pb} L${x(0)},${H - pb} Z`;
+  const step = n > 12 ? 2 : 1;
+  const dots = rows.map((r, i) => `<circle cx="${x(i)}" cy="${y(r[1])}" r="4" fill="#fff" stroke="${color}" stroke-width="2.5"/>` + (n <= 16 ? `<text x="${x(i)}" y="${y(r[1]) - 9}" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">${r[1]}</text>` : '')).join('');
+  const labs = rows.map((r, i) => i % step ? '' : `<text x="${x(i)}" y="${H - 10}" text-anchor="middle" font-size="11" fill="#64748b">${esc(r[0])}</text>`).join('');
+  return `<svg class="ch" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".28"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#${id})"/><path d="${line}" fill="none" stroke="${color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${dots}${labs}</svg>`;
+}
+function ring(p) {
+  const col = p >= 85 ? '#16a34a' : p >= 60 ? '#f59e0b' : '#dc2626', r = 46, c = 2 * Math.PI * r;
+  return `<svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="${r}" fill="none" stroke="#e2e8f0" stroke-width="12"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="${col}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${c * p / 100} ${c}" transform="rotate(-90 60 60)"/><text x="60" y="68" text-anchor="middle" font-size="26" font-weight="700" fill="#0f172a">${p}%</text></svg>`;
+}
+
+/* ----- قائمة التقارير ----- */
+const REPORTS = [
+  ['summary', '📊', 'التقرير التنفيذي الشامل', 'مؤشرات ورسوم بيانية وملخص تحليلي'],
+  ['families', '👨‍👩‍👧', 'كشف الأسر', 'كل الأسر بالكود والتليفون وعدد الأفراد'],
+  ['people', '🧾', 'كشف الأفراد', 'كل الأفراد: النوع والسن والرقم القومي'],
+  ['games', '⚽', 'كشف الألعاب', 'المشتركين في كل لعبة'],
+  ['ages', '🎂', 'الفئات العمرية', 'توزيع الأعمار وقائمة الأبناء'],
+  ['monthly', '📅', 'التسجيلات الشهرية', 'جدول ورسم شهري وتراكمي'],
+  ['quality', '🧹', 'جودة البيانات', 'النواقص مع الأكواد للمراجعة'],
+  ['birthdays', '🎉', 'أعياد ميلاد الشهر', 'مواليد الشهر الحالي']
+];
+
+/* ----- الداشبورد ----- */
+function buildDashShell() {
+  $('dashMode').innerHTML = `
+  <div class="dbar">
+    <div class="dbar-f"><label>الفترة</label><select id="dRange">
+      <option value="all">كل الفترات</option><option value="month">هذا الشهر</option><option value="3m">آخر 3 شهور</option>
+      <option value="6m">آخر 6 شهور</option><option value="year">هذه السنة</option><option value="custom">فترة مخصصة</option></select></div>
+    <div class="dbar-f cust hidden"><label>من</label><input type="date" id="dFrom"></div>
+    <div class="dbar-f cust hidden"><label>إلى</label><input type="date" id="dTo"></div>
+    <div class="dbar-b"><button type="button" class="btn-sm" data-rp="summary">📄 التقرير الشامل PDF</button>
+    <button type="button" class="btn-sm btn-outline" id="dCsv">⬇ تصدير Excel</button></div>
+  </div>
+  <div id="dashBody"></div>
+  <div class="sec"><h2>🗂 مركز التقارير (PDF)</h2>
+    <div class="rp-grid">${REPORTS.map(r => `<button type="button" class="rp-card" data-rp="${r[0]}"><span class="i">${r[1]}</span><span>${r[2]}<small>${r[3]}</small></span></button>`).join('')}</div>
+    <div class="hint" style="margin-top:10px">كل تقرير بيتفتح في معاينة، اضغط فيها "طباعة / حفظ PDF" واختار الوجهة "Save as PDF". التقارير بتتأثر بفلتر الفترة اللي فوق (ما عدا أعياد الميلاد).</div>
+  </div>`;
+}
+function renderDash() {
+  if (!$('dashBody')) buildDashShell();
+  const body = $('dashBody');
+  if (!allFams.size) { body.innerHTML = '<div class="hint">مفيش بيانات لسه، أو لسه بيتحمّل...</div>'; return; }
+  const fams = filteredFams();
+  if (!fams.length) { body.innerHTML = '<div class="sec"><div class="hint">مفيش أسر مسجلة في الفترة المختارة.</div></div>'; return; }
+  const S = analyze(fams), mr = S.monthRows, cur = mr[mr.length - 1], prev = mr[mr.length - 2];
+  const kp = (ic, n, t, ex = '') => `<div class="kp"><div class="kp-ic">${ic}</div><div><b>${n}</b><span>${t}</span>${ex}</div></div>`;
+  const trend = prev ? (d => `<em class="${d >= 0 ? 'up' : 'dn'}">${d >= 0 ? '▲' : '▼'} ${Math.abs(d)} عن الشهر السابق</em>`)(cur.fam - prev.fam) : '';
+  const pn = (t, h, c = '') => `<div class="pn ${c}"><h3>${t}</h3>${h}</div>`;
+  const bd = birthdaysOf([...allFams.values()], new Date().getMonth());
+  const latest = [...fams].sort((a, b) => (b.memberDate || '').localeCompare(a.memberDate || '')).slice(0, 8);
+
+  body.innerHTML =
+    `<div class="kgrid">${kp('🏠', S.nF, 'أسرة')}${kp('👥', S.nP, 'فرد')}${kp('🧒', S.nK, 'ابن')}${kp('📐', S.avgSize.toFixed(1), 'متوسط حجم الأسرة')}${kp('🆕', cur.fam, 'أسرة جديدة (' + cur.label + ')', trend)}${kp('✅', S.score + '%', 'جودة البيانات')}</div>` +
+    `<div class="dgrid">` +
+    pn('📈 نمو التسجيلات الشهرية', lineChart(mr.map(r => [r.label, r.fam])), 'span2') +
+    pn('⚥ توزيع النوع', donut(S.genders)) +
+    pn('🎂 الفئات العمرية', colBars(S.ages)) +
+    pn('⚽ أكثر الألعاب اشتراكًا', hbars(S.games.slice(0, 8))) +
+    pn('🏅 نوع اشتراك الأبناء', donut(S.sports)) +
+    pn('👪 حجم الأسرة', hbars(S.famSize)) +
+    pn('💼 أعلى المهن', hbars(S.jobs)) +
+    pn('🎓 المؤهلات', hbars(S.quals)) +
+    pn('🧹 جودة البيانات', `<div class="donut">${ring(S.score)}<div class="legend">${S.issues.map(i => `<div class="lg"><i style="background:${i.items.length ? '#dc2626' : '#16a34a'}"></i>${esc(i.k)}<b>${i.items.length}</b></div>`).join('')}<button type="button" class="btn-outline" data-rp="quality" style="margin-top:8px;padding:8px;font-size:13px">📄 تقرير النواقص</button></div></div>`) +
+    pn('🎉 أعياد ميلاد ' + MONTHS[new Date().getMonth()] + ' (' + bd.length + ')',
+      (bd.length ? bd.slice(0, 8).map(x => `<div class="fam-row"><span class="badge">${x.day}</span><span>${esc(x.m.name)}</span><span class="fam-rel">${x.turn} سنة</span></div>`).join('') + (bd.length > 8 ? `<div class="hint">+ ${bd.length - 8} آخرين</div>` : '') : '<div class="hint">مفيش أعياد ميلاد الشهر ده</div>') +
+      `<button type="button" class="btn-outline" data-rp="birthdays" style="margin-top:10px;padding:8px;font-size:13px">📄 طباعة القائمة</button>`) +
+    pn('🆕 آخر التسجيلات', `<table class="mini"><thead><tr><th>الكود</th><th>العضو</th><th>الأفراد</th><th>التاريخ</th></tr></thead><tbody>${latest.map(d => `<tr><td>${esc(d.code)}</td><td>${vv(d.mainName)}</td><td>${(d.members || []).length}</td><td>${vv(d.memberDate)}</td></tr>`).join('')}</tbody></table>`) +
+    pn('💡 ملخص ذكي', `<ul class="ins">${S.insights.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`, 'span2') +
+    `</div>`;
+}
+$('dashMode').addEventListener('change', e => {
+  const el = e.target;
+  if (el.id === 'dRange') { dashF.range = el.value; document.querySelectorAll('#dashMode .cust').forEach(x => x.classList.toggle('hidden', el.value !== 'custom')); }
+  else if (el.id === 'dFrom') dashF.from = el.value;
+  else if (el.id === 'dTo') dashF.to = el.value;
+  else return;
+  renderDash();
+});
+$('dashMode').addEventListener('click', e => { if (e.target.closest('#dCsv')) exportCsv(); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-rp]'); if (b) openReport(b.dataset.rp); });
+
+/* ----- تصدير Excel (CSV بترميز يدعم العربي) ----- */
+function exportCsv() {
+  const fams = filteredFams().sort(sortCode);
+  if (!fams.length) { toast('مفيش بيانات للتصدير', false); return; }
+  const gen = m => m.gender || (parseNid(m.nid || '') || {}).gender || '';
+  const txt = v => v ? '="' + v + '"' : '';
+  const heads = ['كود الأسرة', 'كود الفرد', 'الاسم', 'الصلة', 'النوع', 'السن', 'الرقم القومي', 'التليفون', 'المهنة', 'المؤهل', 'الجنسية', 'العنوان', 'الألعاب', 'تاريخ العضوية'];
+  const rows = [];
+  fams.forEach(d => (d.members || []).forEach(m => {
+    const p = parseNid(m.nid || '');
+    rows.push([txt(d.code), txt(m.sub), m.name, m.rel, gen(m), p ? p.age : '', txt(m.nid), txt(m.phone), m.job || '', m.qual || '', m.nat || '', m.addr || '', m.games || '', d.memberDate || '']);
+  }));
+  const csv = '\ufeff' + [heads, ...rows].map(r => r.map(c => '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'G1-members-' + ymd(new Date()) + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  logAudit('تصدير Excel', '—', fams.length + ' أسرة');
+  toast('✅ تم تصدير ' + rows.length + ' فرد');
+}
+
+/* ----- معاينة وطباعة التقارير ----- */
+let curReport = null;
+const baseTitle = document.title;
+const rpHead = (title, sub, meta) => `<div class="pf-head"><img src="logo.png" alt=""><div class="pf-title"><h1>${esc(title)}</h1><div class="rp-sub">${esc(sub || '')}</div></div><div class="pf-meta">${meta || `تاريخ الإصدار: ${new Date().toLocaleDateString('en-GB')}<br>${esc(rangeLabel())}<br>أصدره: ${esc((auth.currentUser || {}).email || '')}`}</div></div>`;
+function showReport(title, sub, body, meta) {
+  const html = `<div class="pf rp">${rpHead(title, sub, meta)}${body}<div class="rp-end">— نهاية التقرير — G1 Sports Club</div></div>`;
+  curReport = { html, title };
+  $('rpPaper').innerHTML = html;
+  $('rpModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  $('rpScroll').scrollTop = 0;
+}
+function closeReport() { $('rpModal').classList.add('hidden'); document.body.style.overflow = ''; }
+$('rpClose').addEventListener('click', closeReport);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeReport(); });
+$('rpPrint').addEventListener('click', () => {
+  if (!curReport) return;
+  $('printArea').innerHTML = curReport.html;
+  document.title = 'G1-' + curReport.title + '-' + ymd(new Date());
+  window.addEventListener('afterprint', () => { document.title = baseTitle; }, { once: true });
+  window.print();
+});
+
+const rpK = (n, t) => `<div class="rp-k"><b>${n}</b><span>${t}</span></div>`;
+const rpS = (t, h) => `<div class="rp-sec"><h4>${t}</h4>${h}</div>`;
+const TB = (heads, rows) => `<table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+
+const BUILD = {
+  summary: S => ({ title: 'التقرير التنفيذي الشامل', sub: 'ملخص إحصائي وتحليلي لبيانات الأعضاء', body:
+    `<div class="rp-kpis">${rpK(S.nF, 'إجمالي الأسر')}${rpK(S.nP, 'إجمالي الأفراد')}${rpK(S.nK, 'الأبناء')}${rpK(S.avgSize.toFixed(1), 'متوسط حجم الأسرة')}${rpK(pct(S.kidsIn, S.nK) + '%', 'أبناء مشتركين في ألعاب')}${rpK(S.score + '%', 'جودة البيانات')}</div>` +
+    `<ul class="rp-ins">${S.insights.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` +
+    rpS('نمو التسجيلات الشهرية (عدد الأسر)', lineChart(S.monthRows.map(r => [r.label, r.fam]))) +
+    `<div class="rp-2">${rpS('توزيع النوع', donut(S.genders))}${rpS('الفئات العمرية', colBars(S.ages))}</div>` +
+    `<div class="rp-2">${rpS('أكثر الألعاب اشتراكًا', hbars(S.games.slice(0, 8)))}${rpS('نوع اشتراك الأبناء', donut(S.sports))}</div>` +
+    `<div class="rp-2">${rpS('حجم الأسرة', hbars(S.famSize))}${rpS('أعلى المهن', hbars(S.jobs))}</div>` }),
+
+  families: S => {
+    const list = [...S.fams].sort(sortCode);
+    const rows = list.map((d, i) => { const mem = d.members || []; return [i + 1, num(d.code), vv(d.mainName), holderLbl(d), num(parentPhone(d)), mem.length, mem.filter(m => m.rel === 'ابن').length, vv(d.memberDate)]; });
+    return { title: 'كشف الأسر', sub: `إجمالي ${list.length} أسرة — ${S.nP} فرد`, body: TB(['م', 'الكود', 'اسم العضو', 'العضوية باسم', 'التليفون', 'الأفراد', 'الأبناء', 'تاريخ العضوية'], rows) };
+  },
+
+  people: S => {
+    let i = 0; const rows = [];
+    [...S.fams].sort(sortCode).forEach(d => (d.members || []).forEach(m => {
+      const a = S.age(m);
+      rows.push([++i, num(m.sub), vv(m.name), vv(m.rel), S.gen(m) || '—', a == null ? '—' : a, num(m.nid), num(m.phone), vv(m.games)]);
+    }));
+    return { title: 'كشف الأفراد', sub: `إجمالي ${S.nP} فرد في ${S.nF} أسرة`, body: TB(['م', 'الكود', 'الاسم', 'الصلة', 'النوع', 'السن', 'الرقم القومي', 'التليفون', 'الألعاب'], rows) };
+  },
+
+  games: S => {
+    const map = new Map();
+    S.fams.forEach(d => (d.members || []).forEach(m => (m.games ? m.games.split(' + ') : []).forEach(g => {
+      if (!map.has(g)) map.set(g, []);
+      map.get(g).push({ m, d });
+    })));
+    const names = [...map.keys()].sort((a, b) => map.get(b).length - map.get(a).length);
+    if (!names.length) return { title: 'كشف الألعاب', sub: '', body: '<div class="hint">مفيش اشتراكات في ألعاب في الفترة دي.</div>' };
+    const typeOf = g => (games.find(x => x.name === g) || {}).type || '—';
+    const sum = TB(['م', 'اللعبة', 'النوع', 'عدد المشتركين'], names.map((g, i) => [i + 1, esc(g), typeOf(g), map.get(g).length]));
+    const per = names.map(g => `<div class="rp-sec" style="break-inside:auto"><h4>⚽ ${esc(g)} — ${map.get(g).length} مشترك</h4>` +
+      TB(['م', 'الكود', 'الاسم', 'السن', 'النوع', 'تليفون ولي الأمر'], map.get(g).map((x, i) => { const a = S.age(x.m); return [i + 1, num(x.m.sub), vv(x.m.name), a == null ? '—' : a, S.gen(x.m) || '—', num(parentPhone(x.d))]; })) + '</div>').join('');
+    return { title: 'كشف الألعاب', sub: `${names.length} لعبة — ${S.games.reduce((s, g) => s + g[1], 0)} اشتراك`, body: rpS('ملخص الألعاب', sum) + per };
+  },
+
+  ages: S => {
+    const dist = AGE_ORDER.map(k => {
+      const ps = S.people.filter(m => { const a = S.age(m); return a != null && ageGrp(a) === k; });
+      return [k, ps.length, ps.filter(m => S.gen(m) === 'ذكر').length, ps.filter(m => S.gen(m) === 'أنثى').length];
+    });
+    const unk = S.people.filter(m => S.age(m) == null).length;
+    const kl = S.kids.map(m => ({ m, a: S.age(m) })).sort((x, y) => (x.a == null) - (y.a == null) || x.a - y.a);
+    return { title: 'تقرير الفئات العمرية', sub: 'محسوبة من الرقم القومي', body:
+      rpS('توزيع الأفراد حسب السن', colBars(S.ages)) +
+      TB(['الفئة العمرية', 'الإجمالي', 'ذكور', 'إناث'], dist.map(r => r.map(esc))) +
+      `<div class="hint" style="margin:6px 0 10px">أفراد بدون رقم قومي (غير محسوبين في الفئات): ${unk}</div>` +
+      `<h3>قائمة الأبناء (${kl.length})</h3>` +
+      TB(['م', 'الكود', 'الاسم', 'السن', 'النوع', 'الألعاب'], kl.map((x, i) => [i + 1, num(x.m.sub), vv(x.m.name), x.a == null ? '—' : x.a, S.gen(x.m) || '—', vv(x.m.games)])) };
+  },
+
+  monthly: S => {
+    const mr = S.monthRows;
+    const rows = mr.map(r => [esc(r.label), r.fam, r.ppl, r.cum]);
+    rows.push([`<b>الإجمالي</b>`, `<b>${mr.reduce((s, r) => s + r.fam, 0)}</b>`, `<b>${mr.reduce((s, r) => s + r.ppl, 0)}</b>`, `<b>${mr[mr.length - 1].cum}</b>`]);
+    return { title: 'تقرير التسجيلات الشهرية', sub: 'عدد الأسر والأفراد الجدد شهريًا والنمو التراكمي', body:
+      `<div class="rp-2">${rpS('أسر جديدة شهريًا', lineChart(mr.map(r => [r.label, r.fam])))}${rpS('إجمالي الأسر التراكمي', lineChart(mr.map(r => [r.label, r.cum]), '#0f766e'))}</div>` +
+      TB(['الشهر', 'أسر جديدة', 'أفراد جدد', 'الإجمالي التراكمي'], rows) };
+  },
+
+  quality: S => ({ title: 'تقرير جودة البيانات', sub: 'النواقص المطلوب استكمالها', body:
+    `<div class="rp-2"><div class="rp-sec"><h4>درجة الجودة</h4><div class="donut">${ring(S.score)}</div></div>` +
+    rpS('ملخص النواقص', TB(['البند', 'العدد'], S.issues.map(i => [esc(i.k), i.items.length]))) + `</div>` +
+    S.issues.filter(i => i.items.length).map(i => `<div class="rp-sec" style="break-inside:auto"><h4>${esc(i.k)} (${i.items.length})</h4><div class="rp-chips">${i.items.map(x => `<span>${esc(x.code)} — ${esc(x.name || '')}</span>`).join('')}</div></div>`).join('') ||
+    '<div class="hint">ممتاز! مفيش نواقص.</div>' }),
+
+  birthdays: () => {
+    const mo = new Date().getMonth(), bd = birthdaysOf([...allFams.values()], mo);
+    return { title: 'أعياد ميلاد شهر ' + MONTHS[mo], sub: `${bd.length} فرد`, body: bd.length
+      ? TB(['اليوم', 'الكود', 'الاسم', 'السن بعد العيد', 'الصلة', 'تليفون ولي الأمر'], bd.map(x => [x.day, num(x.m.sub), vv(x.m.name), x.turn, vv(x.m.rel), num(parentPhone(x.d))]))
+      : '<div class="hint">مفيش أعياد ميلاد الشهر ده.</div>' };
+  }
+};
+function openReport(type) {
+  if (!BUILD[type]) return;
+  const fams = filteredFams();
+  if (!fams.length && type !== 'birthdays') { toast('مفيش بيانات في الفترة دي', false); return; }
+  const r = BUILD[type](analyze(fams));
+  showReport(r.title, r.sub, r.body);
+  logAudit('تقرير', '—', r.title);
 }
 
 /* ====== أحداث التسجيل الجديد ====== */
@@ -743,7 +1152,7 @@ function onInput(e) {
     if (!h) { h = document.createElement('div'); h.className = 'hint nid-hint'; el.parentElement.appendChild(h); }
     const p = parseNid(el.value);
     h.textContent = p ? p.gender + ' · ' + p.age + ' سنة · مواليد ' + p.birth.toLocaleDateString('en-GB') : '';
-    const g = el.id === 'xNid' ? $('xGender') : el.closest('.child') && el.closest('.child').querySelector('.c-gender');
+    const g = el.id === 'xNid' ? $('xGender') : el.id === 'eNid' ? $('eGender') : (c => c && (c.querySelector('.c-gender') || c.querySelector('.x-gender')))(el.closest('.child'));
     if (p && g && !g.value) g.value = p.gender;   // اختيار النوع تلقائياً لو لسه فاضي
   }
   if (el.id === 'code') {
@@ -830,10 +1239,10 @@ function collect() {
   const code = $('code').value.trim();
   const members = [{ sub: code, rel: 'عضو أساسي', name: $('mName').value.trim(),
     nid: $('mNid').value.trim(), phone: $('mPhone').value.trim(), sport: '', games: '',
-    gender: holder() === 'wife' ? 'أنثى' : '',
+    gender: holder() === 'wife' ? 'أنثى' : 'ذكر', nat: $('mNat').value.trim(),
     job: $('mJob').value.trim(), qual: $('mQual').value.trim(), addr: $('mAddr').value.trim() }];
   if ($('hasWife').checked) {
-    members.push({ sub: code + '-B', rel: holder() === 'wife' ? 'زوج' : 'زوجة', gender: holder() === 'wife' ? 'ذكر' : 'أنثى', name: $('wName').value.trim(),
+    members.push({ sub: code + '-B', rel: holder() === 'wife' ? 'زوج' : 'زوجة', gender: $('wGender').value || (holder() === 'wife' ? 'ذكر' : 'أنثى'), nat: $('wNat').value.trim(), name: $('wName').value.trim(),
       nid: $('wNid').value.trim(), phone: $('wPhone').value.trim(), sport: '', games: '',
       job: $('wJob').value.trim(), qual: $('wQual').value.trim(), addr: $('wAddr').value.trim() });
   }
@@ -845,7 +1254,7 @@ function collect() {
     });
   }
   if ($('hasExtra').checked) {
-    members.push({ sub: code + '-' + letterOf(kidsCount), rel: 'عضو إضافي', name: $('eName').value.trim(),
+    members.push({ sub: code + '-' + letterOf(kidsCount), rel: 'عضو إضافي', gender: $('eGender').value, name: $('eName').value.trim(),
       nid: $('eNid').value.trim(), phone: $('ePhone').value.trim(), sport: '', games: '' });
   }
   return { code, members, memberDate: $('mDate').value, holder: holder() };
@@ -962,7 +1371,7 @@ function collectAdd() {
   const members = [];
   document.querySelectorAll('#newPeople .person').forEach(p => {
     if (p.dataset.type === 'child') members.push(childData(p));
-    else members.push({ rel: 'عضو إضافي', name: p.querySelector('.x-name').value.trim(),
+    else members.push({ rel: 'عضو إضافي', gender: p.querySelector('.x-gender').value, name: p.querySelector('.x-name').value.trim(),
       nid: p.querySelector('.x-nid').value.trim(), phone: p.querySelector('.x-phone').value.trim(),
       sport: '', games: '' });
   });
@@ -1010,7 +1419,7 @@ function openEdit(i) {
   $('xDateF').classList.toggle('hidden', !isMain);
   $('xPhoneF').classList.toggle('hidden', isKid);
   $('xExtraF').classList.toggle('hidden', !(isMain || m.rel === 'زوجة' || m.rel === 'زوج'));
-  $('xJob').value = m.job || ''; $('xQual').value = m.qual || ''; $('xAddr').value = m.addr || '';
+  $('xNat').value = m.nat || ''; $('xJob').value = m.job || ''; $('xQual').value = m.qual || ''; $('xAddr').value = m.addr || '';
   $('xGamesF').classList.toggle('hidden', !isKid);
   $('xGender').value = m.gender || '';
   if (isKid) {
@@ -1037,7 +1446,7 @@ $('editSave').addEventListener('click', () => {
   if (!validate(box)) { scrollToFirstError(box); return; }
   const old = found.members[editIdx], m = { ...old }, isMain = old.sub === found.code;
   m.name = $('xName').value.trim(); m.nid = $('xNid').value.trim();
-  if (isMain || old.rel === 'زوجة' || old.rel === 'زوج') { m.job = $('xJob').value.trim(); m.qual = $('xQual').value.trim(); m.addr = $('xAddr').value.trim(); }
+  if (isMain || old.rel === 'زوجة' || old.rel === 'زوج') { m.nat = $('xNat').value.trim(); m.job = $('xJob').value.trim(); m.qual = $('xQual').value.trim(); m.addr = $('xAddr').value.trim(); }
   if (old.rel === 'ابن') {
     const t = $('xSport').value;
     const g = t === 'none' ? [] : [$('xG1').value, t === 'team' ? $('xG2').value : ''].filter(Boolean);
@@ -1046,6 +1455,7 @@ $('editSave').addEventListener('click', () => {
     m.games = g.join(' + ');
     m.gender = $('xGender').value;
   } else m.phone = $('xPhone').value.trim();
+  m.gender = $('xGender').value;   // النوع بيتحفظ لكل الأفراد (كان للأبناء بس)
   const list = found.members.map((x, i) => i === editIdx ? m : x);
   const upd = { members: list };
   if (isMain) {
@@ -1053,7 +1463,7 @@ $('editSave').addEventListener('click', () => {
     const o = found.mainName;   // الأبناء اللي اسمهم بينتهي باسم الأب القديم ياخدوا الاسم الجديد (للزوج بس)
     list.forEach((x, i) => { if (found.holder !== 'wife' && x.rel === 'ابن' && o && x.name.endsWith(' ' + o)) list[i] = { ...x, name: x.name.slice(0, -o.length) + m.name }; });
   }
-    const keys = ['name', 'nid', 'phone', 'job', 'qual', 'addr', 'gender', 'sport', 'games'];
+    const keys = ['name', 'nid', 'phone', 'nat', 'job', 'qual', 'addr', 'gender', 'sport', 'games'];
   const diff = keys.filter(k => (old[k] || '') !== (m[k] || '')).map(k => k + ': ' + (old[k] || '—') + ' ← ' + (m[k] || '—')).join(' | ');
   saveFamily(upd, '✅ تم التعديل', 'تعديل', old.sub + ' — ' + (diff || 'بدون تغيير في البيانات'));
 });
@@ -1090,25 +1500,19 @@ function printFamily() {
   const block = (title, m, extra) =>
     `<h3>${title}</h3><div class="pf-grid">` +
     cell('الكود', m.sub) + cell('الاسم', m.name) + extra +
-    cell('الرقم القومي', m.nid) + cell('التليفون', m.phone) + cell('المهنة', m.job) + cell('المؤهل', m.qual) +
+    cell('الرقم القومي', m.nid) + cell('التليفون', m.phone) + cell('المهنة', m.job) + cell('المؤهل', m.qual) + cell('الجنسية', m.nat) + cell('النوع', gen(m)) +
     `<div class="pf-full"><b>العنوان:</b> ${v(m.addr)}</div></div>`;
   const rows = mem.map(m =>
     `<tr><td dir="ltr">${esc(m.sub)}</td><td>${v(m.name)}</td><td>${v(m.rel)}</td><td>${gen(m) || '—'}</td>` +
     `<td>${v(m.nid)}</td><td>${birth(m) || '—'}</td><td>${v(m.phone)}</td><td>${v(m.games)}</td></tr>`).join('');
-
-  $('printArea').innerHTML = `<div class="pf">
-    <div class="pf-head">
-      <img src="logo.png" alt="">
-      <div class="pf-title"><h1>استمارة بيانات أسرة</h1></div>
-      <div class="pf-meta">كود العضو: <b>${esc(found.code)}</b><br>تاريخ العضوية: ${v(found.memberDate)}<br>تاريخ الطباعة: ${new Date().toLocaleDateString('en-GB')}</div>
-    </div>
-    ${block('بيانات العضو الأساسي', main, cell('تاريخ العضوية', found.memberDate))}
-    ${wife ? block(wife.rel === 'زوج' ? 'بيانات الزوج' : 'بيانات الزوجة', wife, '') : ''}
-    <h3>أفراد الأسرة (${mem.length})</h3>
-    <table><thead><tr><th>الكود</th><th>الاسم</th><th>الصلة</th><th>النوع</th><th>الرقم القومي</th><th>تاريخ الميلاد</th><th>التليفون</th><th>الألعاب</th></tr></thead><tbody>${rows}</tbody></table>
-    <div class="pf-sign">أقر بصحة البيانات الواردة أعلاه.<div class="pf-line">توقيع العضو الأساسي<br>${esc(main.name)}</div></div>
-  </div>`;
-  window.print();
+  const body =
+    block('بيانات العضو الأساسي', main, cell('تاريخ العضوية', found.memberDate) + cell('العضوية باسم', found.holder === 'wife' ? 'الزوجة' : 'الزوج')) +
+    (wife ? block(wife.rel === 'زوج' ? 'بيانات الزوج' : 'بيانات الزوجة', wife, '') : '') +
+    `<h3>أفراد الأسرة (${mem.length})</h3>` +
+    `<table><thead><tr><th>الكود</th><th>الاسم</th><th>الصلة</th><th>النوع</th><th>الرقم القومي</th><th>تاريخ الميلاد</th><th>التليفون</th><th>الألعاب</th></tr></thead><tbody>${rows}</tbody></table>` +
+    `<div class="pf-sign">أقر بصحة البيانات الواردة أعلاه.<div class="pf-line">توقيع العضو الأساسي<br>${esc(main.name)}</div></div>`;
+  showReport('استمارة بيانات أسرة', 'كود العضو: ' + found.code, body,
+    `كود العضو: <b>${esc(found.code)}</b><br>تاريخ العضوية: ${v(found.memberDate)}<br>تاريخ الطباعة: ${new Date().toLocaleDateString('en-GB')}`);
 }
 $('printBtn').addEventListener('click', printFamily);
 /* ====== إدارة الألعاب ====== */
