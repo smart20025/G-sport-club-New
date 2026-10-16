@@ -175,7 +175,10 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 textarea{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12px;font-size:15px;background:#f8fafc;outline:none;resize:vertical}
 #waModal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:160;display:flex;align-items:center;justify-content:center;padding:20px}
 .wa-box{width:100%;max-width:420px;background:#fff;border-radius:20px;padding:24px}
+.av{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#e2e8f0;flex-shrink:0;vertical-align:middle}
+.av.lg{width:72px;height:72px}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
@@ -544,6 +547,42 @@ async function loadLog() {
 }
 
 const $ = id => document.getElementById(id);
+
+/* ====== الصور ====== */
+const photos = new Map();   // sub -> dataURL أو ''
+let pendingPhoto;           // undefined = بدون تغيير | '' = حذف | dataURL = صورة جديدة
+const NO_PHOTO = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="#e2e8f0"/><circle cx="20" cy="15" r="7" fill="#94a3b8"/><path d="M6 40c0-9 6-14 14-14s14 5 14 14z" fill="#94a3b8"/></svg>');
+async function getPhoto(sub) {
+  if (photos.has(sub)) return photos.get(sub);
+  try {
+    const s = await getDoc(doc(db, 'photos', sub));
+    const v = s.exists() ? s.data().data : '';
+    photos.set(sub, v); return v;
+  } catch (e) { return ''; }
+}
+function resizeImage(file, max = 320) {
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const r = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      res(c.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = () => rej(new Error('bad image'));
+    img.src = url;
+  });
+}
+function savePhoto(sub, dataUrl) {
+  photos.set(sub, dataUrl || '');
+  const ref = doc(db, 'photos', sub);
+  return dataUrl ? setDoc(ref, { data: dataUrl, updatedAt: serverTimestamp() }) : deleteDoc(ref);
+}
+function fillPhotos(root) {
+  root.querySelectorAll('img[data-ph]').forEach(async im => { im.src = (await getPhoto(im.dataset.ph)) || NO_PHOTO; });
+}
 const form = $('memberForm');
 let games = [], uid = 0, mode = 'new', found = null, codeDup = false, codeCheck = Promise.resolve();
 
@@ -717,6 +756,10 @@ function childHtml(title, removable) {
         <option value="أنثى">أنثى</option>
       </select>
       <div class="msg-err">اختر نوع الابن</div>
+    </div>
+    <div class="field">
+      <label>صورة الابن (اختياري)</label>
+      <input type="file" class="c-photo" accept="image/*">
     </div>
     <div class="field">
       <label>الرقم القومي للابن (اختياري)</label>
@@ -1295,8 +1338,9 @@ function renderMembers() {
   $('mtTable').innerHTML = `<table class="mini mt"><thead><tr>${th('code', 'الكود')}${th('name', 'الاسم')}${th('rel', 'الصلة')}${th('gender', 'النوع')}${th('age', 'السن')}<th>التليفون</th><th>الألعاب</th>${th('status', 'العضوية')}<th></th></tr></thead><tbody>` +
     (slice.map(r => {
       const ph = r.m.phone || parentPhone(r.d);
-      return `<tr><td dir="ltr">${esc(r.m.sub)}</td><td>${vv(r.m.name)}</td><td>${vv(r.m.rel)}</td><td>${r.g || '—'}</td><td>${r.age == null ? '—' : r.age}</td><td dir="ltr">${vv(r.m.phone)}</td><td>${vv(r.m.games)}</td><td><span class="st st-${ST_CLS[r.st]}">${r.st}</span></td><td class="nw">${waBtn(ph, r.m.rel === 'ابن' ? r.d.mainName : r.m.name)}<button type="button" class="ic" data-open="${esc(r.code)}" title="فتح الأسرة">📂</button></td></tr>`;
+      return `<tr><td dir="ltr">${esc(r.m.sub)}</td><td><img class="av" data-ph="${esc(r.m.sub)}" src="${NO_PHOTO}" alt=""> ${vv(r.m.name)}</td><td>${vv(r.m.rel)}</td><td>${r.g || '—'}</td><td>${r.age == null ? '—' : r.age}</td><td dir="ltr">${vv(r.m.phone)}</td><td>${vv(r.m.games)}</td><td><span class="st st-${ST_CLS[r.st]}">${r.st}</span></td><td class="nw">${waBtn(ph, r.m.rel === 'ابن' ? r.d.mainName : r.m.name)}<button type="button" class="ic" data-open="${esc(r.code)}" title="فتح الأسرة">📂</button></td></tr>`;
     }).join('') || '<tr><td colspan="9" class="hint">مفيش نتائج</td></tr>') + '</tbody></table>';
+  fillPhotos($('mtTable'));
   let total = 0; allFams.forEach(d => { total += (d.members || []).length; });
   $('mtCount').textContent = 'عرض ' + slice.length + ' من ' + rows.length + ' (إجمالي الأفراد ' + total + ')';
   $('mtPager').innerHTML = `<button type="button" class="btn-sm btn-outline" data-pg="-1" ${mt.page <= 1 ? 'disabled' : ''}>› السابق</button><span>صفحة ${mt.page} من ${pages}</span><button type="button" class="btn-sm btn-outline" data-pg="1" ${mt.page >= pages ? 'disabled' : ''}>التالي ‹</button>`;
@@ -1456,7 +1500,10 @@ async function backupExport() {
     try { att = (await getDocs(collection(db, 'attendance'))).docs.map(d => ({ id: d.id, ...stripTs(d.data()) })); }
     catch (e) { toast('⚠ تعذر قراءة الحضور، النسخة هتكون بدونه', false); }
     const gs = await getDoc(doc(db, 'settings', 'games'));
-    const data = { app: 'g1-members', version: 2, exportedAt: new Date().toISOString(), families: fams, games: gs.exists() ? gs.data().list : [], attendance: att };
+    let phs = [];
+    try { phs = (await getDocs(collection(db, 'photos'))).docs.map(d => ({ id: d.id, data: d.data().data })); }
+    catch (e) { toast('⚠ تعذر قراءة الصور، النسخة هتكون بدونها', false); }
+    const data = { app: 'g1-members', version: 3, exportedAt: new Date().toISOString(), families: fams, games: gs.exists() ? gs.data().list : [], attendance: att, photos: phs };
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' }));
     a.download = 'G1-backup-' + ymd(new Date()) + '.json';
@@ -1474,10 +1521,11 @@ async function backupRestore(file) {
   if (!data || data.app !== 'g1-members' || !Array.isArray(data.families) || !data.families.every(okFam)) { toast('❌ الملف مش نسخة احتياطية صالحة للنظام', false); return; }
   const att = Array.isArray(data.attendance) ? data.attendance.filter(a => a && typeof a.id === 'string' && !/\//.test(a.id)) : [];
   const gl = Array.isArray(data.games) ? data.games : null;
+  const phs = Array.isArray(data.photos) ? data.photos.filter(p => p && typeof p.id === 'string' && !/\//.test(p.id) && typeof p.data === 'string' && p.data.startsWith('data:image/')) : [];
   if (!confirm('استرجاع ' + data.families.length + ' أسرة و' + att.length + ' سجل حضور' + (gl ? ' و' + gl.length + ' لعبة' : '') + '؟\nالأسر اللي بنفس الكود هتتكتب فوقها، ومفيش حاجة هتتحذف.')) return;
   toast('جاري الاسترجاع...', true, 15000);
   try {
-    const ops = [...data.families.map(f => [FAM(f.code), { ...f, restoredAt: serverTimestamp() }]), ...att.map(a => { const { id, ...rest } = a; return [doc(db, 'attendance', id), { ...rest, restoredAt: serverTimestamp() }]; })];
+    const ops = [...data.families.map(f => [FAM(f.code), { ...f, restoredAt: serverTimestamp() }]), ...att.map(a => { const { id, ...rest } = a; return [doc(db, 'attendance', id), { ...rest, restoredAt: serverTimestamp() }]; }), ...phs.map(p => [doc(db, 'photos', p.id), { data: p.data, restoredAt: serverTimestamp() }])];
     for (let i = 0; i < ops.length; i += 400) {
       const wb = writeBatch(db);
       ops.slice(i, i + 400).forEach(([ref, val]) => wb.set(ref, val));
@@ -1672,6 +1720,15 @@ form.addEventListener('submit', async e => {
     .then(() => toast('✅ اتأكد تسجيل الكود ' + data.code + ' على السيرفر'))
     .catch(err => toast('❌ الكود ' + data.code + ' مااتسجلش (' + err.code + ') — راجع وسجله تاني', false, 15000));
   logAudit('تسجيل عائلة', data.code, data.members.length + ' أشخاص');
+  {
+    const _jobs = []; let _k = 0;
+    if ($('hasWife').checked && $('wPhoto').files[0]) _jobs.push([data.code + '-B', $('wPhoto').files[0]]);
+    if ($('hasKids').checked) document.querySelectorAll('#kids .child').forEach((c, i) => { const f = c.querySelector('.c-photo').files[0]; if (f) _jobs.push([data.code + '-' + letterOf(i), f]); _k++; });
+    if ($('hasExtra').checked && $('ePhoto').files[0]) _jobs.push([data.code + '-' + letterOf(_k), $('ePhoto').files[0]]);
+    _jobs.forEach(([s, f]) => resizeImage(f).then(d => savePhoto(s, d)).catch(() => toast('⚠ صورة ' + s + ' مااتحفظتش', false)));
+  }
+  const _pf = $('mPhoto').files[0];
+  if (_pf) resizeImage(_pf).then(d => savePhoto(data.code, d)).catch(() => toast('⚠ العضو اتسجل بس الصورة مااتحفظتش', false));
   toast('✅ اتحفظ ' + data.code + ' (' + data.members.length + ' أشخاص)');
   resetAll();
 });
@@ -1688,9 +1745,10 @@ function hideFound() {
 function renderFound() {
   $('foundCode').textContent = found.code;
   $('foundList').innerHTML = found.members.map((m, i) =>
-    `<div class="fam-row"><span class="badge">${esc(m.sub)}</span><span>${esc(m.name)}</span><span class="fam-rel">${esc(m.rel)}</span>${waBtn(m.phone || found.members[0].phone, m.rel === 'ابن' ? found.mainName : m.name)}` +
+    `<div class="fam-row"><img class="av" data-ph="${esc(m.sub)}" src="${NO_PHOTO}" alt=""><span class="badge">${esc(m.sub)}</span><span>${esc(m.name)}</span><span class="fam-rel">${esc(m.rel)}</span>${waBtn(m.phone || found.members[0].phone, m.rel === 'ابن' ? found.mainName : m.name)}` +
     (isAdmin ? `<button type="button" class="ic" data-act="edit" data-i="${i}">✏️</button><button type="button" class="rm" data-act="del" data-i="${i}">🗑</button>` : '') + `</div>`
   ).join('');
+  fillPhotos($('foundList'));
   $('memDate').textContent = found.memberDate || '—';
   $('expDate').textContent = found.expiryDate ? found.expiryDate + ' (' + memStatus(found) + ')' : '—';
   $('delFamBtn').classList.toggle('hidden', !isAdmin);
@@ -1738,6 +1796,7 @@ function addPerson(type) {
     toast('❌ وصلت لآخر كود متاح لهذا العضو', false); return;
   }
   wrap.insertAdjacentHTML('beforeend', type === 'child' ? childHtml('ابن جديد', true) : extraHtml(true));
+  if (type !== 'child') wrap.lastElementChild.querySelector('.x-name').closest('.field').insertAdjacentHTML('afterend', '<div class="field"><label>الصورة (اختياري)</label><input type="file" class="x-photo" accept="image/*"></div>');
   refreshSelects(); updateAddCodes(); updateNames();
   $('addSubmit').classList.remove('hidden');
   wrap.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1772,6 +1831,10 @@ $('addForm').addEventListener('submit', e => {
 
   const base = found.nextLetter.charCodeAt(0);
   const added = collectAdd().map((m, i) => ({ ...m, sub: found.code + '-' + String.fromCharCode(base + i) }));
+  document.querySelectorAll('#newPeople .person').forEach((p, i) => {
+    const f = (p.querySelector('.c-photo') || p.querySelector('.x-photo') || {}).files;
+    if (f && f[0]) resizeImage(f[0]).then(d => savePhoto(added[i].sub, d)).catch(() => toast('⚠ صورة ' + added[i].sub + ' مااتحفظتش', false));
+  });
   const code = found.code;
 
   updateDoc(FAM(code), { members: arrayUnion(...added), updatedAt: serverTimestamp() })
@@ -1800,6 +1863,8 @@ function openEdit(i) {
   const m = found.members[i], isMain = m.sub === found.code, isKid = m.rel === 'ابن';
   editIdx = i;
   $('eTitle').textContent = 'تعديل ' + m.sub;
+  pendingPhoto = undefined; $('xPhotoPrev').src = NO_PHOTO;
+  getPhoto(m.sub).then(p => { if (p && editIdx === i) $('xPhotoPrev').src = p; });
   $('xName').value = m.name; $('xNid').value = m.nid || ''; $('xPhone').value = m.phone || ''; $('xDate').value = found.memberDate || '';
   ['xName', 'xNid', 'xPhone', 'xDate'].forEach(id => $(id).classList.remove('invalid'));
   $('xDateF').classList.toggle('hidden', !isMain);
@@ -1831,6 +1896,12 @@ function saveFamily(upd, msg, act, det) {
 $('editSave').addEventListener('click', () => {
   const box = $('editBox');
   if (!validate(box)) { scrollToFirstError(box); return; }
+  if (pendingPhoto !== undefined) {
+    const _s = found.members[editIdx].sub;
+    savePhoto(_s, pendingPhoto).catch(err => toast('❌ الصورة مااتحفظتش (' + (err.code || '') + ')', false, 8000));
+    logAudit('تعديل صورة', found.code, _s);
+    pendingPhoto = undefined;
+  }
   const old = found.members[editIdx], m = { ...old }, isMain = old.sub === found.code;
   m.name = $('xName').value.trim(); m.nid = $('xNid').value.trim();
   if (isMain || old.rel === 'زوجة' || old.rel === 'زوج') { m.nat = $('xNat').value.trim(); m.job = $('xJob').value.trim(); m.qual = $('xQual').value.trim(); m.addr = $('xAddr').value.trim(); }
@@ -1862,11 +1933,12 @@ $('foundList').addEventListener('click', e => {
   const i = +b.dataset.i, m = found.members[i];
   if (b.dataset.act === 'edit') return openEdit(i);
   if (m.sub === found.code) { toast('❌ العضو الأساسي مينفعش يتحذف لوحده، احذف العائلة كلها', false); return; }
-  if (confirm('حذف ' + m.name + ' (' + m.sub + ') ؟')) saveFamily({ members: found.members.filter((_, k) => k !== i) }, '✅ تم الحذف', 'حذف فرد', m.sub + ' — ' + m.name);
+  if (confirm('حذف ' + m.name + ' (' + m.sub + ') ؟')) (savePhoto(m.sub, '').catch(() => {}), saveFamily({ members: found.members.filter((_, k) => k !== i) }, '✅ تم الحذف', 'حذف فرد', m.sub + ' — ' + m.name));
 });
 $('delFamBtn').addEventListener('click', () => {
   if (!isAdmin || !found || !confirm('حذف العائلة كلها (' + found.code + ' — ' + found.members.length + ' أشخاص) نهائياً؟')) return;
   const code = found.code;
+  found.members.forEach(m => savePhoto(m.sub, '').catch(() => {}));
   logAudit('حذف عائلة', code, found.mainName + ' — ' + found.members.length + ' أشخاص');
   deleteDoc(FAM(code))
     .then(() => toast('✅ اتأكد حذف ' + code + ' على السيرفر'))
@@ -1877,7 +1949,8 @@ $('delFamBtn').addEventListener('click', () => {
 $('editCancel').addEventListener('click', closeEdit);
 $('xSport').addEventListener('change', syncEditGames);
 /* ====== طباعة الاستمارة العائلية ====== */
-function printFamily() {
+async function printFamily() {
+  const _ph = found ? await getPhoto(found.code) : '';
   if (!found) return;
   const mem = found.members;
   const main = mem.find(m => m.sub === found.code) || mem[0];
@@ -1895,7 +1968,7 @@ function printFamily() {
     `<tr><td dir="ltr">${esc(m.sub)}</td><td>${v(m.name)}</td><td>${v(m.rel)}</td><td>${gen(m) || '—'}</td>` +
     `<td>${v(m.nid)}</td><td>${birth(m) || '—'}</td><td>${v(m.phone)}</td><td>${v(m.games)}</td></tr>`).join('');
   const body =
-    block('بيانات العضو الأساسي', main, cell('تاريخ العضوية', found.memberDate) + cell('العضوية باسم', found.holder === 'wife' ? 'الزوجة' : 'الزوج')) +
+    (_ph ? `<img src="${_ph}" style="width:90px;height:110px;object-fit:cover;border:1px solid #999;float:left;margin:0 0 8px 8px">` : '') + block('بيانات العضو الأساسي', main, cell('تاريخ العضوية', found.memberDate) + cell('العضوية باسم', found.holder === 'wife' ? 'الزوجة' : 'الزوج')) +
     (wife ? block(wife.rel === 'زوج' ? 'بيانات الزوج' : 'بيانات الزوجة', wife, '') : '') +
     `<h3>أفراد الأسرة (${mem.length})</h3>` +
     `<table><thead><tr><th>الكود</th><th>الاسم</th><th>الصلة</th><th>النوع</th><th>الرقم القومي</th><th>تاريخ الميلاد</th><th>التليفون</th><th>الألعاب</th></tr></thead><tbody>${rows}</tbody></table>` +
@@ -1904,6 +1977,43 @@ function printFamily() {
     `كود العضو: <b>${esc(found.code)}</b><br>تاريخ العضوية: ${v(found.memberDate)}<br>تاريخ الطباعة: ${new Date().toLocaleDateString('en-GB')}`);
 }
 $('printBtn').addEventListener('click', printFamily);
+$('wName').closest('.field').insertAdjacentHTML('afterend', '<div class="field"><label>الصورة (اختياري)</label><input type="file" id="wPhoto" accept="image/*"></div>');
+$('eName').closest('.field').insertAdjacentHTML('afterend', '<div class="field"><label>الصورة (اختياري)</label><input type="file" id="ePhoto" accept="image/*"></div>');
+
+/* ====== واجهة الصور ====== */
+$('mName').closest('.field').insertAdjacentHTML('afterend', '<div class="field"><label>صورة العضو (اختياري)</label><input type="file" id="mPhoto" accept="image/*"></div>');
+$('xName').closest('.field').insertAdjacentHTML('afterend', '<div class="field"><label>الصورة</label><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><img id="xPhotoPrev" class="av lg" alt=""><input type="file" id="xPhoto" accept="image/*" style="flex:1;min-width:160px"><button type="button" class="ic" id="xPhotoDl">⬇ تحميل</button><button type="button" class="rm" id="xPhotoDel">حذف الصورة</button></div></div>');
+$('xPhoto').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { pendingPhoto = await resizeImage(f); $('xPhotoPrev').src = pendingPhoto; }
+  catch (_) { toast('❌ الملف مش صورة سليمة', false); }
+  e.target.value = '';
+});
+$('xPhotoDel').addEventListener('click', () => { pendingPhoto = ''; $('xPhotoPrev').src = NO_PHOTO; });
+$('xPhotoDl').addEventListener('click', async () => {
+  const sub = found.members[editIdx].sub;
+  const p = pendingPhoto !== undefined ? pendingPhoto : await getPhoto(sub);
+  if (!p) { toast('مفيش صورة للفرد ده', false); return; }
+  const a = document.createElement('a'); a.href = p; a.download = sub + '.jpg';
+  document.body.appendChild(a); a.click(); a.remove();
+});
+$('bkImportBtn').parentElement.insertAdjacentHTML('afterend', '<button type="button" class="btn-outline" id="bkPhotos" style="margin-top:10px">🖼 تحميل كل الصور (ZIP)</button>');
+$('bkPhotos').addEventListener('click', async () => {
+  if (!isAdmin) return;
+  if (typeof JSZip === 'undefined') { toast('❌ مكتبة ZIP مااتحمّلتش', false); return; }
+  toast('جاري تجهيز الصور...', true, 15000);
+  try {
+    const snap = await getDocs(collection(db, 'photos'));
+    if (snap.empty) { toast('مفيش صور محفوظة', false); return; }
+    const zip = new JSZip();
+    snap.docs.forEach(d => { const b64 = (d.data().data || '').split(',')[1]; if (b64) zip.file(d.id + '.jpg', b64, { base64: true }); });
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'G1-photos-' + ymd(new Date()) + '.zip';
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('✅ تم تحميل ' + snap.size + ' صورة');
+  } catch (e) { toast('❌ فشل التحميل (' + (e.code || e.message) + ')', false); }
+});
 /* ====== إدارة الألعاب ====== */
 $('addGameBtn').addEventListener('click', addGame);
 $('gName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addGame(); } });
