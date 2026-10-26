@@ -550,6 +550,7 @@ const $ = id => document.getElementById(id);
 
 /* ====== الصور ====== */
 const photos = new Map();   // sub -> dataURL أو ''
+let photosKnown = false;    // اتفحصت الصور من السيرفر ولا لأ
 let photoIds = new Set();   // أكواد الأفراد اللي ليهم صور (بتتحدث لما نفتح تقرير الصور أو نرفع ZIP)
 let pendingPhoto;           // undefined = بدون تغيير | '' = حذف | dataURL = صورة جديدة
 const NO_PHOTO = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="#e2e8f0"/><circle cx="20" cy="15" r="7" fill="#94a3b8"/><path d="M6 40c0-9 6-14 14-14s14 5 14 14z" fill="#94a3b8"/></svg>');
@@ -1189,11 +1190,39 @@ const BUILD = {
       TB(['الشهر', 'أسر جديدة', 'أفراد جدد', 'الإجمالي التراكمي'], rows) };
   },
 
-  quality: S => ({ title: 'تقرير جودة البيانات', sub: 'النواقص المطلوب استكمالها', body:
-    `<div class="rp-2"><div class="rp-sec"><h4>درجة الجودة</h4><div class="donut">${ring(S.score)}</div></div>` +
-    rpS('ملخص النواقص', TB(['البند', 'العدد'], S.issues.map(i => [esc(i.k), i.items.length]))) + `</div>` +
-    S.issues.filter(i => i.items.length).map(i => `<div class="rp-sec" style="break-inside:auto"><h4>${esc(i.k)} (${i.items.length})</h4><div class="rp-chips">${i.items.map(x => `<span>${esc(x.code)} — ${esc(x.name || '')}</span>`).join('')}</div></div>`).join('') ||
-    '<div class="hint">ممتاز! مفيش نواقص.</div>' }),
+  quality: S => {
+    const mainOf = d => (d.members || [])[0] || {};
+    const adults = S.people.filter(m => m.rel !== 'ابن');
+    const phMap = new Map();   // رقم تليفون كل فرد (أو تليفون العضو الأساسي لو مفيش)
+    S.fams.forEach(d => (d.members || []).forEach(m => phMap.set(m.sub, m.phone || parentPhone(d))));
+    const fo = (k, f) => ({ k, base: S.nF, unit: 'أسرة', items: S.fams.filter(f).map(d => ({ code: d.code, name: d.mainName, phone: parentPhone(d) })) });
+    const po = (k, arr, f, unit) => ({ k, base: arr.length, unit, items: arr.filter(f).map(m => ({ code: m.sub, name: m.name, phone: phMap.get(m.sub) || '' })) });
+    const others = [];   // الأزواج والأعضاء الإضافيين (غير الأساسي والأبناء)
+    S.fams.forEach(d => (d.members || []).forEach(m => { if (m.rel !== 'ابن' && m.sub !== d.code) others.push(m); }));
+    const list = [
+      fo('أسر بدون رقم تليفون', d => !mainOf(d).phone),
+      fo('أسر بدون مهنة للعضو الأساسي', d => !mainOf(d).job),
+      fo('أسر بدون مؤهل للعضو الأساسي', d => !mainOf(d).qual),
+      fo('أسر بدون عنوان', d => !mainOf(d).addr),
+      fo('أسر بدون تاريخ انتهاء عضوية', d => !d.expiryDate),
+      po('بالغين بدون رقم قومي', adults, m => !m.nid, 'بالغ'),
+      po('أبناء بدون رقم قومي', S.kids, m => !m.nid, 'ابن'),
+      po('أرقام قومية غير صحيحة', S.people.filter(m => m.nid), m => !parseNid(m.nid), 'فرد'),
+      po('بالغين بدون نوع', adults, m => !S.gen(m), 'بالغ'),
+      po('أبناء بدون نوع', S.kids, m => !S.gen(m), 'ابن'),
+      po('أزواج / أعضاء إضافيين بدون تليفون', others, m => !m.phone, 'فرد')
+    ];
+    if (photosKnown) list.push(po('أفراد بدون صورة', S.people, m => !photoIds.has(m.sub), 'فرد'));
+    const bad = list.reduce((s, i) => s + i.items.length, 0);
+    const sum = TB(['م', 'البند', 'العدد', 'من إجمالي', 'النسبة'],
+      list.map((i, n) => [n + 1, esc(i.k), `<b style="color:${i.items.length ? '#dc2626' : '#16a34a'}">${i.items.length}</b>`, i.base + ' ' + i.unit, pct(i.items.length, i.base) + '%']).concat([['', '<b>إجمالي النواقص</b>', `<b>${bad}</b>`, '', '']]));
+    const secs = list.filter(i => i.items.length).map(i => `<div class="rp-sec" style="break-inside:auto"><h4>${esc(i.k)} (${i.items.length})</h4>` +
+      TB(['م', 'الكود', 'الاسم', 'التليفون'], i.items.map((x, n) => [n + 1, num(x.code), vv(x.name), num(x.phone)])) + '</div>').join('');
+    return { title: 'تقرير جودة البيانات', sub: 'كل النواقص المطلوب استكمالها وأعدادها', body:
+      `<div class="rp-kpis">${rpK(S.nF, 'أسرة')}${rpK(S.nP, 'فرد')}${rpK(list.filter(i => i.items.length).length + ' من ' + list.length, 'بنود فيها نواقص')}${rpK(bad, 'إجمالي النواقص')}${rpK(S.score + '%', 'درجة الجودة')}</div>` +
+      rpS('ملخص النواقص وأعدادها', sum) + (secs || '<div class="hint">ممتاز! مفيش نواقص.</div>') +
+      (photosKnown ? '' : '<div class="hint">ملحوظة: تعذر فحص الصور فمش محسوبة في التقرير.</div>') };
+  },
 
   nophoto: S => {
     const miss = [];
@@ -1216,15 +1245,17 @@ const BUILD = {
 async function loadPhotoIds() {
   const s = await getDocs(collection(db, 'photos'));
   photoIds = new Set(s.docs.filter(d => d.data().data).map(d => d.id));
+  photosKnown = true;
 }
 async function openReport(type) {
   if (!BUILD[type]) return;
   const fams = filteredFams();
   if (!fams.length && type !== 'birthdays') { toast('مفيش بيانات في الفترة دي', false); return; }
-  if (type === 'nophoto') {
+  if (type === 'nophoto' || type === 'quality') {
     toast('جاري فحص الصور...', true, 15000);
+    photosKnown = false;
     try { await loadPhotoIds(); }
-    catch (e) { toast('❌ تعذر قراءة الصور (' + (e.code || e.message) + ')', false, 8000); return; }
+    catch (e) { if (type === 'nophoto') { toast('❌ تعذر قراءة الصور (' + (e.code || e.message) + ')', false, 8000); return; } }
   }
   const r = BUILD[type](analyze(fams));
   showReport(r.title, r.sub, r.body);
