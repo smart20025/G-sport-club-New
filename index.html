@@ -177,8 +177,115 @@ textarea{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12p
 .wa-box{width:100%;max-width:420px;background:#fff;border-radius:20px;padding:24px}
 .av{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#e2e8f0;flex-shrink:0;vertical-align:middle}
 .av.lg{width:72px;height:72px}
+/* ====== البوابة ====== */
+.gate-only .tabs,.gate-only h1,.gate-only p.sub{display:none}
+.g-top{display:flex;gap:12px;flex-wrap:wrap;align-items:stretch;margin-bottom:14px}
+.g-top .kp{flex:1;min-width:150px}
+.g-dir{flex:1.3;min-width:220px;border-radius:18px;padding:16px;text-align:center;color:#fff;font-size:28px;font-weight:700;display:grid;place-items:center}
+.g-dir.in{background:linear-gradient(90deg,#16a34a,#22c55e)}
+.g-dir.out{background:linear-gradient(90deg,#dc2626,#f97316)}
+#gScan{font-size:22px;text-align:center;direction:ltr;padding:16px;border:3px solid var(--main);margin-bottom:6px}
+.g-res{border-radius:20px;padding:20px;margin:14px 0;border:4px solid #e2e8f0;background:#f8fafc;min-height:150px}
+.g-res.ok{border-color:#16a34a;background:#f0fdf4}
+.g-res.warn{border-color:#f59e0b;background:#fffbeb}
+.g-res.bad{border-color:#dc2626;background:#fef2f2}
+.g-main{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.g-main img{width:130px;height:160px;object-fit:cover;border-radius:14px;background:#e2e8f0}
+.g-t{font-size:28px;font-weight:700;margin:0 0 6px}
+/* ====== كارت العضو (الوش) — مقاس 86×54 مم ====== */
+.idw{width:100%}
+.idc{position:relative;width:100%;aspect-ratio:1.5926;overflow:hidden;background:#f1441b;direction:rtl;color:#0b0b0b;font-family:'Cairo',sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.idc *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.idc-in{position:absolute;inset:0;container-type:inline-size}
+.idc-in>*{position:absolute;margin:0}
+.idc-bgi{inset:0;width:100%;height:100%;object-fit:cover}
+.idc-photo{left:6.86%;top:21.97%;width:28.9%;height:50.19%;background:#fef8ee;overflow:hidden}
+.idc-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.idc-logo{left:64.39%;top:11.34%;width:29.91%;height:13.49%}
+.idc-info{right:6%;top:22cqw;width:56%}
+.idc-info>div{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.idc-name{font-weight:700;line-height:1.3}
+.idc-en{font-weight:400;line-height:1.25;direction:ltr}
+.idc-line{font-weight:700;line-height:1.25}
+.idc-sign{right:69.35%;top:calc(86.2% - 2.1cqw);text-align:right;font-weight:700;font-size:2.8cqw;line-height:1.32;white-space:nowrap}
+.idc .num{direction:ltr;display:inline-block;unicode-bidi:isolate}
+.idc-bar{right:6%;bottom:4%;background:#fff;border-radius:1cqw;padding:.7cqw 1.8cqw;box-sizing:border-box}
+.idc-bar svg{width:100%;height:100%;display:block}
+.idc-in.flip .idc-info{right:auto;left:6%}
+.idc-in.flip .idc-logo{left:5.7%}
+.idc-in.flip .idc-bar{right:auto;left:6%}
+.idc-in.flip .idc-sign{right:6.86%}
+.cfg-h{font-weight:700;color:var(--main);margin:16px 0 10px;font-size:15px;border-top:1px dashed #cbd5e1;padding-top:12px}
+.cfg-sub{grid-column:2/-1;display:grid;grid-template-columns:auto 80px minmax(0,1fr);gap:6px;align-items:center;font-size:13px;color:#475569}
+.cfg-2{display:grid;grid-template-columns:80px minmax(0,1fr);gap:6px}
+.cfg-rng{padding:0!important;height:28px;accent-color:var(--main);background:transparent!important;border:none!important}
+.rv{color:var(--main);font-weight:700;font-size:13px}
+.idpages{display:grid;gap:5mm 8mm;justify-content:center}
+.id-res .fam-row{cursor:pointer}
+/* ====== تبويب الكروت ====== */
+.id-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:980px){.id-layout{grid-template-columns:1fr}}
+details.sec>summary{cursor:pointer;font-weight:700;font-size:18px;color:var(--main);list-style:none;display:flex;align-items:center;gap:10px}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec[open]>summary{margin-bottom:14px}
+.cfg-chk{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-bottom:14px}
+.cfg-chk label{display:flex;align-items:center;gap:8px;margin:0;font-weight:600;font-size:14px;cursor:pointer}
+.cfg-chk input,.cfg-row input[type=checkbox]{width:auto;padding:0;margin:0;accent-color:var(--main)}
+.cfg-row{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr) auto auto auto;gap:6px;align-items:center;margin-bottom:8px}
+.cfg-row input,.cfg-row select{padding:8px 10px;font-size:14px}
+.cfg-row input[type=checkbox]{padding:0}
+.cfg-row .cfg-txt{grid-column:2/-1}
+.cfg-row button{width:auto;padding:6px 10px;font-size:14px}
+.en-row{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1.2fr);gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid #f1f5f9}
+.en-row input{padding:8px 10px;font-size:14px;direction:ltr}
+.en-row input.sug{border-style:dashed;color:#92400e;background:#fffbeb}
+.en-nav{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0}
+.en-nav button{width:auto;padding:8px 16px;font-size:14px}
+/* ====== توحيد مقاسات التبويبات ====== */
+body{align-items:flex-start}
+.card{max-width:1100px;min-height:min(780px,calc(100vh - 40px))}
+#newMode,#addMode,#attMode{max-width:780px;margin-inline:auto}
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px}
+.tab{min-width:0;min-height:46px;padding:10px 8px;white-space:nowrap}
+/* ====== تخطيط جديد: التبويبات على اليمين والمحتوى في المنتصف ====== */
+body{align-items:flex-start;justify-content:center;padding:24px 16px}
+.card.shell{display:grid;grid-template-columns:250px minmax(0,1fr);gap:0;padding:0;max-width:1320px;width:100%;margin-inline:auto;overflow:visible;min-height:calc(100vh - 48px)}
+.side{display:flex;flex-direction:column;gap:18px;padding:26px 18px;background:#fff7f2;border:1px solid #fed7aa;border-radius:20px;margin:16px 16px 16px 0;position:sticky;top:40px;align-self:start;max-height:calc(100vh - 80px);overflow-y:auto}
+.side .logo{max-width:150px;margin:0 auto}
+.side .tabs{display:flex;flex-direction:column;gap:8px;margin:0}
+.side .tab{flex:none;width:100%;text-align:start;display:flex;align-items:center;gap:8px;min-height:48px;padding:11px 16px;font-size:15px;font-weight:600;background:#fff;color:#475569;border:1px solid #fde4d3;border-radius:14px;white-space:normal}
+.side .tab:hover{background:#fff1e8;color:var(--main2)}
+.side .tab.active{background:linear-gradient(90deg,var(--main),var(--main2));color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(255,85,0,.28)}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:1px dashed #fdba74;font-size:12px;color:#64748b;text-align:center;word-break:break-all}
+.side-foot button{padding:9px 12px;font-size:14px}
+.main{padding:32px 36px;min-width:0;display:flex;flex-direction:column}
+.main>*{width:100%;max-width:1020px;margin-inline:auto}
+.page-head{text-align:center;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid #f1f5f9}
+.page-head h1{font-size:28px}
+.page-head p.sub{margin:0}
+#newMode,#addMode,#attMode{max-width:780px}
+.main .ver{margin-top:auto;padding-top:22px}
+@media(max-width:900px){
+  body{padding:0}
+  .card.shell{grid-template-columns:1fr;border-radius:0;min-height:100vh}
+  .side{position:sticky;top:0;z-index:20;max-height:none;overflow:visible;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 12px;border-radius:0;border-inline-end:0;border-bottom:1px solid #fed7aa}
+  .side .logo{max-width:70px;margin:0}
+  .side .tabs{order:3;flex-basis:100%;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .side .tab{width:auto;flex:0 0 auto;min-height:42px;padding:8px 14px;font-size:14px;white-space:nowrap}
+  .side-foot{margin:0 auto 0 0;flex-direction:row;align-items:center;border:0;padding:0;text-align:start;flex:1;justify-content:space-between}
+  .main{padding:20px 14px}
+}
+/* يوزر البوابة: صفحة البوابة فقط */
+.gate-only .card.shell{grid-template-columns:1fr;max-width:860px}
+.gate-only .side{position:static;flex-direction:row;align-items:center;justify-content:space-between;max-height:none;margin:0;padding:12px 22px;border-radius:24px 24px 0 0;border:0;border-bottom:1px solid #fed7aa}
+.gate-only .side .logo{max-width:80px;margin:0}
+.gate-only .side .tabs{display:none}
+.gate-only .side-foot{margin:0;flex-direction:row;align-items:center;border:0;padding:0;text-align:start;flex:1;justify-content:space-between;gap:14px}
+.gate-only .page-head{display:none}
+.gate-only .side-foot button{width:auto;white-space:nowrap;padding:9px 18px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
 </head>
 <body>
 
@@ -191,19 +298,28 @@ textarea{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12p
   </div>
 </div>
 
-<div class="card">
-  <div class="userbar"><span id="who"></span><button type="button" class="btn-sm btn-outline" id="logoutBtn" style="padding:6px 14px;font-size:13px">🚪 خروج</button></div>
+<div class="card shell">
+<aside class="side">
   <img src="logo.png" alt="G1 Sports Club" class="logo">
-  <h1>تسجيل بيانات الأعضاء 📝</h1>
-  <p class="sub">سجّل العضو الأساسي وأسرته</p>
-
-  <div class="tabs">
-    <button type="button" class="tab active" id="tabNew">تسجيل عضو جديد</button>
-    <button type="button" class="tab" id="tabAdd">إضافة لعضو مسجل</button>
+  <nav class="tabs">
+    <button type="button" class="tab active" id="tabNew">➕ تسجيل عضو جديد</button>
+    <button type="button" class="tab" id="tabAdd">🔗 إضافة لعضو مسجل</button>
     <button type="button" class="tab" id="tabMem">👥 الأعضاء</button>
     <button type="button" class="tab" id="tabAtt">📋 الحضور</button>
+    <button type="button" class="tab hidden" id="tabGate">🚪 البوابة</button>
+    <button type="button" class="tab hidden" id="tabIds">🪪 الكروت</button>
     <button type="button" class="tab hidden" id="tabDash">📊 لوحة التحكم</button>
+  </nav>
+  <div class="side-foot">
+    <span id="who"></span>
+    <button type="button" class="btn-outline" id="logoutBtn">🚪 تسجيل الخروج</button>
   </div>
+</aside>
+<main class="main">
+  <header class="page-head">
+    <h1>تسجيل بيانات الأعضاء 📝</h1>
+    <p class="sub">سجّل العضو الأساسي وأسرته</p>
+  </header>
 
   <div id="newMode">
     <form id="memberForm" novalidate>
@@ -421,6 +537,8 @@ textarea{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12p
     <div id="dashMode" class="hidden"></div>
   <div id="membersMode" class="hidden"></div>
   <div id="attMode" class="hidden"></div>
+  <div id="gateMode" class="hidden"></div>
+  <div id="idsMode" class="hidden"></div>
   <details class="sec games-box hidden" id="logBox">
     <summary>📜 سجل العمليات (أدمن)</summary>
     <button type="button" class="btn-outline" id="logBtn" style="margin-top:12px">تحديث السجل</button>
@@ -444,6 +562,7 @@ textarea{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12p
   </details>
 
   <div class="ver">Data analyst: Mohamed Abd-Elfttah</div>
+</main>
 </div>
 
 <div id="rpModal" class="hidden">
@@ -481,6 +600,12 @@ const firebaseConfig = {
 /* ====== إيميلات الأدمن (بحروف صغيرة) — لازم تطابق اللي في القواعد ====== */
 const ADMIN_EMAILS = ['admin@g1.com'];
 let isAdmin = false;
+
+/* ====== إعدادات البوابة (غيّر الإيميلات لإيميلات اليوزرين اللي هتعملهم في Firebase) ====== */
+const GATE_USERS = { 'gate-in@g1.com': 'in', 'gate-out@g1.com': 'out' };   // in = بوابة دخول | out = بوابة خروج
+const BLOCK_EXPIRED = true;      // true = منع الدخول لو العضوية منتهية (الخروج مسموح دايمًا)
+const SCAN_COOLDOWN = 4000;      // مهلة (مللي ثانية) بين مسحين لنفس الكارت
+let gateDir = '', presence = new Map(), gateRecs = [], unsubPres = null, unsubGate = null, gateDay = '', gateTimer = null;
 
 const app = initializeApp(firebaseConfig);
 const db = initializeFirestore(app, {
@@ -607,17 +732,24 @@ onAuthStateChanged(auth, u => {
   isAdmin = !!u && ADMIN_EMAILS.includes((u.email || '').toLowerCase());
   $('login').classList.toggle('hidden', !!u);
   $('gamesBox').classList.toggle('hidden', !isAdmin);
-  $('who').textContent = u ? '👤 ' + u.email + ' — ' + (isAdmin ? 'أدمن' : 'تسجيل وبحث') : '';
+  $('who').textContent = u ? '👤 ' + u.email + ' — ' + (isAdmin ? 'أدمن' : GATE_USERS[(u.email || '').toLowerCase()] === 'in' ? 'بوابة الدخول' : GATE_USERS[(u.email || '').toLowerCase()] === 'out' ? 'بوابة الخروج' : 'تسجيل وبحث') : '';
    $('logBox').classList.toggle('hidden', !isAdmin);
    $('backupBox').classList.toggle('hidden', !isAdmin);
     $('tabDash').classList.toggle('hidden', !isAdmin);
-  if (!isAdmin && mode === 'dash') setMode('new');
+  gateDir = (u && GATE_USERS[(u.email || '').toLowerCase()]) || '';
+  document.body.classList.toggle('gate-only', !!gateDir);
+  $('tabGate').classList.toggle('hidden', !(isAdmin || gateDir));
+  $('tabIds').classList.toggle('hidden', !isAdmin);
+  if (gateDir) setMode('gate');
+  else if (!isAdmin && ['dash', 'gate', 'ids'].includes(mode)) setMode('new');
   if (u) {
-    loadGames();
-    if (!unsubFams) unsubFams = onSnapshot(collection(db, 'families'),
+    if (!gateDir) loadGames();
+    if (isAdmin || gateDir) startGate();
+    if (!unsubFams && !gateDir) unsubFams = onSnapshot(collection(db, 'families'),
        s => { allFams = new Map(s.docs.map(d => [d.id, d.data()])); if (mode === 'dash') renderDash(); if (mode === 'members') renderMembers(); if (mode === 'att') renderRoster(); renderGames(); }, () => {});
   } else {
     if (unsubFams) { unsubFams(); unsubFams = null; }
+    stopGate();
     allFams = new Map(); found = null; hideFound(); resetAll(); $('aCode').value = ''; $('lPass').value = ''; games = [];
   }
   if (u && found) renderFound();
@@ -837,17 +969,20 @@ function syncKids(n) {
 /* ====== التبويبات ====== */
 function setMode(m) {
   mode = m;
-  ['new', 'add', 'dash', 'members', 'att'].forEach(k => $(k + 'Mode').classList.toggle('hidden', m !== k));
-  [['tabNew', 'new'], ['tabAdd', 'add'], ['tabMem', 'members'], ['tabAtt', 'att'], ['tabDash', 'dash']].forEach(([id, k]) => $(id).classList.toggle('active', m === k));
-  document.querySelector('.card').classList.toggle('wide', m === 'dash' || m === 'members');
+  ['new', 'add', 'dash', 'members', 'att', 'gate', 'ids'].forEach(k => $(k + 'Mode').classList.toggle('hidden', m !== k));
+  [['tabNew', 'new'], ['tabAdd', 'add'], ['tabMem', 'members'], ['tabAtt', 'att'], ['tabGate', 'gate'], ['tabIds', 'ids'], ['tabDash', 'dash']].forEach(([id, k]) => $(id).classList.toggle('active', m === k));
   if (m === 'dash') renderDash();
   if (m === 'members') renderMembers();
   if (m === 'att') renderAtt();
+  if (m === 'gate') renderGate();
+  if (m === 'ids') renderIds();
   updateNames();
 }
 $('tabNew').addEventListener('click', () => setMode('new'));
 $('tabAdd').addEventListener('click', () => setMode('add'));
 $('tabDash').addEventListener('click', () => setMode('dash'));
+$('tabGate').addEventListener('click', () => setMode('gate'));
+$('tabIds').addEventListener('click', () => setMode('ids'));
 
 /* ====== لوحة التحكم الاحترافية + مركز التقارير ====== */
 const MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -2129,6 +2264,557 @@ async function photosFromZip(file) {
       TB(['م', 'اسم الملف', 'السبب'], problems.map((p, i) => [i + 1, `<span class="num">${esc(p[0])}</span>`, esc(p[1])])));
   }
 }
+
+/* ====== أدوات مشتركة للبوابة والكروت ====== */
+function findMember(code) {
+  const u = String(code || '').toUpperCase();
+  for (const [, d] of allFams) for (const m of (d.members || [])) if (String(m.sub).toUpperCase() === u) return { m, d };
+  return null;
+}
+const recTime = r => (r && r.at && r.at.toDate ? r.at.toDate() : new Date());
+const hhmm = d => d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+// لو جهاز القراءة على كيبورد عربي: نحوّل الحروف العربية لمقابلها الإنجليزي
+const AR2EN = { 'ش': 'A', 'ؤ': 'C', 'ي': 'D', 'ث': 'E', 'ب': 'F', 'ل': 'G', 'ا': 'H', 'ه': 'I', 'ت': 'J', 'ن': 'K', 'م': 'L', 'ة': 'M', 'ى': 'N', 'خ': 'O', 'ح': 'P', 'ض': 'Q', 'ق': 'R', 'س': 'S', 'ف': 'T', 'ع': 'U', 'ر': 'V', 'ص': 'W', 'ء': 'X', 'غ': 'Y', 'ئ': 'Z' };
+const fixLayout = s => s.replace(/لا/g, 'B').replace(/[؀-ۿ]/g, c => AR2EN[c] || c);
+async function loadAllPhotos() {
+  const s = await getDocs(collection(db, 'photos'));
+  s.docs.forEach(d => photos.set(d.id, d.data().data || ''));
+  photoIds = new Set(s.docs.filter(d => d.data().data).map(d => d.id));
+  photosKnown = true;
+}
+
+/* ====== بوابة الدخول والخروج ====== */
+const gateDirNow = () => gateDir || (($('gDir') || {}).value || 'in');
+function startGate() {
+  stopGate();
+  unsubPres = onSnapshot(collection(db, 'presence'), s => {
+    presence = new Map(s.docs.map(d => [d.id, d.data()]));
+    if (mode === 'gate') renderGateStats();
+  }, () => {});
+  subGateDay();
+  gateTimer = setInterval(() => {
+    if (ymd(new Date()) !== gateDay) subGateDay();
+    if (mode === 'gate' && document.activeElement === document.body && $('gScan')) $('gScan').focus();
+  }, 1500);
+  if (mode === 'gate') renderGate();
+}
+function subGateDay() {
+  if (unsubGate) unsubGate();
+  gateDay = ymd(new Date());
+  unsubGate = onSnapshot(query(collection(db, 'gate'), where('day', '==', gateDay)), s => {
+    gateRecs = s.docs.map(d => d.data());
+    if (mode === 'gate') renderGateStats();
+  }, () => {});
+}
+function stopGate() {
+  if (unsubPres) unsubPres();
+  if (unsubGate) unsubGate();
+  clearInterval(gateTimer);
+  unsubPres = unsubGate = null; presence = new Map(); gateRecs = [];
+  if ($('gateMode')) $('gateMode').innerHTML = '';
+}
+function renderGate() {
+  if (!$('gScan')) {
+    $('gateMode').innerHTML = `
+    <div class="g-top"><div class="g-dir" id="gDirBox"></div>
+      <div class="kp"><div class="kp-ic">🟢</div><div><b id="gIn">0</b><span>جوه النادي الآن</span></div></div>
+      <div class="kp"><div class="kp-ic">⬇</div><div><b id="gEn">0</b><span>حركات دخول اليوم</span></div></div>
+      <div class="kp"><div class="kp-ic">⬆</div><div><b id="gEx">0</b><span>حركات خروج اليوم</span></div></div></div>
+    ${gateDir ? '' : '<div class="field"><label>نوع البوابة</label><select id="gDir"><option value="in">دخول</option><option value="out">خروج</option></select></div>'}
+    <input type="text" id="gScan" autocomplete="off" placeholder="امسح الباركود هنا (أو اكتب الكود واضغط Enter)">
+    <div class="g-res" id="gRes"><div class="hint">في انتظار مسح الكارت...</div></div>
+    <details class="sec games-box" id="gInside"><summary>👥 الموجودين الآن (<span id="gInN">0</span>)</summary><div id="gInList"></div>${isAdmin ? '<button type="button" class="rm" id="gReset" style="margin-top:10px;padding:8px 14px">🔄 تصفير الموجودين (خروج الكل)</button>' : ''}</details>
+    <div class="sec"><h2>🕒 آخر الحركات اليوم</h2><div id="gRecent"></div></div>`;
+  }
+  renderGateStats();
+  $('gScan').focus();
+}
+function renderGateStats() {
+  if (!$('gScan')) return;
+  const dir = gateDirNow(), box = $('gDirBox');
+  box.className = 'g-dir ' + dir;
+  box.textContent = dir === 'in' ? '⬇ بوابة الدخول' : '⬆ بوابة الخروج';
+  const ins = [...presence.entries()].filter(([, p]) => p.inside);
+  $('gIn').textContent = ins.length; $('gInN').textContent = ins.length;
+  $('gEn').textContent = gateRecs.filter(r => r.dir === 'in').length;
+  $('gEx').textContent = gateRecs.filter(r => r.dir === 'out').length;
+  $('gInList').innerHTML = ins.sort((a, b) => String(a[1].name).localeCompare(String(b[1].name), 'ar'))
+    .map(([sub, p]) => `<div class="fam-row"><span class="badge">${esc(sub)}</span><span>${esc(p.name || '')}</span><span class="fam-rel">${hhmm(recTime(p))}</span></div>`).join('') || '<div class="hint">مفيش حد جوه</div>';
+  $('gRecent').innerHTML = [...gateRecs].sort((a, b) => recTime(b) - recTime(a)).slice(0, 12)
+    .map(r => `<div class="fam-row"><span class="st ${r.dir === 'in' ? 'st-ok' : 'st-bad'}">${r.dir === 'in' ? 'دخول' : 'خروج'}</span><span class="badge">${esc(r.sub)}</span><span>${esc(r.name || '')}</span>${r.anomaly ? '<span class="st st-warn">تنبيه</span>' : ''}<span class="fam-rel">${hhmm(recTime(r))}</span></div>`).join('') || '<div class="hint">لسه مفيش حركات النهارده</div>';
+}
+let gateClear = null, audioCtx = null;
+function beep(kind) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const seq = kind === 'ok' ? [[880, .12]] : kind === 'warn' ? [[520, .12], [520, .12]] : [[200, .45]];
+    let t = audioCtx.currentTime;
+    seq.forEach(([f, d]) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.frequency.value = f; o.connect(g); g.connect(audioCtx.destination);
+      g.gain.setValueAtTime(.25, t); g.gain.exponentialRampToValueAtTime(.001, t + d);
+      o.start(t); o.stop(t + d); t += d + .08;
+    });
+  } catch (e) { /* مفيش صوت */ }
+}
+function gateShow(level, title, body = '') {
+  const r = $('gRes'); if (!r) return;
+  r.className = 'g-res ' + level;
+  r.innerHTML = `<h2 class="g-t">${title}</h2>${body}`;
+  fillPhotos(r);
+  clearTimeout(gateClear);
+  gateClear = setTimeout(() => { r.className = 'g-res'; r.innerHTML = '<div class="hint">في انتظار مسح الكارت...</div>'; }, 12000);
+}
+const lastScan = new Map();
+// يوزر البوابة مالوش صلاحية يقرأ قايمة الأسر: بيجيب الأسرة المطلوبة بس من كود الكارت (القاعدة get فقط)
+async function gateLookup(v) {
+  const cands = [...new Set([v, fixLayout(v)])];
+  if (!gateDir) { for (const c of cands) { const h = findMember(c); if (h) return h; } return null; }
+  for (const c of cands) {
+    const fam = c.split('-')[0];
+    if (!/^[A-Z0-9]{1,30}$/i.test(fam)) continue;
+    for (const id of new Set([fam, fam.toLowerCase()])) {
+      try {
+        const s = await getDoc(FAM(id));
+        if (s.exists()) { allFams.set(s.id, s.data()); const h = findMember(c); if (h) return h; }
+      } catch (e) { /* مفيش صلاحية أو كود غلط */ }
+    }
+  }
+  return null;
+}
+async function onScan(raw) {
+  raw = String(raw || '');
+  const v = toLatinDigits(raw).replace(/[\s‎‏]/g, '').toUpperCase();
+  if (!v) return;
+  if (!gateDir && !allFams.size) { beep('warn'); gateShow('warn', '⏳ البيانات لسه بتتحمّل، جرّب تاني'); return; }
+  const hit = await gateLookup(v);
+  if (!hit) {
+    beep('bad');
+    const cand = !gateDir && raw.trim().length >= 3 ? searchPeople(raw.trim()).slice(0, 6) : [];
+    gateShow('bad', '❌ كود غير مسجل', `<div class="hint">الكود: <b dir="ltr">${esc(v)}</b></div>` +
+      (cand.length ? '<div class="hint" style="margin-top:8px">يمكن تقصد:</div>' + cand.map(x => `<div class="fam-row" style="cursor:pointer" data-pick="${esc(x.m.sub)}"><span class="badge">${esc(x.m.sub)}</span><span>${esc(x.m.name)}</span><span class="fam-rel">${esc(x.m.rel)}</span></div>`).join('') : ''));
+    return;
+  }
+  const { m, d } = hit, sub = m.sub, now = Date.now(), dir = gateDirNow();
+  const st = memStatus(d), pr = presence.get(sub), email = (auth.currentUser || {}).email || '';
+  let level = 'ok', note = '', record = true, anomaly = '', title = dir === 'in' ? '✅ تم تسجيل الدخول' : '✅ تم تسجيل الخروج';
+
+  if (now - (lastScan.get(sub) || 0) < SCAN_COOLDOWN) {
+    beep('warn'); record = false; level = 'warn'; title = '⏱ تم مسح الكارت للتو';
+    note = 'اتجاهل المسح المكرر.';
+  } else {
+    lastScan.set(sub, now);
+    if (dir === 'in' && BLOCK_EXPIRED && st === 'منتهي') { level = 'bad'; record = false; title = '⛔ ممنوع الدخول'; note = 'العضوية منتهية — لم يتم تسجيل الدخول'; }
+    else {
+      if (st === 'منتهي') { level = 'warn'; note = 'العضوية منتهية'; }
+      else if (st === 'ينتهي قريبًا') { level = 'warn'; note = 'العضوية قاربت على الانتهاء'; }
+      if (dir === 'in' && pr && pr.inside) { level = 'warn'; anomaly = 'double-in'; note = (note ? note + ' — ' : '') + 'مسجل دخول بالفعل منذ ' + hhmm(recTime(pr)); }
+      if (dir === 'out' && !(pr && pr.inside)) { level = 'warn'; anomaly = 'out-without-in'; note = (note ? note + ' — ' : '') + 'مفيش دخول مسجل قبل كده'; }
+    }
+    beep(level);
+    if (record) {
+      const wb = writeBatch(db);
+      wb.set(doc(db, 'presence', sub), { inside: dir === 'in', at: serverTimestamp(), name: m.name, fam: d.code, by: email });
+      wb.set(doc(collection(db, 'gate')), { sub, fam: d.code, name: m.name, rel: m.rel, dir, day: ymd(new Date()), at: serverTimestamp(), by: email, ...(anomaly ? { anomaly } : {}) });
+      wb.commit().catch(err => toast('❌ الحركة مااتسجلتش على السيرفر (' + (err.code || '') + ')', false, 12000));
+    }
+  }
+  const insideNow = s2 => s2 === sub && record ? dir === 'in' : !!(presence.get(s2) || {}).inside;
+  const fam = (d.members || []).map(x => {
+    const ins = insideNow(x.sub);
+    return `<div class="fam-row"><img class="av" data-ph="${esc(x.sub)}" src="${NO_PHOTO}" alt=""><span class="badge">${esc(x.sub)}</span><span>${esc(x.name)}${x.sub === sub ? ' ⬅' : ''}</span><span class="fam-rel">${esc(x.rel)}${x.games ? ' · ⚽ ' + esc(x.games) : ''}</span><span class="st st-${ins ? 'ok' : 'na'}">${ins ? 'جوه' : 'بره'}</span></div>`;
+  }).join('');
+  gateShow(level, title,
+    `<div class="g-main"><img data-ph="${esc(sub)}" src="${NO_PHOTO}" alt=""><div><div class="g-t" style="font-size:24px">${esc(m.name)}</div>
+     <div class="hint">${esc(m.rel)} · كود <b dir="ltr">${esc(sub)}</b></div>
+     <div style="margin-top:6px"><span class="st st-${ST_CLS[st]}">${st}</span> <span class="hint">انتهاء: ${esc(d.expiryDate || '—')}</span></div>
+     ${m.games ? `<div class="hint" style="margin-top:4px">⚽ ${esc(m.games)}</div>` : ''}
+     ${note ? `<div style="margin-top:8px;font-weight:700">${esc(note)}</div>` : ''}</div></div>
+     <div class="hint" style="margin-bottom:4px">أفراد الأسرة (${(d.members || []).length})</div>${fam}`);
+}
+async function resetPresence() {
+  if (!isAdmin) return;
+  const ins = [...presence.entries()].filter(([, p]) => p.inside);
+  if (!ins.length) { toast('مفيش حد جوه', false); return; }
+  if (!confirm('تسجيل خروج لعدد ' + ins.length + ' فرد؟')) return;
+  try {
+    for (let i = 0; i < ins.length; i += 400) {
+      const wb = writeBatch(db);
+      ins.slice(i, i + 400).forEach(([sub, p]) => wb.set(doc(db, 'presence', sub), { ...p, inside: false, at: serverTimestamp() }));
+      await wb.commit();
+    }
+    logAudit('تصفير الموجودين', '—', ins.length + ' فرد');
+    toast('✅ تم تسجيل خروج ' + ins.length + ' فرد');
+  } catch (e) { toast('❌ فشل التصفير (' + (e.code || e.message) + ')', false); }
+}
+$('gateMode').addEventListener('keydown', e => {
+  if (e.target.id === 'gScan' && e.key === 'Enter') { e.preventDefault(); const v = e.target.value; e.target.value = ''; onScan(v); }
+});
+$('gateMode').addEventListener('change', e => { if (e.target.id === 'gDir') { renderGateStats(); $('gScan').focus(); } });
+$('gateMode').addEventListener('click', e => {
+  const p = e.target.closest('[data-pick]');
+  if (p && !gateDir) { onScan(p.dataset.pick); return; }
+  if (e.target.id === 'gReset') { resetPresence(); return; }
+  if (!e.target.closest('select,input,summary,button') && $('gScan')) $('gScan').focus();
+});
+
+/* ====== ترجمة (كتابة) الأسماء العربية بحروف إنجليزية ====== */
+const TR_RAW = 'محمد:Mohamed,أحمد:Ahmed,محمود:Mahmoud,مصطفى:Mostafa,علي:Ali,حسن:Hassan,حسين:Hussein,ابراهيم:Ibrahim,إبراهيم:Ibrahim,اسماعيل:Ismail,إسماعيل:Ismail,يوسف:Youssef,عمر:Omar,عمرو:Amr,عثمان:Osman,خالد:Khaled,طارق:Tarek,ياسر:Yasser,هشام:Hesham,هاني:Hany,وائل:Wael,إسلام:Islam,اسلام:Islam,كريم:Karim,زياد:Ziad,ياسين:Yassin,مروان:Marwan,مازن:Mazen,حازم:Hazem,سيف:Seif,سيد:Sayed,جمال:Gamal,عادل:Adel,سامي:Sami,سمير:Samir,سعيد:Said,سعد:Saad,صلاح:Salah,صبري:Sabry,رضا:Reda,رمضان:Ramadan,رأفت:Raafat,ربيع:Rabie,ممدوح:Mamdouh,مجدي:Magdy,ماجد:Maged,محسن:Mohsen,منصور:Mansour,نبيل:Nabil,نادر:Nader,ناصر:Nasser,وليد:Walid,وحيد:Waheed,أيمن:Ayman,إيهاب:Ihab,أشرف:Ashraf,أمير:Amir,أنس:Anas,أسامة:Osama,أيوب:Ayoub,باسم:Basem,بلال:Belal,تامر:Tamer,ثروت:Tharwat,جلال:Galal,جابر:Gaber,حمدي:Hamdy,حمزة:Hamza,حسام:Hossam,حاتم:Hatem,خليل:Khalil,رامي:Ramy,رائد:Raed,زكريا:Zakaria,زين:Zein,سليمان:Soliman,سلطان:Sultan,شريف:Sherif,شادي:Shady,شعبان:Shaaban,صالح:Saleh,طه:Taha,عاطف:Atef,عصام:Essam,عماد:Emad,عبدالله:Abdallah,عبدالرحمن:Abdelrahman,عبدالعزيز:Abdelaziz,عبدالفتاح:Abdelfattah,عبدالحميد:Abdelhamid,عبدالرحيم:Abdelrahim,عبدالمنعم:Abdelmoneim,عبدالحكيم:Abdelhakim,عبدالكريم:Abdelkarim,عبدالسلام:Abdelsalam,عبدالباسط:Abdelbasset,فتحي:Fathy,فريد:Farid,فؤاد:Fouad,فادي:Fady,فارس:Fares,قاسم:Kassem,كمال:Kamal,كامل:Kamel,لطفي:Lotfy,مؤمن:Moemen,معتز:Moataz,مدحت:Medhat,مراد:Morad,مسعد:Mosaad,مهند:Mohannad,مهدي:Mahdy,موسى:Moussa,نصر:Nasr,نور:Nour,هيثم:Haitham,هلال:Helal,يحيى:Yahya,يونس:Younis,آدم:Adam,حامد:Hamed,حمادة:Hamada,محروس:Mahrous,عوض:Awad,عيد:Eid,غريب:Ghareeb,مبروك:Mabrouk,متولي:Metwally,مرسي:Morsy,مختار:Mokhtar,هاشم:Hashem,ماهر:Maher,مالك:Malek,رشاد:Rashad,رشدي:Roshdy,عزت:Ezzat,عزام:Azzam,علاء:Alaa,سامح:Sameh,شهاب:Shehab,شوقي:Shawky,صفوت:Safwat,ضياء:Diaa,عباس:Abbas,عطية:Attia,عنتر:Antar,فهمي:Fahmy,قدري:Kadry,ياسر:Yasser,' +
+  'فاطمة:Fatma,عائشة:Aisha,مريم:Mariam,سارة:Sara,سلمى:Salma,منى:Mona,هدى:Hoda,هبة:Heba,هناء:Hanaa,ندى:Nada,نهى:Noha,نجلاء:Naglaa,نيرة:Nayera,ياسمين:Yasmin,يارا:Yara,ريم:Reem,رنا:Rana,رانيا:Rania,رحمة:Rahma,رضوى:Radwa,دعاء:Doaa,داليا:Dalia,دينا:Dina,شيماء:Shaimaa,شهد:Shahd,شروق:Shorouk,سمر:Samar,سهير:Soheir,سعاد:Soad,سلوى:Salwa,سناء:Sanaa,سمية:Somaya,أسماء:Asmaa,آية:Aya,ايه:Aya,إيمان:Eman,أميرة:Amira,أمل:Amal,أمينة:Amina,آلاء:Alaa,علا:Ola,علياء:Aliaa,عبير:Abeer,عفاف:Afaf,عزة:Azza,غادة:Ghada,فرح:Farah,فاتن:Faten,كريمة:Karima,لمياء:Lamia,ليلى:Layla,لينا:Lina,لبنى:Lobna,مروة:Marwa,ميار:Mayar,مي:May,منال:Manal,ماجدة:Magda,ملك:Malak,نادية:Nadia,نرمين:Nermeen,نورهان:Nourhan,نوران:Nouran,هالة:Hala,هاجر:Hagar,هند:Hend,وفاء:Wafaa,ولاء:Walaa,زينب:Zeinab,جميلة:Gamila,جيهان:Gehan,جنى:Jana,حنان:Hanan,حبيبة:Habiba,خديجة:Khadija,خلود:Kholoud,تسنيم:Tasneem,بسمة:Basma,بسنت:Besant,سلسبيل:Salsabil,سوسن:Sawsan,صفاء:Safaa,ضحى:Doha,لارا:Lara,مها:Maha,مايا:Maya,بتول:Batoul,إسراء:Esraa,رشا:Rasha,ريهام:Reham,إنجي:Engy,إيناس:Enas,مرفت:Mervat,نعمة:Nema,' +
+  'رحمن:Rahman,رحيم:Rahim,عزيز:Aziz,فتاح:Fattah,حميد:Hamid,منعم:Moneim,حكيم:Hakim,سلام:Salam,باسط:Basset,غني:Ghany,قادر:Kader,ستار:Sattar,جواد:Gawad,وهاب:Wahab,رازق:Razek,مجيد:Magid,هادي:Hady,معطي:Moaty,رؤوف:Raouf,حليم:Halim,لطيف:Latif,خالق:Khaleq,صبور:Sabour,ودود:Wadoud,شافي:Shafy,بديع:Badie,سميع:Samie,بصير:Basir,حفيظ:Hafez,' +
+  'رياض:Riad,قنديل:Kandil,بكر:Bakr,صديق:Sadek,وسام:Wesam,زغلول:Zaghloul,شاذلي:Shazly,ابو:Abu,أبو:Abu,ام:Om,أم:Om,بن:Ben,ابن:Ibn,الدين:El Din,الله:Allah';
+const trNorm = w => w.replace(/[ً-ٰٟـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي').replace(/ة/g, 'ه');
+const TR_D = {};
+TR_RAW.split(',').forEach(p => { const i = p.indexOf(':'); if (i > 0) TR_D[trNorm(p.slice(0, i))] = p.slice(i + 1); });
+const TR_L = { ب: 'b', ت: 't', ث: 's', ج: 'g', ح: 'h', خ: 'kh', د: 'd', ذ: 'z', ر: 'r', ز: 'z', س: 's', ش: 'sh', ص: 's', ض: 'd', ط: 't', ظ: 'z', غ: 'gh', ف: 'f', ق: 'k', ك: 'k', ل: 'l', م: 'm', ن: 'n', ه: 'h' };
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+// ترجمة تقريبية للكلمات اللي مش في القاموس (حرف بحرف مع إضافة حروف العلة)
+function trFB(w) {
+  let out = '', prevC = false;
+  const ch = [...w];
+  ch.forEach((c, i) => {
+    const last = i === ch.length - 1;
+    if (c === 'ه' && last && i > 0) { out += 'a'; prevC = false; }
+    else if (TR_L[c]) { if (prevC) out += 'a'; out += TR_L[c]; prevC = true; }
+    else if (c === 'ا') { out += 'a'; prevC = false; }
+    else if (c === 'ع') { out += 'a'; prevC = false; }
+    else if (c === 'و') { out += i === 0 ? 'w' : 'o'; prevC = i === 0; }
+    else if (c === 'ي') { out += i === 0 ? 'y' : ch[i + 1] === 'ا' ? 'i' : 'e'; prevC = i === 0; }
+    else if (/[a-z0-9]/i.test(c)) { out += c; prevC = false; }
+  });
+  return cap(out);
+}
+function trWord(raw) {
+  const w = trNorm(raw);
+  if (!w) return '';
+  if (TR_D[w]) return TR_D[w];
+  if (w.length > 3 && w.startsWith('ال')) { const r = w.slice(2); return 'El ' + (TR_D[r] || trFB(r)); }
+  if (w.length > 4 && w.startsWith('عبد')) { let r = w.slice(3); if (r.startsWith('ال')) r = r.slice(2); return 'Abdel' + (TR_D[r] || trFB(r)).toLowerCase(); }
+  return trFB(w);
+}
+function trName(name) {
+  const ws = String(name || '').replace(/[()،,\-]/g, ' ').trim().split(/\s+/).filter(Boolean), out = [];
+  for (let i = 0; i < ws.length; i++) {
+    if (trNorm(ws[i]) === 'عبد' && ws[i + 1]) {          // "عبد الرحمن" → Abdelrahman
+      const nx = ws[++i], joined = trNorm('عبد' + nx);
+      let r = trNorm(nx); if (r.startsWith('ال') && r.length > 3) r = r.slice(2);
+      out.push(TR_D[joined] || 'Abdel' + (TR_D[r] || trFB(r)).toLowerCase());
+    } else out.push(trWord(ws[i]));
+  }
+  return out.join(' ').replace(/\s+/g, ' ').trim();
+}
+const enName = m => (m.nameEn && String(m.nameEn).trim()) || (CFG.autoEn ? trName(m.name) : '');
+
+/* ====== تخصيص الكارت (بيتحفظ على الجهاز) ====== */
+const CFG_KEY = 'g1CardCfgV1';
+const CFG_DEF = {
+  showAr: true, showEn: true, autoEn: true, showPhoto: true, showBar: true, showSign: true,
+  barSize: 's', dateFmt: 'ymd', side: 'r', textAlign: 'r', fontScale: 100, arSize: 100, arAlign: '', enSize: 100, enAlign: '',
+  photoScale: 100, photoX: 0, photoY: 0, photoZoom: 100, photoFocus: 50, photoFit: 'cover', photoRound: false, sign1: 'رئيس مجلس الادارة', sign2: 'أ/محمد محمد',
+  rows: [{ on: true, label: 'رقم المشترك', field: 'sub', text: '', size: 100, align: '' }, { on: true, label: 'تاريخ الانتهاء', field: 'exp', text: '', size: 100, align: '' }]
+};
+const cloneDef = () => ({ ...CFG_DEF, rows: CFG_DEF.rows.map(r => ({ ...r })) });
+function loadCfg() {
+  try {
+    const s = JSON.parse(localStorage.getItem(CFG_KEY) || 'null');
+    if (s && typeof s === 'object') return { ...cloneDef(), ...s, rows: Array.isArray(s.rows) ? s.rows : cloneDef().rows };
+  } catch (e) { /* تجاهل */ }
+  return cloneDef();
+}
+let CFG = loadCfg();
+const saveCfg = () => { try { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); } catch (e) { /* تجاهل */ } };
+// الحقول اللي ينفع تتحط في الكارت: [المفتاح، الاسم، رقمي؟]
+const CF = [['sub', 'كود العضو', 1], ['fam', 'كود الأسرة', 1], ['exp', 'تاريخ الانتهاء', 1], ['join', 'تاريخ الاشتراك', 1], ['status', 'حالة العضوية', 0],
+  ['rel', 'الصلة', 0], ['phone', 'التليفون', 1], ['nid', 'الرقم القومي', 1], ['age', 'السن', 1], ['gender', 'النوع', 0],
+  ['job', 'المهنة', 0], ['qual', 'المؤهل', 0], ['nat', 'الجنسية', 0], ['addr', 'العنوان', 0], ['games', 'الألعاب', 0], ['nameEn', 'الاسم بالإنجليزي', 0], ['text', '✏️ نص ثابت', 0]];
+const CF_NUM = new Set(CF.filter(x => x[2]).map(x => x[0]));
+const fmtDate = e => {
+  const mt = String(e || '').match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (!mt) return String(e || '');
+  return CFG.dateFmt === 'dmy' ? (+mt[3]) + '\\' + (+mt[2]) + '\\' + mt[1] : mt[1] + '\\' + (+mt[2]) + '\\' + (+mt[3]);
+};
+function fieldVal(r, m, d) {
+  let v = '';
+  switch (r.field) {
+    case 'sub': v = m.sub; break;
+    case 'fam': v = d.code; break;
+    case 'exp': v = d.expiryDate ? fmtDate(d.expiryDate) : ''; break;
+    case 'join': v = d.memberDate ? fmtDate(d.memberDate) : ''; break;
+    case 'status': v = d.expiryDate ? memStatus(d) : ''; break;
+    case 'age': { const p = parseNid(m.nid || ''); v = p ? p.age : ''; break; }
+    case 'gender': { const p = parseNid(m.nid || ''); v = p ? p.gender : ''; break; }
+    case 'nameEn': v = enName(m); break;
+    case 'text': v = r.text || ''; break;
+    default: v = m[r.field] || '';
+  }
+  return String(v == null ? '' : v).trim();
+}
+function barcodeSvg(v) {
+  if (typeof JsBarcode === 'undefined') return '';
+  try {
+    const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    JsBarcode(s, String(v), { format: 'CODE128', displayValue: false, margin: 0, height: 60, width: 2, background: '#ffffff' });
+    s.setAttribute('preserveAspectRatio', 'none'); s.removeAttribute('width'); s.removeAttribute('height');
+    return s.outerHTML;
+  } catch (e) { return ''; }
+}
+const BAR = { s: [34, 9.2], m: [41, 11.8], l: [50, 14.5] };
+const TA = { r: 'right', c: 'center', l: 'left' };
+function cardHtml(m, d, photo) {
+  const c = CFG, nm = String(m.name || ''), en = c.showEn ? enName(m) : '';
+  const gs = (+c.fontScale || 100) / 100, flip = c.side === 'l';
+  const al = a => TA[a] || TA[c.textAlign] || 'right';
+  const lines = c.rows.filter(r => r.on).map(r => ({ r, v: fieldVal(r, m, d) })).filter(x => x.v);
+  const fs = c.showAr && nm ? Math.max(2.4, Math.min(4.9, 52 / (nm.length * 0.52))) : 0;
+  const fe = en ? Math.max(2.2, Math.min(4.5, 52 / (en.length * 0.56))) : 0;
+  const avail = 31 - (fs ? fs * 1.3 : 0) - (fe ? fe * 1.25 + 0.8 : 0) - (lines.length ? 2.2 : 0);
+  const lfs = lines.length ? Math.max(1.9, Math.min(3.1, avail / (lines.length * 1.95))) : 0;
+  const lineHtml = lines.map((x, i) => {
+    const lab = x.r.label ? esc(x.r.label) + ': ' : '';
+    const val = CF_NUM.has(x.r.field) ? `<span class="num">${esc(x.v)}</span>` : esc(x.v);
+    const sz = lfs * gs * ((+x.r.size || 100) / 100);
+    return `<div class="idc-line" style="font-size:${sz.toFixed(2)}cqw;text-align:${al(x.r.align)};margin-top:${i === 0 ? 2.2 : (lfs * 0.7).toFixed(2)}cqw">${lab}${val}</div>`;
+  }).join('');
+  const [bw0, bh] = BAR[c.barSize] || BAR.s, bw = Math.max(bw0, Math.min(58, 6 + String(m.sub).length * 4.5));
+  const bar = c.showBar ? barcodeSvg(m.sub) : '';
+  const sign = c.showSign && (c.sign1 || c.sign2) ? `<div class="idc-sign">${c.sign1 ? `<div>${esc(c.sign1)}</div>` : ''}${c.sign2 ? `<div>${esc(c.sign2)}</div>` : ''}</div>` : '';
+  // الصورة: الحجم والمكان والتقريب داخل الإطار
+  const ps = (+c.photoScale || 100) / 100, pw = 28.9 * ps, ph = 50.19 * ps;
+  const ptop = 21.97 + (50.19 - ph) / 2 + (+c.photoY || 0), poff = 6.86 + (28.9 - pw) / 2 + (flip ? -(+c.photoX || 0) : (+c.photoX || 0));
+  const pst = `${flip ? 'right' : 'left'}:${poff.toFixed(2)}%;top:${ptop.toFixed(2)}%;width:${pw.toFixed(2)}%;height:${ph.toFixed(2)}%${c.photoRound ? ';border-radius:4cqw' : ''}`;
+  const pim = `object-fit:${c.photoFit === 'contain' ? 'contain' : 'cover'};object-position:50% ${+c.photoFocus || 50}%;transform:scale(${((+c.photoZoom || 100) / 100).toFixed(2)})`;
+  return `<div class="idc"><div class="idc-in${flip ? ' flip' : ''}"><img class="idc-bgi" src="card-bg.jpg" alt="" onerror="this.remove()">
+    ${c.showPhoto ? `<div class="idc-photo" style="${pst}"><img src="${photo || NO_PHOTO}" style="${pim}" alt=""></div>` : ''}
+    <img class="idc-logo" src="card-logo.svg" alt="" onerror="this.onerror=null;this.src='logo.png';this.style.filter='brightness(0) invert(1)';this.style.objectFit='contain'">
+    <div class="idc-info">${fs ? `<div class="idc-name" style="font-size:${(fs * gs * (+c.arSize || 100) / 100).toFixed(2)}cqw;text-align:${al(c.arAlign)}">${esc(nm)}</div>` : ''}${fe ? `<div class="idc-en" style="font-size:${(fe * gs * (+c.enSize || 100) / 100).toFixed(2)}cqw;text-align:${al(c.enAlign)}">${esc(en)}</div>` : ''}${lineHtml}</div>
+    ${sign}${bar ? `<div class="idc-bar" style="width:${bw.toFixed(1)}%;height:${bh}%">${bar}</div>` : ''}</div></div>`;
+}
+
+/* ====== واجهة تبويب الكروت ====== */
+const SAMPLE = { sample: true, m: { sub: '0101010', name: 'محمد محمود', rel: 'عضو', phone: '01000000000', nid: '', job: 'مهندس', games: 'سباحة' }, d: { code: '0101010', expiryDate: '2030-01-01', memberDate: '2026-01-01' } };
+const ALN_OPTS = inh => (inh ? '<option value="">زي العام</option>' : '') + '<option value="r">يمين</option><option value="c">وسط</option><option value="l">شمال</option>';
+const CFG_NUM = new Set(['fontScale', 'arSize', 'enSize', 'photoScale', 'photoX', 'photoY', 'photoZoom', 'photoFocus']);
+const RV_FMT = { fontScale: v => v + '%', photoScale: v => v + '%', photoZoom: v => v + '%', photoX: v => v, photoY: v => v, photoFocus: v => v + '%' };
+function syncCfgUi() {
+  document.querySelectorAll('#idsMode [data-cfg]').forEach(el => { const k = el.dataset.cfg; if (el.type === 'checkbox') el.checked = !!CFG[k]; else el.value = CFG[k]; });
+  document.querySelectorAll('#idsMode [data-for]').forEach(el => { const k = el.dataset.for; el.textContent = (RV_FMT[k] || (v => v))(CFG[k]); });
+}
+let idCur = null, enPage = 0;
+const EN_PER = 20;
+const redrawCard = (() => { let t; return () => { clearTimeout(t); t = setTimeout(drawIdCard, 120); }; })();
+function renderIds() {
+  if ($('idQ')) { drawIdCard(); renderEnList(); return; }
+  const chk = (k, t) => `<label><input type="checkbox" data-cfg="${k}"${CFG[k] ? ' checked' : ''}> ${t}</label>`;
+  $('idsMode').innerHTML = `<div class="id-layout">
+  <div>
+    <div class="sec"><h2>🪪 كارت العضو (الوش)</h2>
+      <div class="find-row"><input type="text" id="idQ" autocomplete="off" placeholder="ابحث بالكود أو الاسم أو الرقم القومي أو التليفون"><button type="button" class="btn-sm" id="idFind">بحث</button></div>
+      <div id="idRes" class="id-res"></div>
+      <div id="idCardBox" style="margin-top:14px"></div>
+      <div class="hint" id="idWho" style="text-align:center;margin-top:8px"></div></div>
+    <div class="sec"><h2>🖨 الطباعة وحفظ PDF</h2>
+      <div class="field"><label>شكل الصفحة</label><select id="idLayout">
+        <option value="card">كل كارت في صفحة لوحده بمقاس الكارت (86×54 مم)</option>
+        <option value="a4one">كل كارت في صفحة A4 كاملة</option>
+        <option value="a4grid">8 كروت في صفحة A4 (للقص)</option></select></div>
+      <div class="grid"><button type="button" id="idPrint1">📄 طباعة / PDF للكارت ده</button><button type="button" class="btn-outline" id="idPrintFam">👪 كروت الأسرة</button></div>
+      <div class="field" style="margin-top:16px"><label>طباعة جماعية — النطاق</label><select id="idScope"><option value="all">كل الأفراد</option><option value="main">الأعضاء الأساسيين فقط</option><option value="photo">اللي ليهم صور فقط</option></select></div>
+      <button type="button" id="idPrintAll">🖨 طباعة / PDF للمجموعة</button>
+      <div class="hint" style="margin-top:8px">هتفتح نافذة الطباعة: اختار <b>Save as PDF</b> عشان تحفظ ملف، وفعّل <b>Background graphics</b> عشان الألوان تظهر. اسم الملف بيتسمّى باسم العضو تلقائيًا.</div></div>
+  </div>
+  <div>
+    <details class="sec" open id="idCfgBox"><summary>🎨 تخصيص الكارت</summary>
+      <div class="cfg-chk">${chk('showAr', 'الاسم بالعربي')}${chk('showEn', 'الاسم بالإنجليزي')}${chk('autoEn', 'ترجمة تلقائية للي ملوش اسم إنجليزي')}${chk('showPhoto', 'الصورة')}${chk('showBar', 'الباركود')}${chk('showSign', 'توقيع رئيس المجلس (أسفل يسار)')}</div>
+      <div class="cfg-h" style="border-top:none;margin-top:0;padding-top:0">📐 مكان الكلام والخط</div>
+      <div class="grid"><div class="field"><label>مكان الكلام على الكارت</label><select data-cfg="side"><option value="r">يمين (الصورة شمال)</option><option value="l">شمال (الصورة يمين)</option></select></div>
+        <div class="field"><label>محاذاة النص (للكل)</label><select data-cfg="textAlign">${ALN_OPTS(false)}</select></div></div>
+      <div class="field"><label>حجم الخط العام <span class="rv" data-for="fontScale"></span></label><input type="range" class="cfg-rng" data-cfg="fontScale" min="60" max="140" step="5"></div>
+      <div class="grid"><div class="field"><label>الاسم العربي — الحجم % والمحاذاة</label><div class="cfg-2"><input type="number" data-cfg="arSize" min="40" max="250" step="5"><select data-cfg="arAlign">${ALN_OPTS(true)}</select></div></div>
+        <div class="field"><label>الاسم الإنجليزي — الحجم % والمحاذاة</label><div class="cfg-2"><input type="number" data-cfg="enSize" min="40" max="250" step="5"><select data-cfg="enAlign">${ALN_OPTS(true)}</select></div></div></div>
+      <div class="cfg-h">🖼 الصورة</div>
+      <div class="grid"><div class="field"><label>حجم الصورة <span class="rv" data-for="photoScale"></span></label><input type="range" class="cfg-rng" data-cfg="photoScale" min="50" max="140" step="2"></div>
+        <div class="field"><label>تقريب الصورة داخل الإطار <span class="rv" data-for="photoZoom"></span></label><input type="range" class="cfg-rng" data-cfg="photoZoom" min="100" max="250" step="5"></div>
+        <div class="field"><label>تحريك أفقي (يمين +) <span class="rv" data-for="photoX"></span></label><input type="range" class="cfg-rng" data-cfg="photoX" min="-25" max="25" step="0.5"></div>
+        <div class="field"><label>تحريك رأسي (لتحت +) <span class="rv" data-for="photoY"></span></label><input type="range" class="cfg-rng" data-cfg="photoY" min="-20" max="20" step="0.5"></div>
+        <div class="field"><label>مكان الوش داخل الإطار <span class="rv" data-for="photoFocus"></span></label><input type="range" class="cfg-rng" data-cfg="photoFocus" min="0" max="100" step="5"></div>
+        <div class="field"><label>ملء الإطار</label><select data-cfg="photoFit"><option value="cover">تعبئة كاملة (قص الزايد)</option><option value="contain">الصورة كاملة بدون قص</option></select></div></div>
+      <div class="cfg-chk">${chk('photoRound', 'حواف الصورة دائرية')}</div>
+      <div class="cfg-h">🔖 باقي العناصر</div>
+      <div class="grid"><div class="field"><label>حجم الباركود</label><select data-cfg="barSize"><option value="s">صغير</option><option value="m">متوسط</option><option value="l">كبير</option></select></div>
+        <div class="field"><label>شكل التاريخ</label><select data-cfg="dateFmt"><option value="ymd">سنة\\شهر\\يوم (زي التصميم)</option><option value="dmy">يوم\\شهر\\سنة</option></select></div></div>
+      <div class="grid"><div class="field"><label>سطر التوقيع الأول</label><input type="text" data-cfg="sign1" value="${esc(CFG.sign1)}"></div>
+        <div class="field"><label>سطر التوقيع الثاني</label><input type="text" data-cfg="sign2" value="${esc(CFG.sign2)}"></div></div>
+      <label>الحقول تحت الاسم (بالترتيب)</label>
+      <div id="cfgRows"></div>
+      <div class="grid"><button type="button" class="btn-outline" id="cfgAdd">➕ إضافة حقل</button><button type="button" class="btn-outline" id="cfgReset">↺ رجوع للافتراضي</button></div>
+      <div class="hint" style="margin-top:8px">التخصيص بيتحفظ على الجهاز اللي بتطبع منه. الحقل ممكن يكون من بيانات العضو أو "نص ثابت" (زي: مشترك سنوي). لو سبت العنوان فاضي بيظهر الحقل من غير عنوان. الأحسن ما يزيدش عن 4–5 حقول.</div>
+    </details>
+    <details class="sec" id="idEnBox"><summary>🔤 الأسماء الإنجليزية</summary>
+      <div class="hint" style="margin-bottom:10px">الاسم المقترح تلقائي (كتابة حروف الاسم العربي بالإنجليزي) وممكن يحتاج تعديل، خصوصًا الأسماء النادرة. الخانات الصفراء مقترحة ولسه ماتحفظتش.</div>
+      <div class="find-row"><input type="text" id="enQ" autocomplete="off" placeholder="بحث بالاسم أو الكود"><select id="enFilter" style="width:auto"><option value="miss">الناقص فقط</option><option value="all">الكل</option></select></div>
+      <div id="enList" style="margin-top:10px"></div>
+      <div class="en-nav"><button type="button" class="btn-outline" id="enPrev">السابق ▶</button><span id="enPg" class="hint"></span><button type="button" class="btn-outline" id="enNext">◀ التالي</button></div>
+      <div class="grid"><button type="button" id="enSavePg">💾 حفظ الصفحة دي</button><button type="button" class="btn-outline" id="enSaveAll">💾 حفظ المقترح لكل الناقص</button></div>
+    </details>
+  </div></div>`;
+  syncCfgUi();
+  renderCfgRows(); renderEnList(); drawIdCard();
+}
+function renderCfgRows() {
+  const opts = sel => CF.map(f => `<option value="${f[0]}"${f[0] === sel ? ' selected' : ''}>${f[1]}</option>`).join('');
+  $('cfgRows').innerHTML = CFG.rows.map((r, i) => `<div class="cfg-row" data-i="${i}">
+    <input type="checkbox" data-rowf="on"${r.on ? ' checked' : ''} title="إظهار">
+    <input type="text" data-rowf="label" value="${esc(r.label)}" placeholder="العنوان (اختياري)">
+    <select data-rowf="field">${opts(r.field)}</select>
+    <button type="button" class="btn-outline" data-rowact="up" title="لفوق">↑</button><button type="button" class="btn-outline" data-rowact="down" title="لتحت">↓</button><button type="button" class="rm" data-rowact="del" title="حذف">✕</button>
+    <div class="cfg-sub"><span>الحجم %</span><input type="number" data-rowf="size" value="${+r.size || 100}" min="40" max="250" step="5"><select data-rowf="align">${ALN_OPTS(true).replace('value="' + (r.align || '') + '"', 'value="' + (r.align || '') + '" selected')}</select></div>
+    ${r.field === 'text' ? `<input type="text" class="cfg-txt" data-rowf="text" value="${esc(r.text || '')}" placeholder="اكتب النص اللي هيظهر">` : ''}</div>`).join('') || '<div class="hint">مفيش حقول — اضغط إضافة حقل</div>';
+}
+async function drawIdCard() {
+  if (!$('idCardBox')) return;
+  const cur = idCur || SAMPLE;
+  const ph = cur.sample ? '' : await getPhoto(cur.m.sub);
+  $('idCardBox').innerHTML = `<div class="idw" style="max-width:560px;margin:0 auto">${cardHtml(cur.m, cur.d, ph)}</div>`;
+  $('idWho').textContent = cur.sample ? 'نموذج للمعاينة — ابحث عن عضو عشان يظهر كارته' : cur.m.name + ' — ' + cur.m.sub + ' (' + (cur.d.members || []).length + ' فرد في الأسرة)';
+  $('idPrint1').disabled = !!cur.sample;
+  $('idPrintFam').disabled = !!cur.sample;
+  $('idPrintFam').textContent = cur.sample ? '👪 كروت الأسرة' : '👪 كروت الأسرة (' + (cur.d.members || []).length + ')';
+}
+async function showIdCard(sub) {
+  const hit = findMember(sub); if (!hit) return;
+  idCur = hit; $('idRes').innerHTML = '';
+  await drawIdCard();
+}
+function idSearch() {
+  const q = $('idQ').value.trim(); if (!q) return;
+  const exact = findMember(toLatinDigits(q).replace(/\s/g, ''));
+  if (exact) { showIdCard(exact.m.sub); return; }
+  const r = searchPeople(q);
+  $('idRes').innerHTML = r.length ? r.map(x => `<div class="fam-row" data-idsub="${esc(x.m.sub)}"><span class="badge">${esc(x.m.sub)}</span><span>${esc(x.m.name)}</span><span class="fam-rel">${esc(x.m.rel)}</span></div>`).join('') : '<div class="hint">مفيش نتيجة</div>';
+}
+
+/* ====== الأسماء الإنجليزية: مراجعة وحفظ ====== */
+function enAll() {
+  const q = ($('enQ').value || '').trim(), miss = $('enFilter').value === 'miss', out = [];
+  [...allFams.values()].sort(sortCode).forEach(d => (d.members || []).forEach(m => {
+    if (miss && m.nameEn) return;
+    if (q && !(norm(m.name).includes(norm(q)) || String(m.sub).toUpperCase().includes(q.toUpperCase()))) return;
+    out.push({ m, d });
+  }));
+  return out;
+}
+function renderEnList() {
+  if (!$('enList')) return;
+  const all = enAll(), pages = Math.max(1, Math.ceil(all.length / EN_PER));
+  enPage = Math.min(enPage, pages - 1);
+  $('enList').innerHTML = all.slice(enPage * EN_PER, (enPage + 1) * EN_PER).map(x => `<div class="en-row"><span class="badge">${esc(x.m.sub)}</span><span>${esc(x.m.name)}</span>
+    <input type="text" data-ensub="${esc(x.m.sub)}" data-enfam="${esc(x.d.code)}" data-orig="${esc(x.m.nameEn || '')}" value="${esc(x.m.nameEn || trName(x.m.name))}" class="${x.m.nameEn ? '' : 'sug'}"></div>`).join('') || '<div class="hint">مفيش أسماء ناقصة 🎉</div>';
+  $('enPg').textContent = 'صفحة ' + (enPage + 1) + ' من ' + pages + ' — ' + all.length + ' اسم';
+  $('enSaveAll').textContent = '💾 حفظ المقترح لكل الناقص (' + enAll.missCount() + ')';
+}
+enAll.missCount = () => { let n = 0; allFams.forEach(d => (d.members || []).forEach(m => { if (!m.nameEn && trName(m.name)) n++; })); return n; };
+async function saveEnNames(entries) {
+  if (!isAdmin) return;
+  if (!entries.length) { toast('مفيش تغييرات للحفظ', false); return; }
+  const byFam = new Map();
+  entries.forEach(x => { if (!byFam.has(x.fam)) byFam.set(x.fam, new Map()); byFam.get(x.fam).set(x.sub, x.val); });
+  try {
+    const codes = [...byFam.keys()];
+    for (let i = 0; i < codes.length; i += 300) {
+      const wb = writeBatch(db);
+      codes.slice(i, i + 300).forEach(code => {
+        const d = allFams.get(code) || [...allFams.values()].find(f => f.code === code); if (!d) return;
+        const map = byFam.get(code);
+        wb.update(FAM(d.code), { members: (d.members || []).map(x => map.has(x.sub) ? { ...x, nameEn: map.get(x.sub) } : x), updatedAt: serverTimestamp() });
+      });
+      await wb.commit();
+    }
+    logAudit('أسماء إنجليزية', '—', entries.length + ' اسم');
+    toast('✅ اتحفظ ' + entries.length + ' اسم إنجليزي');
+    renderEnList(); drawIdCard();
+  } catch (e) { toast('❌ فشل الحفظ (' + (e.code || e.message) + ')', false, 10000); }
+}
+
+/* ====== الطباعة / PDF ====== */
+const PAGE_CSS = {
+  card: '@page{size:86mm 54mm;margin:0;@bottom-center{content:none}} #printArea .idpages{display:block} #printArea .idw{width:86mm;height:54mm;overflow:hidden;break-after:page;page-break-after:always} #printArea .idw:last-child{break-after:auto;page-break-after:auto}',
+  a4one: '@page{size:A4;margin:0;@bottom-center{content:none}} #printArea .idpages{display:block} #printArea .idw{width:210mm;height:296mm;display:flex;align-items:center;justify-content:center;break-after:page;page-break-after:always} #printArea .idw:last-child{break-after:auto;page-break-after:auto} #printArea .idc{width:190mm}',
+  a4grid: '@page{size:A4;margin:12mm;@bottom-center{content:none}} #printArea .idpages{grid-template-columns:repeat(2,86mm)} #printArea .idw{width:86mm;break-inside:avoid}'
+};
+async function printCards(list, title) {
+  if (!list.length) { toast('مفيش كروت للطباعة', false); return; }
+  if (typeof JsBarcode === 'undefined' && CFG.showBar) toast('⚠ مكتبة الباركود مااتحمّلتش، الكروت هتطلع من غير باركود', false, 6000);
+  toast('جاري تجهيز ' + list.length + ' كارت...', true, 15000);
+  try { if (list.length > 6) await loadAllPhotos(); else await Promise.all(list.map(x => getPhoto(x.m.sub))); } catch (e) { /* نكمل من غير صور */ }
+  const layout = $('idLayout').value;
+  const st = document.createElement('style'); st.id = 'idPageStyle'; st.textContent = PAGE_CSS[layout] || PAGE_CSS.card;
+  document.head.appendChild(st);
+  $('printArea').innerHTML = '<div class="idpages">' + list.map(x => `<div class="idw">${cardHtml(x.m, x.d, photos.get(x.m.sub) || '')}</div>`).join('') + '</div>';
+  document.title = title || 'G1-cards-' + ymd(new Date());
+  window.addEventListener('afterprint', () => { document.title = baseTitle; $('printArea').innerHTML = ''; st.remove(); }, { once: true });
+  logAudit('طباعة كروت', '—', list.length + ' كارت');
+  setTimeout(() => window.print(), 500);
+}
+$('idsMode').addEventListener('click', e => {
+  const t = e.target, row = t.closest('[data-idsub]');
+  if (row) { showIdCard(row.dataset.idsub); return; }
+  const ra = t.closest('[data-rowact]');
+  if (ra) {
+    const i = +ra.closest('.cfg-row').dataset.i, a = ra.dataset.rowact, rows = CFG.rows;
+    if (a === 'del') rows.splice(i, 1);
+    else { const j = a === 'up' ? i - 1 : i + 1; if (j < 0 || j >= rows.length) return; [rows[i], rows[j]] = [rows[j], rows[i]]; }
+    saveCfg(); renderCfgRows(); drawIdCard(); return;
+  }
+  switch (t.id) {
+    case 'idFind': idSearch(); break;
+    case 'cfgAdd': CFG.rows.push({ on: true, label: '', field: 'phone', text: '', size: 100, align: '' }); saveCfg(); renderCfgRows(); drawIdCard(); break;
+    case 'cfgReset': if (confirm('رجوع كل إعدادات الكارت للافتراضي؟')) { CFG = cloneDef(); saveCfg(); $('idsMode').innerHTML = ''; renderIds(); } break;
+    case 'idPrint1': if (idCur && !idCur.sample) printCards([idCur], idCur.m.name + ' - ' + idCur.m.sub); break;
+    case 'idPrintFam': if (idCur && !idCur.sample) printCards((idCur.d.members || []).map(m => ({ m, d: idCur.d })), 'أسرة ' + idCur.d.code); break;
+    case 'idPrintAll': {
+      const scope = $('idScope').value, list = [];
+      [...allFams.values()].sort(sortCode).forEach(d => (d.members || []).forEach(m => { if (scope === 'main' && m.sub !== d.code) return; list.push({ m, d }); }));
+      (async () => {
+        let l = list;
+        if (scope === 'photo') { try { await loadAllPhotos(); } catch (er) { toast('❌ تعذر قراءة الصور', false); return; } l = list.filter(x => photoIds.has(x.m.sub)); }
+        if (l.length > 8 && !confirm('هيتم تجهيز ' + l.length + ' كارت للطباعة. متأكد؟')) return;
+        printCards(l);
+      })();
+      break;
+    }
+    case 'enPrev': if (enPage > 0) { enPage--; renderEnList(); } break;
+    case 'enNext': enPage++; renderEnList(); break;
+    case 'enSavePg': {
+      const ent = [...document.querySelectorAll('#enList input[data-ensub]')].map(i => ({ sub: i.dataset.ensub, fam: i.dataset.enfam, val: i.value.trim(), orig: i.dataset.orig }))
+        .filter(x => x.val && x.val !== x.orig);
+      saveEnNames(ent); break;
+    }
+    case 'enSaveAll': {
+      const ent = [];
+      allFams.forEach(d => (d.members || []).forEach(m => { if (!m.nameEn) { const v = trName(m.name); if (v) ent.push({ sub: m.sub, fam: d.code, val: v }); } }));
+      if (!ent.length) { toast('مفيش أسماء ناقصة', false); break; }
+      if (confirm('هيتم حفظ ' + ent.length + ' اسم إنجليزي مقترح لكل اللي ملهمش اسم. الأحسن تراجع الصفحات الأول. متأكد؟')) saveEnNames(ent);
+      break;
+    }
+  }
+});
+$('idsMode').addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.cfg) {
+    const k = t.dataset.cfg;
+    CFG[k] = t.type === 'checkbox' ? t.checked : CFG_NUM.has(k) ? (parseFloat(t.value) || (k === 'photoX' || k === 'photoY' ? 0 : 100)) : t.value;
+    const rv = document.querySelector('[data-for="' + k + '"]'); if (rv) rv.textContent = (RV_FMT[k] || (v => v))(CFG[k]);
+    saveCfg(); redrawCard();
+    if (t.dataset.cfg === 'autoEn') renderEnList();
+  } else if (t.dataset.rowf) {
+    const r = CFG.rows[+t.closest('.cfg-row').dataset.i]; if (!r) return;
+    r[t.dataset.rowf] = t.type === 'checkbox' ? t.checked : t.dataset.rowf === 'size' ? (parseFloat(t.value) || 100) : t.value;
+    saveCfg();
+    if (t.dataset.rowf === 'field') renderCfgRows();
+    redrawCard();
+  } else if (t.id === 'enQ' || t.id === 'enFilter') { enPage = 0; renderEnList(); }
+});
+$('idsMode').addEventListener('keydown', e => { if (e.target.id === 'idQ' && e.key === 'Enter') { e.preventDefault(); idSearch(); } });
 
 /* ====== إدارة الألعاب ====== */
 $('addGameBtn').addEventListener('click', addGame);
