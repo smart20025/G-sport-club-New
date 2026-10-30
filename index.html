@@ -2553,7 +2553,7 @@ function barcodeSvg(v) {
   if (typeof JsBarcode === 'undefined') return '';
   try {
     const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    JsBarcode(s, String(v), { format: 'CODE128', displayValue: false, margin: 0, height: 60, width: 2, background: '#ef4919' });
+    JsBarcode(s, String(v), { format: 'CODE128', displayValue: false, margin: 0, height: 60, width: 2, background: 'transparent' });
     s.setAttribute('preserveAspectRatio', 'none'); s.removeAttribute('width'); s.removeAttribute('height');
     return s.outerHTML;
   } catch (e) { return ''; }
