@@ -209,7 +209,7 @@ textarea{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12p
 .idc-line{font-weight:700;line-height:1.25}
 .idc-sign{right:69.35%;top:calc(86.2% - 2.1cqw);text-align:right;font-weight:700;font-size:2.8cqw;line-height:1.32;white-space:nowrap}
 .idc .num{direction:ltr;display:inline-block;unicode-bidi:isolate}
-.idc-bar{right:6%;bottom:4%;background:#fff;border-radius:1cqw;padding:.7cqw 1.8cqw;box-sizing:border-box}
+.idc-bar{right:6%;bottom:4%;border-radius:1cqw;padding:.7cqw 1.8cqw;box-sizing:border-box}
 .idc-bar svg{width:100%;height:100%;display:block}
 .idc-in.flip .idc-info{right:auto;left:6%}
 .idc-in.flip .idc-logo{left:5.7%}
@@ -2553,7 +2553,7 @@ function barcodeSvg(v) {
   if (typeof JsBarcode === 'undefined') return '';
   try {
     const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    JsBarcode(s, String(v), { format: 'CODE128', displayValue: false, margin: 0, height: 60, width: 2, background: '#ffffff' });
+    JsBarcode(s, String(v), { format: 'CODE128', displayValue: false, margin: 0, height: 60, width: 2, background: '#ef4919' });
     s.setAttribute('preserveAspectRatio', 'none'); s.removeAttribute('width'); s.removeAttribute('height');
     return s.outerHTML;
   } catch (e) { return ''; }
