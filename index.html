@@ -209,7 +209,7 @@ textarea{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12p
 .idc-line{font-weight:700;line-height:1.25}
 .idc-sign{right:69.35%;top:calc(86.2% - 2.1cqw);text-align:right;font-weight:700;font-size:2.8cqw;line-height:1.32;white-space:nowrap}
 .idc .num{direction:ltr;display:inline-block;unicode-bidi:isolate}
-.idc-bar{right:6%;bottom:4%;border-radius:1cqw;padding:.7cqw 1.8cqw;box-sizing:border-box}
+.idc-bar{right:6%;bottom:4%;background:#fff;border-radius:1cqw;padding:.7cqw 1.8cqw;box-sizing:border-box}
 .idc-bar svg{width:100%;height:100%;display:block}
 .idc-in.flip .idc-info{right:auto;left:6%}
 .idc-in.flip .idc-logo{left:5.7%}
@@ -282,6 +282,8 @@ body{align-items:flex-start;justify-content:center;padding:24px 16px}
 .gate-only .side .tabs{display:none}
 .gate-only .side-foot{margin:0;flex-direction:row;align-items:center;border:0;padding:0;text-align:start;flex:1;justify-content:space-between;gap:14px}
 .gate-only .page-head{display:none}
+.gr-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.gr-row{grid-template-columns:1fr}}
 .gate-only .side-foot button{width:auto;white-space:nowrap;padding:9px 18px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -2313,6 +2315,14 @@ function stopGate() {
   unsubPres = unsubGate = null; presence = new Map(); gateRecs = [];
   if ($('gateMode')) $('gateMode').innerHTML = '';
 }
+const GATE_ADMIN_PANEL = `<details class="sec games-box" id="gReports"><summary>📊 تقارير البوابة (أدمن)</summary>
+  <div class="gr-row"><div class="field"><label>من يوم</label><input type="date" id="gFrom"></div><div class="field"><label>إلى يوم</label><input type="date" id="gTo"></div></div>
+  <div class="chips" style="margin:0 0 14px"><button type="button" class="ic" data-gq="today">اليوم</button><button type="button" class="ic" data-gq="yest">أمس</button><button type="button" class="ic" data-gq="7">آخر 7 أيام</button><button type="button" class="ic" data-gq="30">آخر 30 يوم</button></div>
+  <div class="grid"><button type="button" id="gRpAtt">📄 كشف الحضور اليومي (PDF)</button><button type="button" class="btn-outline" id="gRpBusy">📈 الازدحام وأهدأ الأوقات (PDF)</button></div>
+  <div class="cfg-h">🗑 مسح السجلات (أدمن فقط)</div>
+  <div class="grid"><button type="button" class="rm" id="gDelRange" style="padding:12px">مسح سجلات الفترة المحددة</button><button type="button" class="rm" id="gDelAll" style="padding:12px">مسح كل سجلات البوابة</button></div>
+  <div class="hint" style="margin-top:8px">المسح بيحذف سجل الحركات بس (مش بيغيّر حالة "الموجودين الآن"). اطبع التقرير الأول لو عايز نسخة قبل المسح.</div>
+</details>`;
 function renderGate() {
   if (!$('gScan')) {
     $('gateMode').innerHTML = `
@@ -2324,7 +2334,9 @@ function renderGate() {
     <input type="text" id="gScan" autocomplete="off" placeholder="امسح الباركود هنا (أو اكتب الكود واضغط Enter)">
     <div class="g-res" id="gRes"><div class="hint">في انتظار مسح الكارت...</div></div>
     <details class="sec games-box" id="gInside"><summary>👥 الموجودين الآن (<span id="gInN">0</span>)</summary><div id="gInList"></div>${isAdmin ? '<button type="button" class="rm" id="gReset" style="margin-top:10px;padding:8px 14px">🔄 تصفير الموجودين (خروج الكل)</button>' : ''}</details>
-    <div class="sec"><h2>🕒 آخر الحركات اليوم</h2><div id="gRecent"></div></div>`;
+    <div class="sec"><h2>🕒 آخر الحركات اليوم</h2><div id="gRecent"></div></div>
+    ${isAdmin ? GATE_ADMIN_PANEL : ''}`;
+    if ($('gFrom')) $('gFrom').value = $('gTo').value = ymd(new Date());
   }
   renderGateStats();
   $('gScan').focus();
@@ -2455,8 +2467,160 @@ $('gateMode').addEventListener('click', e => {
   const p = e.target.closest('[data-pick]');
   if (p && !gateDir) { onScan(p.dataset.pick); return; }
   if (e.target.id === 'gReset') { resetPresence(); return; }
+  const gq = e.target.closest('[data-gq]');
+  if (gq && isAdmin) {
+    const a = new Date(), n = new Date(), k = gq.dataset.gq;
+    if (k === 'yest') { a.setDate(a.getDate() - 1); n.setTime(a.getTime()); }
+    else if (k === '7') a.setDate(a.getDate() - 6);
+    else if (k === '30') a.setDate(a.getDate() - 29);
+    $('gFrom').value = ymd(a); $('gTo').value = ymd(n); return;
+  }
+  if (isAdmin) {
+    const id = e.target.id;
+    if (id === 'gRpAtt') { gateAttReport(); return; }
+    if (id === 'gRpBusy') { gateBusyReport(); return; }
+    if (id === 'gDelRange') { gateDelete(false); return; }
+    if (id === 'gDelAll') { gateDelete(true); return; }
+  }
   if (!e.target.closest('select,input,summary,button') && $('gScan')) $('gScan').focus();
 });
+
+/* ====== تقارير البوابة (أدمن فقط) ====== */
+const AR_DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+const hr12 = h => (h % 12 || 12) + (h < 12 ? ' ص' : ' م');
+const hrRange = h => hr12(h) + ' – ' + hr12((h + 1) % 24);
+const fd = d => String(d).split('-').reverse().join('/');   // 29/10/2026 (بتتعرض صح في الصفحة العربية)
+const dayLabel = d => AR_DAYS[new Date(d + 'T12:00:00').getDay()] + ' ' + fd(d);
+const fmtDur = ms => { const m = Math.round(ms / 60000); return Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0'); };
+function gateRange() {
+  let f = $('gFrom').value || ymd(new Date()), t = $('gTo').value || f;
+  if (f > t) [f, t] = [t, f];
+  return { f, t };
+}
+async function fetchGate(f, t) {
+  const s = await getDocs(query(collection(db, 'gate'), where('day', '>=', f), where('day', '<=', t)));
+  return s.docs.map(d => d.data()).sort((a, b) => recTime(a) - recTime(b));
+}
+const gateMeta = (f, t) => `تاريخ الإصدار: ${new Date().toLocaleDateString('en-GB')}<br>الفترة: ${fd(f)}${f === t ? '' : ' ← ' + fd(t)}<br>أصدره: ${esc((auth.currentUser || {}).email || '')}`;
+// إحصائيات يوم واحد (سجلات مرتبة بالوقت)
+function gateDayStats(recs) {
+  const people = new Map(), inside = new Set(); let maxIn = 0, maxAt = null;
+  recs.forEach(r => {
+    const t = recTime(r);
+    let p = people.get(r.sub);
+    if (!p) people.set(r.sub, p = { sub: r.sub, name: r.name, rel: r.rel, ins: 0, first: null, lastOut: null, lastDir: '', open: null, dur: 0, anom: 0 });
+    if (r.anomaly) p.anom++;
+    if (r.dir === 'in') { p.ins++; if (!p.first) p.first = t; p.open = t; inside.add(r.sub); if (inside.size > maxIn) { maxIn = inside.size; maxAt = t; } }
+    else { p.lastOut = t; if (p.open) { p.dur += t - p.open; p.open = null; } inside.delete(r.sub); }
+    p.lastDir = r.dir;
+  });
+  return { people: [...people.values()], maxIn, maxAt };
+}
+async function loadGateRecs() {
+  const { f, t } = gateRange();
+  toast('جاري تجهيز التقرير...', true, 15000);
+  try {
+    const recs = await fetchGate(f, t);
+    if (!recs.length) { toast('مفيش حركات في الفترة دي', false); return null; }
+    toast('✅ جاهز', true, 800);
+    return { f, t, recs };
+  } catch (e) { toast('❌ تعذر قراءة السجل (' + (e.code || e.message) + ')', false, 8000); return null; }
+}
+async function gateAttReport() {
+  const x = await loadGateRecs(); if (!x) return;
+  const byDay = new Map();
+  x.recs.forEach(r => { if (!byDay.has(r.day)) byDay.set(r.day, []); byDay.get(r.day).push(r); });
+  const days = [...byDay.keys()].sort().slice(0, 31);
+  const body = days.map((d, i) => {
+    const recs = byDay.get(d), st = gateDayStats(recs);
+    const ppl = st.people.sort((a, b) => (a.first || a.lastOut) - (b.first || b.lastOut));
+    const hrs = new Array(24).fill(0);
+    recs.forEach(r => { if (r.dir === 'in') hrs[recTime(r).getHours()]++; });
+    const nIn = recs.filter(r => r.dir === 'in').length, nOut = recs.length - nIn;
+    const still = ppl.filter(p => p.lastDir === 'in').length;
+    const rows = ppl.map((p, k) => [k + 1, `<span class="num">${esc(p.sub)}</span>`, esc(p.name || ''), esc(p.rel || ''),
+      p.first ? hhmm(p.first) : '—', p.lastOut ? hhmm(p.lastOut) : '—', p.ins,
+      p.dur ? fmtDur(p.dur) : '—', (p.lastDir === 'in' ? 'لم يسجل خروج' : 'خرج') + (p.anom ? ' ⚠' : '')]);
+    return `<div${i ? ' style="break-before:page;page-break-before:always"' : ''}><h3>${dayLabel(d)}</h3>` +
+      `<div class="rp-kpis">${rpK(ppl.length, 'عدد الأفراد اللي دخلوا')}${rpK(nIn, 'حركات الدخول')}${rpK(nOut, 'حركات الخروج')}` +
+      `${rpK(st.maxIn + (st.maxAt ? ' (' + hhmm(st.maxAt) + ')' : ''), 'أقصى تواجد متزامن')}${nIn ? rpK(hrRange(hrs.indexOf(Math.max(...hrs))), 'أكثر ساعة دخول') : ''}${rpK(still, 'لم يسجلوا خروج')}</div>` +
+      TB(['م', 'الكود', 'الاسم', 'الصلة', 'أول دخول', 'آخر خروج', 'مرات الدخول', 'مدة التواجد', 'الحالة'], rows) + '</div>';
+  }).join('');
+  showReport('كشف الحضور اليومي — البوابة', x.f === x.t ? dayLabel(x.f) : `من ${fd(x.f)} إلى ${fd(x.t)}` + (byDay.size > 31 ? ' (أول 31 يوم)' : ''), body, gateMeta(x.f, x.t));
+  logAudit('تقرير بوابة', '—', 'كشف الحضور ' + x.f + (x.f === x.t ? '' : ' ← ' + x.t));
+}
+function hourBars(rows) {
+  const W = 600, H = 210, pl = 10, pb = 34, pt = 24, n = rows.length, mx = Math.max(1, ...rows.map(r => r[1]));
+  const step = (W - pl * 2) / n, bw = Math.min(40, step * .7);
+  return `<svg class="ch" viewBox="0 0 ${W} ${H}">` + rows.map((r, i) => {
+    const h = (H - pt - pb) * r[1] / mx, bx = pl + step * i + (step - bw) / 2, y = H - pb - h, v = r[1] >= 10 ? Math.round(r[1]) : (Math.round(r[1] * 10) / 10);
+    return `<rect x="${bx}" y="${y}" width="${bw}" height="${Math.max(h, 2)}" rx="4" fill="${r[2]}"/><text x="${bx + bw / 2}" y="${y - 5}" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">${v}</text><text x="${bx + bw / 2}" y="${H - 12}" text-anchor="middle" font-size="10" fill="#475569">${esc(r[0])}</text>`;
+  }).join('') + '</svg>';
+}
+async function gateBusyReport() {
+  const x = await loadGateRecs(); if (!x) return;
+  const ins = x.recs.filter(r => r.dir === 'in');
+  if (!ins.length) { toast('مفيش حركات دخول في الفترة دي', false); return; }
+  const dayRecs = new Map();
+  x.recs.forEach(r => { if (!dayRecs.has(r.day)) dayRecs.set(r.day, []); dayRecs.get(r.day).push(r); });
+  const nD = dayRecs.size, tot = new Array(24).fill(0);
+  ins.forEach(r => tot[recTime(r).getHours()]++);
+  const act = tot.map((v, h) => v ? h : -1).filter(h => h >= 0), h0 = Math.min(...act), h1 = Math.max(...act);
+  const win = []; for (let h = h0; h <= h1; h++) win.push(h);
+  const byBusy = [...win].sort((a, b) => tot[b] - tot[a] || a - b);
+  const top = byBusy.slice(0, Math.min(3, win.length)), low = [...byBusy].reverse().filter(h => !top.includes(h)).slice(0, 3);
+  const wAvg = win.reduce((s, h) => s + tot[h], 0) / win.length, avg = h => tot[h] / nD;
+  const col = h => top.includes(h) ? '#dc2626' : low.includes(h) ? '#16a34a' : '#ff5500';
+  const cls = h => tot[h] >= wAvg * 1.25 ? ['مزدحم', 'bad'] : tot[h] <= wAvg * .6 ? ['هادئ', 'ok'] : ['عادي', 'na'];
+  const fmt1 = v => (Math.round(v * 10) / 10).toString();
+  // أقصى تواجد متزامن
+  let mxIn = 0, mxDay = '', mxAt = null, sumMax = 0;
+  dayRecs.forEach((recs, d) => { const st = gateDayStats(recs); sumMax += st.maxIn; if (st.maxIn > mxIn) { mxIn = st.maxIn; mxDay = d; mxAt = st.maxAt; } });
+  // الأيام
+  const perDay = new Map(); ins.forEach(r => perDay.set(r.day, (perDay.get(r.day) || 0) + 1));
+  const bestDay = [...perDay.entries()].sort((a, b) => b[1] - a[1])[0];
+  // أيام الأسبوع (الأسبوع بيبدأ السبت)
+  const wd = new Array(7).fill(0), wdDays = new Array(7).fill(0);
+  perDay.forEach((n, d) => { const k = new Date(d + 'T12:00:00').getDay(); wd[k] += n; wdDays[k]++; });
+  const wdAvg = k => wdDays[k] ? wd[k] / wdDays[k] : 0, order = [6, 0, 1, 2, 3, 4, 5].filter(k => wdDays[k]);
+  const showWd = nD >= 2 && order.length >= 2;
+  const wdTop = [...order].sort((a, b) => wdAvg(b) - wdAvg(a)), wdLow = wdTop[wdTop.length - 1];
+  const insights = [
+    `أكثر وقت ازدحامًا: ${hrRange(top[0])} — متوسط ${fmt1(avg(top[0]))} دخول في اليوم (إجمالي ${tot[top[0]]}).`,
+    top.length > 1 ? `أكثر الساعات ازدحامًا بالترتيب: ${top.map(h => hrRange(h)).join(' ، ')}.` : '',
+    low.length ? `أهدأ وقت: ${hrRange(low[0])} — متوسط ${fmt1(avg(low[0]))} دخول في اليوم. الساعات الهادئة: ${low.map(h => hrRange(h)).join(' ، ')}.` : '',
+    showWd ? `أكثر يوم في الأسبوع ازدحامًا: ${AR_DAYS[wdTop[0]]} (متوسط ${fmt1(wdAvg(wdTop[0]))} دخول) — وأهدأ يوم: ${AR_DAYS[wdLow]} (متوسط ${fmt1(wdAvg(wdLow))}).` : '',
+    nD > 1 ? `أكثر تاريخ دخولًا: ${dayLabel(bestDay[0])} بعدد ${bestDay[1]} حركة دخول.` : '',
+    `أقصى عدد كان جوه النادي في نفس الوقت: ${mxIn} فرد (${dayLabel(mxDay)} الساعة ${mxAt ? hhmm(mxAt) : '—'}).`,
+    `ملحوظة: ساعات العمل محسوبة من أول حركة دخول لآخر حركة دخول في الفترة (${hrRange(h0).split(' – ')[0]} → ${hr12((h1 + 1) % 24)}).`
+  ].filter(Boolean);
+  const body = `<div class="rp-kpis">${rpK(ins.length, 'إجمالي حركات الدخول')}${rpK(nD, 'عدد الأيام')}${rpK(fmt1(ins.length / nD), 'متوسط الدخول يوميًا')}${rpK(hrRange(top[0]), 'أكثر وقت ازدحامًا')}${low.length ? rpK(hrRange(low[0]), 'أهدأ وقت') : rpK('—', 'أهدأ وقت')}${rpK(mxIn, 'أقصى تواجد متزامن')}</div>` +
+    `<ul class="rp-ins">${insights.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` +
+    rpS('متوسط حركات الدخول لكل ساعة (🔴 الأكثر ازدحامًا — 🟢 الأهدأ)', hourBars(win.map(h => [hr12(h), avg(h), col(h)]))) +
+    (showWd ? rpS('متوسط الدخول حسب يوم الأسبوع', colBars(order.map(k => [AR_DAYS[k], Math.round(wdAvg(k) * 10) / 10]))) : '') +
+    rpS('تفصيل الساعات', TB(['الساعة', 'إجمالي الدخول', 'المتوسط يوميًا', 'النسبة', 'التقييم'],
+      win.map(h => [hrRange(h), tot[h], fmt1(avg(h)), Math.round(tot[h] * 100 / ins.length) + '%', `<span class="st st-${cls(h)[1]}">${cls(h)[0]}</span>`])));
+  showReport('تقرير الازدحام وأهدأ الأوقات — البوابة', x.f === x.t ? dayLabel(x.f) : `من ${fd(x.f)} إلى ${fd(x.t)}`, body, gateMeta(x.f, x.t));
+  logAudit('تقرير بوابة', '—', 'الازدحام ' + x.f + (x.f === x.t ? '' : ' ← ' + x.t));
+}
+async function gateDelete(all) {
+  if (!isAdmin) return;
+  const { f, t } = gateRange();
+  try {
+    const s = await getDocs(all ? collection(db, 'gate') : query(collection(db, 'gate'), where('day', '>=', f), where('day', '<=', t)));
+    if (!s.size) { toast('مفيش سجلات للمسح', false); return; }
+    const what = all ? 'كل سجلات البوابة' : 'سجلات الفترة من ' + fd(f) + ' إلى ' + fd(t);
+    const ans = prompt('⚠ هيتم مسح ' + s.size + ' سجل (' + what + ') نهائيًا ومينفعش التراجع.\nلو متأكد اكتب كلمة: مسح');
+    if (ans === null || ans.trim() !== 'مسح') { toast('اتلغى المسح', false); return; }
+    for (let i = 0; i < s.docs.length; i += 400) {
+      const wb = writeBatch(db);
+      s.docs.slice(i, i + 400).forEach(d => wb.delete(d.ref));
+      await wb.commit();
+    }
+    logAudit('مسح سجلات البوابة', '—', s.size + ' سجل — ' + what);
+    toast('✅ اتمسح ' + s.size + ' سجل');
+  } catch (e) { toast('❌ فشل المسح (' + (e.code || e.message) + ')', false, 10000); }
+}
 
 /* ====== ترجمة (كتابة) الأسماء العربية بحروف إنجليزية ====== */
 const TR_RAW = 'محمد:Mohamed,أحمد:Ahmed,محمود:Mahmoud,مصطفى:Mostafa,علي:Ali,حسن:Hassan,حسين:Hussein,ابراهيم:Ibrahim,إبراهيم:Ibrahim,اسماعيل:Ismail,إسماعيل:Ismail,يوسف:Youssef,عمر:Omar,عمرو:Amr,عثمان:Osman,خالد:Khaled,طارق:Tarek,ياسر:Yasser,هشام:Hesham,هاني:Hany,وائل:Wael,إسلام:Islam,اسلام:Islam,كريم:Karim,زياد:Ziad,ياسين:Yassin,مروان:Marwan,مازن:Mazen,حازم:Hazem,سيف:Seif,سيد:Sayed,جمال:Gamal,عادل:Adel,سامي:Sami,سمير:Samir,سعيد:Said,سعد:Saad,صلاح:Salah,صبري:Sabry,رضا:Reda,رمضان:Ramadan,رأفت:Raafat,ربيع:Rabie,ممدوح:Mamdouh,مجدي:Magdy,ماجد:Maged,محسن:Mohsen,منصور:Mansour,نبيل:Nabil,نادر:Nader,ناصر:Nasser,وليد:Walid,وحيد:Waheed,أيمن:Ayman,إيهاب:Ihab,أشرف:Ashraf,أمير:Amir,أنس:Anas,أسامة:Osama,أيوب:Ayoub,باسم:Basem,بلال:Belal,تامر:Tamer,ثروت:Tharwat,جلال:Galal,جابر:Gaber,حمدي:Hamdy,حمزة:Hamza,حسام:Hossam,حاتم:Hatem,خليل:Khalil,رامي:Ramy,رائد:Raed,زكريا:Zakaria,زين:Zein,سليمان:Soliman,سلطان:Sultan,شريف:Sherif,شادي:Shady,شعبان:Shaaban,صالح:Saleh,طه:Taha,عاطف:Atef,عصام:Essam,عماد:Emad,عبدالله:Abdallah,عبدالرحمن:Abdelrahman,عبدالعزيز:Abdelaziz,عبدالفتاح:Abdelfattah,عبدالحميد:Abdelhamid,عبدالرحيم:Abdelrahim,عبدالمنعم:Abdelmoneim,عبدالحكيم:Abdelhakim,عبدالكريم:Abdelkarim,عبدالسلام:Abdelsalam,عبدالباسط:Abdelbasset,فتحي:Fathy,فريد:Farid,فؤاد:Fouad,فادي:Fady,فارس:Fares,قاسم:Kassem,كمال:Kamal,كامل:Kamel,لطفي:Lotfy,مؤمن:Moemen,معتز:Moataz,مدحت:Medhat,مراد:Morad,مسعد:Mosaad,مهند:Mohannad,مهدي:Mahdy,موسى:Moussa,نصر:Nasr,نور:Nour,هيثم:Haitham,هلال:Helal,يحيى:Yahya,يونس:Younis,آدم:Adam,حامد:Hamed,حمادة:Hamada,محروس:Mahrous,عوض:Awad,عيد:Eid,غريب:Ghareeb,مبروك:Mabrouk,متولي:Metwally,مرسي:Morsy,مختار:Mokhtar,هاشم:Hashem,ماهر:Maher,مالك:Malek,رشاد:Rashad,رشدي:Roshdy,عزت:Ezzat,عزام:Azzam,علاء:Alaa,سامح:Sameh,شهاب:Shehab,شوقي:Shawky,صفوت:Safwat,ضياء:Diaa,عباس:Abbas,عطية:Attia,عنتر:Antar,فهمي:Fahmy,قدري:Kadry,ياسر:Yasser,' +
@@ -2553,7 +2717,7 @@ function barcodeSvg(v) {
   if (typeof JsBarcode === 'undefined') return '';
   try {
     const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    JsBarcode(s, String(v), { format: 'CODE128', displayValue: false, margin: 0, height: 60, width: 2, background: 'transparent' });
+    JsBarcode(s, String(v), { format: 'CODE128', displayValue: false, margin: 0, height: 60, width: 2, background: '#ffffff' });
     s.setAttribute('preserveAspectRatio', 'none'); s.removeAttribute('width'); s.removeAttribute('height');
     return s.outerHTML;
   } catch (e) { return ''; }
