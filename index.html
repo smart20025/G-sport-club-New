@@ -202,6 +202,9 @@ textarea{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12p
 .idc-photo{left:6.86%;top:21.97%;width:28.9%;height:50.19%;background:#fef8ee;overflow:hidden}
 .idc-photo img{width:100%;height:100%;object-fit:cover;display:block}
 .idc-logo{left:64.39%;top:11.34%;width:29.91%;height:13.49%}
+.idc-title{left:6.86%;top:5%;width:55%;height:16%;display:flex;align-items:center;font-weight:700;line-height:1.25;overflow:hidden}
+.idc-title>span{display:block;width:100%}
+.idc-in.flip .idc-title{left:auto;right:6.86%}
 .idc-info{right:6%;top:22cqw;width:56%}
 .idc-info>div{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .idc-name{font-weight:700;line-height:1.3}
@@ -209,8 +212,9 @@ textarea{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12p
 .idc-line{font-weight:700;line-height:1.25}
 .idc-sign{right:69.35%;top:calc(86.2% - 2.1cqw);text-align:right;font-weight:700;font-size:2.8cqw;line-height:1.32;white-space:nowrap}
 .idc .num{direction:ltr;display:inline-block;unicode-bidi:isolate}
-.idc-bar{right:6%;bottom:4%;background:#fff;border-radius:1cqw;padding:.7cqw 1.8cqw;box-sizing:border-box}
-.idc-bar svg{width:100%;height:100%;display:block}
+.idc-bar{right:6%;bottom:4%;background:transparent;padding:.7cqw 1.8cqw;box-sizing:border-box}
+.idc-bar svg{width:100%;height:100%;display:block;background:transparent}
+.idc-bar svg>rect:first-child{fill:transparent!important}
 .idc-in.flip .idc-info{right:auto;left:6%}
 .idc-in.flip .idc-logo{left:5.7%}
 .idc-in.flip .idc-bar{right:auto;left:6%}
@@ -2673,7 +2677,7 @@ const enName = m => (m.nameEn && String(m.nameEn).trim()) || (CFG.autoEn ? trNam
 const CFG_KEY = 'g1CardCfgV1';
 const CFG_DEF = {
   showAr: true, showEn: true, autoEn: true, showPhoto: true, showBar: true, showSign: true,
-  barSize: 's', dateFmt: 'ymd', side: 'r', textAlign: 'r', fontScale: 100, arSize: 100, arAlign: '', enSize: 100, enAlign: '',
+  barSize: 's', dateFmt: 'ymd', side: 'r', textAlign: 'r', fontScale: 100, title: '', titleSize: 100, titleAlign: 'r', arSize: 100, arAlign: '', enSize: 100, enAlign: '',
   photoScale: 100, photoX: 0, photoY: 0, photoZoom: 100, photoFocus: 50, photoFit: 'cover', photoRound: false, sign1: 'رئيس مجلس الادارة', sign2: 'أ/محمد محمد',
   rows: [{ on: true, label: 'رقم المشترك', field: 'sub', text: '', size: 100, align: '' }, { on: true, label: 'تاريخ الانتهاء', field: 'exp', text: '', size: 100, align: '' }]
 };
@@ -2717,7 +2721,7 @@ function barcodeSvg(v) {
   if (typeof JsBarcode === 'undefined') return '';
   try {
     const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    JsBarcode(s, String(v), { format: 'CODE128', displayValue: false, margin: 0, height: 60, width: 2, background: '#ffffff' });
+    JsBarcode(s, String(v), { format: 'CODE128', displayValue: false, margin: 0, height: 60, width: 2, background: 'transparent' });
     s.setAttribute('preserveAspectRatio', 'none'); s.removeAttribute('width'); s.removeAttribute('height');
     return s.outerHTML;
   } catch (e) { return ''; }
@@ -2739,6 +2743,14 @@ function cardHtml(m, d, photo) {
     const sz = lfs * gs * ((+x.r.size || 100) / 100);
     return `<div class="idc-line" style="font-size:${sz.toFixed(2)}cqw;text-align:${al(x.r.align)};margin-top:${i === 0 ? 2.2 : (lfs * 0.7).toFixed(2)}cqw">${lab}${val}</div>`;
   }).join('');
+  // عنوان حر أعلى الكارت (مش مربوط بأي حقل)
+  const tt = String(c.title || '').trim();
+  let titleHtml = '';
+  if (tt) {
+    const L = tt.length, ts = (+c.titleSize || 100) / 100, f1 = 55 / (L * 0.55);
+    const one = f1 >= 3.4, fz = one ? Math.min(5.4, f1) : Math.max(2.4, Math.min(4.4, 55 / (Math.ceil(L / 2) * 0.55)));
+    titleHtml = `<div class="idc-title"><span style="font-size:${(fz * ts).toFixed(2)}cqw;text-align:${al(c.titleAlign)}${one ? ';white-space:nowrap' : ''}">${esc(tt)}</span></div>`;
+  }
   const [bw0, bh] = BAR[c.barSize] || BAR.s, bw = Math.max(bw0, Math.min(58, 6 + String(m.sub).length * 4.5));
   const bar = c.showBar ? barcodeSvg(m.sub) : '';
   const sign = c.showSign && (c.sign1 || c.sign2) ? `<div class="idc-sign">${c.sign1 ? `<div>${esc(c.sign1)}</div>` : ''}${c.sign2 ? `<div>${esc(c.sign2)}</div>` : ''}</div>` : '';
@@ -2750,6 +2762,7 @@ function cardHtml(m, d, photo) {
   return `<div class="idc"><div class="idc-in${flip ? ' flip' : ''}"><img class="idc-bgi" src="card-bg.jpg" alt="" onerror="this.remove()">
     ${c.showPhoto ? `<div class="idc-photo" style="${pst}"><img src="${photo || NO_PHOTO}" style="${pim}" alt=""></div>` : ''}
     <img class="idc-logo" src="card-logo.svg" alt="" onerror="this.onerror=null;this.src='logo.png';this.style.filter='brightness(0) invert(1)';this.style.objectFit='contain'">
+    ${titleHtml}
     <div class="idc-info">${fs ? `<div class="idc-name" style="font-size:${(fs * gs * (+c.arSize || 100) / 100).toFixed(2)}cqw;text-align:${al(c.arAlign)}">${esc(nm)}</div>` : ''}${fe ? `<div class="idc-en" style="font-size:${(fe * gs * (+c.enSize || 100) / 100).toFixed(2)}cqw;text-align:${al(c.enAlign)}">${esc(en)}</div>` : ''}${lineHtml}</div>
     ${sign}${bar ? `<div class="idc-bar" style="width:${bw.toFixed(1)}%;height:${bh}%">${bar}</div>` : ''}</div></div>`;
 }
@@ -2757,7 +2770,7 @@ function cardHtml(m, d, photo) {
 /* ====== واجهة تبويب الكروت ====== */
 const SAMPLE = { sample: true, m: { sub: '0101010', name: 'محمد محمود', rel: 'عضو', phone: '01000000000', nid: '', job: 'مهندس', games: 'سباحة' }, d: { code: '0101010', expiryDate: '2030-01-01', memberDate: '2026-01-01' } };
 const ALN_OPTS = inh => (inh ? '<option value="">زي العام</option>' : '') + '<option value="r">يمين</option><option value="c">وسط</option><option value="l">شمال</option>';
-const CFG_NUM = new Set(['fontScale', 'arSize', 'enSize', 'photoScale', 'photoX', 'photoY', 'photoZoom', 'photoFocus']);
+const CFG_NUM = new Set(['fontScale', 'titleSize', 'arSize', 'enSize', 'photoScale', 'photoX', 'photoY', 'photoZoom', 'photoFocus']);
 const RV_FMT = { fontScale: v => v + '%', photoScale: v => v + '%', photoZoom: v => v + '%', photoX: v => v, photoY: v => v, photoFocus: v => v + '%' };
 function syncCfgUi() {
   document.querySelectorAll('#idsMode [data-cfg]').forEach(el => { const k = el.dataset.cfg; if (el.type === 'checkbox') el.checked = !!CFG[k]; else el.value = CFG[k]; });
@@ -2789,6 +2802,10 @@ function renderIds() {
   <div>
     <details class="sec" open id="idCfgBox"><summary>🎨 تخصيص الكارت</summary>
       <div class="cfg-chk">${chk('showAr', 'الاسم بالعربي')}${chk('showEn', 'الاسم بالإنجليزي')}${chk('autoEn', 'ترجمة تلقائية للي ملوش اسم إنجليزي')}${chk('showPhoto', 'الصورة')}${chk('showBar', 'الباركود')}${chk('showSign', 'توقيع رئيس المجلس (أسفل يسار)')}</div>
+      <div class="field" style="margin-top:6px"><label>📝 عنوان أعلى الكارت (نص حر — سيبه فاضي لو مش عايزه)</label>
+        <input type="text" data-cfg="title" maxlength="60" placeholder="مثال: بطاقة عضوية 2026" autocomplete="off">
+        <div class="cfg-2" style="margin-top:6px"><input type="number" data-cfg="titleSize" min="40" max="250" step="5" title="الحجم %"><select data-cfg="titleAlign">${ALN_OPTS(false)}</select></div>
+        <div class="hint" style="margin-top:4px">الرقم = حجم العنوان % ، والقايمة = المحاذاة. العنوان بيظهر فوق جنب اللوجو وبيتطبع على كل الكروت.</div></div>
       <div class="cfg-h" style="border-top:none;margin-top:0;padding-top:0">📐 مكان الكلام والخط</div>
       <div class="grid"><div class="field"><label>مكان الكلام على الكارت</label><select data-cfg="side"><option value="r">يمين (الصورة شمال)</option><option value="l">شمال (الصورة يمين)</option></select></div>
         <div class="field"><label>محاذاة النص (للكل)</label><select data-cfg="textAlign">${ALN_OPTS(false)}</select></div></div>
