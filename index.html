@@ -2,7 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ff5500">
 <title>تسجيل الأعضاء</title>
 <link rel="icon" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
@@ -289,6 +290,105 @@ body{align-items:flex-start;justify-content:center;padding:24px 16px}
 .gr-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:560px){.gr-row{grid-template-columns:1fr}}
 .gate-only .side-foot button{width:auto;white-space:nowrap;padding:9px 18px}
+/* ====== نافذة تخصيص تقرير نواقص الأعضاء ====== */
+#mqModal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:160;display:flex;align-items:center;justify-content:center;padding:14px}
+#mqModal.hidden{display:none}
+.mq-box{width:100%;max-width:540px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:20px;padding:20px}
+.mq-chk{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin-bottom:6px}
+.mq-chk label{display:flex;align-items:center;gap:8px;margin:0;font-weight:600;font-size:14px;cursor:pointer;padding:9px 10px;border:2px solid #e2e8f0;border-radius:10px}
+.mq-chk input{width:auto;padding:0;margin:0;accent-color:var(--main)}
+.mq-act{display:flex;gap:8px;margin:8px 0 14px}
+.mq-act button{padding:8px 12px;font-size:13px}
+.mq-foot{position:sticky;bottom:-20px;background:#fff;padding:12px 0 4px;margin-top:10px;border-top:1px solid #f1f5f9}
+
+/* ====== موبايل ====== */
+html{-webkit-text-size-adjust:100%}
+.side{-webkit-overflow-scrolling:touch}
+.toast{bottom:calc(30px + env(safe-area-inset-bottom))}
+@media(max-width:900px){
+  input,select,textarea{font-size:16px!important}
+  button{min-height:44px;touch-action:manipulation}
+  .ic,.rm,.chip button{min-height:36px}
+  .side{padding:8px 10px;gap:8px;padding-top:calc(8px + env(safe-area-inset-top))}
+  .side .logo{max-width:46px}
+  .side .tabs{scrollbar-width:none;gap:6px}
+  .side .tabs::-webkit-scrollbar{display:none}
+  .side .tab{min-height:40px;padding:6px 12px;font-size:13px;border-radius:12px}
+  .side-foot{gap:8px;font-size:11px}
+  #who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:58vw;word-break:normal}
+  .side-foot button{min-height:36px;padding:6px 10px;font-size:12px;white-space:nowrap;width:auto}
+  .main .ver{padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+}
+@media screen and (max-width:700px){
+  .main{padding:14px 10px}
+  .page-head{margin-bottom:14px;padding-bottom:10px}
+  .page-head h1{font-size:21px}
+  .page-head p.sub{font-size:13px}
+  .sec{padding:14px;border-radius:14px;margin-bottom:14px}
+  .sec h2,details.sec>summary{font-size:16px}
+  .check{padding:12px;font-size:14px}
+  .radios label{padding:9px 12px;flex:1 1 auto}
+  .kgrid{grid-template-columns:1fr 1fr;gap:10px}
+  .kp{padding:10px;gap:8px;border-radius:14px}
+  .kp b{font-size:20px}
+  .kp span{font-size:12px}
+  .kp-ic{width:38px;height:38px;font-size:19px;border-radius:10px}
+  .dgrid{grid-template-columns:1fr;gap:12px}
+  .pn{padding:12px;border-radius:14px}
+  .donut{gap:8px}
+  .dbar{padding:10px;gap:8px}
+  .dbar-f{min-width:100%}
+  .dbar-b{width:100%}
+  .dbar-b button{flex:1 1 auto}
+  .bar-l{width:80px}
+  .rp-grid{grid-template-columns:1fr}
+  .add-row2{grid-template-columns:1fr}
+  .mt-f{grid-template-columns:1fr 1fr}
+  .mt-info{font-size:12px}
+  .pager{gap:8px}
+  .pager button{padding:8px 10px}
+  .cfg-chk{grid-template-columns:1fr}
+  .cfg-row{grid-template-columns:auto minmax(0,1fr) minmax(0,1fr)}
+  .cfg-row .cfg-txt,.cfg-sub{grid-column:1/-1}
+  .cfg-row button{width:100%}
+  .en-row{grid-template-columns:auto minmax(0,1fr)}
+  .en-row input{grid-column:1/-1}
+  .child{padding:12px}
+  .fam-row{flex-wrap:wrap;gap:6px}
+  .g-dir{min-width:100%;font-size:20px;padding:12px}
+  .g-top .kp{min-width:calc(50% - 8px)}
+  .g-main img{width:88px;height:110px}
+  .g-t{font-size:22px}
+  .g-res{padding:14px}
+  #gScan{font-size:18px!important;padding:12px}
+  .toast{width:92%;padding:12px 16px;font-size:14px}
+  #login .box{padding:20px}
+  .wa-box,.mq-box{padding:16px;border-radius:16px}
+  .mq-foot{bottom:-16px}
+  /* جدول الأعضاء يتحول لكروت */
+  .mt thead{display:none}
+  .mt,.mt tbody,.mt tr,.mt td{display:block;width:100%}
+  .mt tr{border:1px solid #e2e8f0;border-radius:14px;padding:8px 10px;margin-bottom:10px;background:#fff}
+  .mt td{display:flex;justify-content:space-between;align-items:center;gap:10px;border:0;padding:5px 2px;text-align:end}
+  .mt td::before{content:attr(data-l);color:#64748b;font-weight:600;text-align:start;flex-shrink:0}
+  .mt td[data-l=""]::before{content:none}
+  .mt td.nw{justify-content:flex-end;gap:8px}
+  .mt td[colspan]{display:block;text-align:center}
+  /* معاينة التقارير */
+  .rp-bar{padding:8px 10px}
+  .rp-bar button{padding:8px 10px;font-size:13px;min-height:38px}
+  .rp-scroll{padding:6px}
+  #rpPaper{padding:8px;width:100%}
+  .rp-kpis{grid-template-columns:1fr 1fr}
+  .rp-k b{font-size:18px}
+  .pf-head{flex-direction:column;text-align:center;gap:6px}
+  .pf-head img{height:54px}
+  .pf-title h1{font-size:19px}
+  .pf-grid{grid-template-columns:1fr}
+  .pf table{font-size:10px}
+  .pf th,.pf td{padding:4px 3px}
+  #rpPaper .pf-sign{width:100%}
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
@@ -580,6 +680,25 @@ body{align-items:flex-start;justify-content:center;padding:24px 16px}
   <div class="field"><label>القالب</label><select id="waT"><option value="renew">تذكير بتجديد العضوية</option><option value="bday">تهنئة عيد ميلاد</option><option value="game">تذكير بموعد التدريب</option><option value="free">رسالة حرة</option></select></div>
   <div class="field"><label>نص الرسالة (تقدر تعدّله)</label><textarea id="waMsg" rows="6"></textarea></div>
   <div class="grid"><button type="button" id="waSend">إرسال عبر واتساب</button><button type="button" class="btn-outline" id="waClose">إلغاء</button></div>
+</div></div>
+<div id="mqModal" class="hidden"><div class="mq-box">
+  <h2 style="margin-top:0">🧩 تقرير نواقص الأعضاء الأساسيين</h2>
+  <div class="hint" style="margin-bottom:10px">اختار البنود اللي عايز تفحصها وشكل التقرير، وبعدين اضغط "إنشاء التقرير". اختياراتك بتتحفظ للمرة الجاية.</div>
+  <label>البنود المطلوب فحصها</label>
+  <div class="mq-chk" id="mqItems"></div>
+  <div class="mq-act"><button type="button" class="btn-outline" id="mqAll">✔ الكل</button><button type="button" class="btn-outline" id="mqNone">✖ مسح</button></div>
+  <div class="field"><label>شكل عرض النواقص</label>
+    <select id="mqMode"><option value="both">أعمدة ✓/✗ + عمود بالناقص بالظبط</option><option value="cols">أعمدة ✓/✗ لكل بند فقط</option><option value="text">عمود واحد بالناقص بالظبط فقط</option></select></div>
+  <div class="grid">
+    <div class="field"><label>الأعضاء المعروضين</label><select id="mqOnly"><option value="1">الناقصين فقط</option><option value="0">الكل (كامل وناقص)</option></select></div>
+    <div class="field"><label>الترتيب</label><select id="mqSort"><option value="code">حسب الكود</option><option value="miss">الأكثر نقصًا أولًا</option></select></div>
+  </div>
+  <div class="field"><label>أفراد الأسرة (الزوج/الزوجة، الأبناء، العضو الإضافي)</label>
+    <select id="mqFam"><option value="merge">يفحصهم ويسجل نواقصهم على العضو الأساسي (عمود "نواقص باقي الأسرة")</option><option value="rows">يفحصهم ويعرض كل فرد في سطر تحت العضو الأساسي</option><option value="none">العضو الأساسي فقط</option></select>
+    <div class="hint">البنود بتتفحص حسب نوع الفرد: الأبناء (رقم قومي، نوع، صورة) — الزوج/الزوجة (كل البنود ما عدا تاريخ الانتهاء) — الإضافي (تليفون، رقم قومي، نوع، صورة). البند غير المنطبق بيظهر "—".</div></div>
+  <div class="mq-chk"><label><input type="checkbox" id="mqPhone"> إظهار التليفون</label><label><input type="checkbox" id="mqCount"> إظهار عدد النواقص</label></div>
+  <div class="hint" style="margin-top:8px">التقرير بيتأثر بفلتر الفترة في لوحة التحكم.</div>
+  <div class="mq-foot grid"><button type="button" id="mqGo">📄 إنشاء التقرير</button><button type="button" class="btn-outline" id="mqCancel">إلغاء</button></div>
 </div></div>
 <div class="toast" id="toast"></div>
   <div id="printArea"></div>
@@ -1152,6 +1271,7 @@ const REPORTS = [
   ['games', '⚽', 'كشف الألعاب', 'المشتركين في كل لعبة'],
   ['ages', '🎂', 'الفئات العمرية', 'توزيع الأعمار وقائمة الأبناء'],
   ['monthly', '📅', 'التسجيلات الشهرية', 'جدول ورسم شهري وتراكمي'],
+  ['memq', '🧩', 'نواقص الأعضاء الأساسيين', 'كود واسم وتليفون وعلامة ✓/✗ — وتقدر تخصص البنود'],
   ['quality', '🧹', 'جودة البيانات', 'النواقص مع الأكواد للمراجعة'],
   ['nophoto', '🖼', 'الصور غير المضافة', 'الأعضاء اللي ملهمش صورة: الكود والاسم والعدد'],
   ['birthdays', '🎉', 'أعياد ميلاد الشهر', 'مواليد الشهر الحالي']
@@ -1382,6 +1502,104 @@ const BUILD = {
       : '<div class="hint">مفيش أعياد ميلاد الشهر ده.</div>' };
   }
 };
+/* ====== تقرير نواقص الأعضاء الأساسيين (قابل للتخصيص) ====== */
+// [المفتاح، الاسم الكامل، الاسم المختصر للعمود، دالة الفحص (true = كامل)]
+const MQ_ITEMS = [
+  ['phone', 'التليفون', 'تليفون', m => !!m.phone],
+  ['nid', 'الرقم القومي', 'رقم قومي', m => !!parseNid(m.nid || '')],
+  ['job', 'المهنة', 'مهنة', m => !!m.job],
+  ['qual', 'المؤهل', 'مؤهل', m => !!m.qual],
+  ['nat', 'الجنسية', 'جنسية', m => !!m.nat],
+  ['addr', 'العنوان', 'عنوان', m => !!m.addr],
+  ['gender', 'النوع', 'نوع', m => !!(m.gender || (parseNid(m.nid || '') || {}).gender)],
+  ['expiry', 'تاريخ انتهاء العضوية', 'انتهاء', (m, d) => !!d.expiryDate],
+  ['photo', 'الصورة', 'صورة', m => photoIds.has(m.sub)]
+];
+const MQ_KEY = 'g1MqCfgV1';
+const MQ_DEF = { items: ['phone', 'nid', 'job', 'qual', 'addr', 'expiry'], mode: 'both', only: true, sort: 'code', showPhone: true, showCount: true, fam: 'merge' };
+let MQ = (() => {
+  try { const s = JSON.parse(localStorage.getItem(MQ_KEY) || 'null'); if (s && typeof s === 'object') return { ...MQ_DEF, ...s }; } catch (e) { /* تجاهل */ }
+  return { ...MQ_DEF };
+})();
+function openMq() {
+  const sel = new Set(MQ.items);
+  $('mqItems').innerHTML = MQ_ITEMS.map(x => `<label><input type="checkbox" data-mq="${x[0]}"${sel.has(x[0]) ? ' checked' : ''}> ${x[1]}</label>`).join('');
+  $('mqMode').value = MQ.mode; $('mqOnly').value = MQ.only ? '1' : '0'; $('mqSort').value = MQ.sort;
+  $('mqPhone').checked = !!MQ.showPhone; $('mqCount').checked = !!MQ.showCount; $('mqFam').value = MQ.fam || 'merge';
+  $('mqModal').classList.remove('hidden');
+}
+async function runMq() {
+  const keys = [...document.querySelectorAll('#mqItems input:checked')].map(i => i.dataset.mq);
+  if (!keys.length) { toast('اختار بند واحد على الأقل', false); return; }
+  MQ = { items: keys, mode: $('mqMode').value, only: $('mqOnly').value === '1', sort: $('mqSort').value, showPhone: $('mqPhone').checked, showCount: $('mqCount').checked, fam: $('mqFam').value };
+  try { localStorage.setItem(MQ_KEY, JSON.stringify(MQ)); } catch (e) { /* تجاهل */ }
+  const fams = filteredFams();
+  if (!fams.length) { toast('مفيش بيانات في الفترة دي', false); return; }
+  let its = MQ_ITEMS.filter(x => keys.includes(x[0]));
+  if (keys.includes('photo')) {
+    toast('جاري فحص الصور...', true, 15000);
+    try { await loadPhotoIds(); }
+    catch (e) { toast('⚠ تعذر فحص الصور فاتشالت من التقرير', false, 6000); its = its.filter(x => x[0] !== 'photo'); if (!its.length) return; }
+  }
+  $('mqModal').classList.add('hidden');
+  const fm = MQ.fam || 'merge';
+  const ALLR = ['main', 'spouse', 'extra', 'kid'];
+  // البنود المنطبقة على كل نوع فرد
+  const APPL = { phone: ['main', 'spouse', 'extra'], nid: ALLR, job: ['main', 'spouse'], qual: ['main', 'spouse'], nat: ['main', 'spouse'], addr: ['main', 'spouse'], gender: ALLR, expiry: ['main'], photo: ALLR };
+  const roleOf = (m, main) => m === main ? 'main' : m.rel === 'ابن' ? 'kid' : m.rel === 'عضو إضافي' ? 'extra' : 'spouse';
+  const evalP = (m, d, role) => {
+    const res = its.map(x => APPL[x[0]].includes(role) ? !!x[3](m, d) : null);
+    const miss = its.filter((x, i) => res[i] === false).map(x => x[0] === 'nid' && m.nid ? 'الرقم القومي (غير صحيح)' : x[1]);
+    return { res, miss };
+  };
+  const all = fams.map(d => {
+    const mem = d.members || [], m = mem[0] || {};
+    const others = fm === 'none' ? [] : mem.slice(1).map(o => ({ m: o, ...evalP(o, d, roleOf(o, m)) }));
+    const me = evalP(m, d, 'main');
+    return { d, m, ...me, others, total: me.miss.length + others.reduce((s, o) => s + o.miss.length, 0) };
+  });
+  const persons = all.flatMap(r => [r, ...r.others]);
+  const total = all.length, complete = all.filter(r => !r.total).length;
+  const cnt = its.map((x, i) => persons.filter(p => p.res[i] === false).length);
+  const base = its.map((x, i) => persons.filter(p => p.res[i] !== null).length);
+  let rows = MQ.only ? all.filter(r => r.total) : all;
+  rows = [...rows].sort(MQ.sort === 'miss' ? (a, b) => b.total - a.total || sortCode(a.d, b.d) : (a, b) => sortCode(a.d, b.d));
+  const yes = '<b style="color:#16a34a">✓</b>', no = '<b style="color:#dc2626">✗</b>', na = '<span style="color:#cbd5e1">—</span>';
+  const showCols = MQ.mode !== 'text', showText = MQ.mode !== 'cols', famCol = fm === 'merge';
+  const heads = ['م', 'كود العضو', 'الاسم', ...(MQ.showPhone ? ['التليفون'] : []), ...(showCols ? its.map(x => x[2]) : []), ...(showText ? ['الناقص بالظبط'] : []), ...(famCol ? ['نواقص باقي الأسرة'] : []), ...(MQ.showCount ? ['عدد النواقص'] : []), 'الحالة'];
+  const famText = r => {
+    const l = r.others.filter(o => o.miss.length);
+    return l.length ? l.map(o => `<div style="margin-bottom:3px"><span class="num">${esc(o.m.sub)}</span> ${esc(o.m.name || '')} <small>(${esc(o.m.rel || '')})</small>: <span style="color:#dc2626">${esc(o.miss.join('، '))}</span></div>`).join('') : '—';
+  };
+  const mkRow = (p, idx, sub, r) => {
+    const n = sub ? p.miss.length : r.total;
+    const cells = [idx, num(p.m.sub), sub ? `↳ ${vv(p.m.name)} <small>(${esc(p.m.rel || '')})</small>` : `<b>${vv(r.d.mainName || p.m.name)}</b>`,
+      ...(MQ.showPhone ? [num(p.m.phone)] : []),
+      ...(showCols ? p.res.map(ok => ok === null ? na : ok ? yes : no) : []),
+      ...(showText ? [p.miss.length ? `<span style="color:#dc2626">${esc(p.miss.join('، '))}</span>` : '—'] : []),
+      ...(famCol ? [sub ? '' : famText(r)] : []),
+      ...(MQ.showCount ? [n || '—'] : []),
+      n ? '<b style="color:#dc2626">✗ ناقص</b>' : '<b style="color:#16a34a">✓ كامل</b>'];
+    const st = sub ? 'background:#f8fafc' : (fm === 'rows' ? 'border-top:2px solid #0f766e' : '');
+    return `<tr style="${st}">${cells.map(c => `<td>${c}</td>`).join('')}</tr>`;
+  };
+  const trs = [];
+  rows.forEach((r, i) => {
+    trs.push(mkRow(r, i + 1, false, r));
+    if (fm === 'rows') r.others.filter(o => !MQ.only || o.miss.length).forEach(o => trs.push(mkRow(o, '', true, r)));
+  });
+  const personsBad = persons.filter(p => p.miss.length).length;
+  const body = `<div class="rp-kpis">${rpK(total, 'أسرة (عضو أساسي)')}${rpK(complete, fm === 'none' ? 'بياناتهم كاملة' : 'أسر كاملة بالكامل')}${rpK(total - complete, 'فيها نواقص')}${fm !== 'none' ? rpK(persons.length, 'إجمالي الأفراد المفحوصين') + rpK(personsBad, 'أفراد فيهم نواقص') : ''}</div>` +
+    rpS('عدد الناقص في كل بند', TB(['البند', 'عدد الناقص', 'من إجمالي', 'النسبة'], its.map((x, i) => [esc(x[1]), `<b style="color:${cnt[i] ? '#dc2626' : '#16a34a'}">${cnt[i]}</b>`, base[i], pct(cnt[i], base[i]) + '%']))) +
+    (trs.length ? `<table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs.join('')}</tbody></table>` : '<div class="hint">ممتاز! مفيش نواقص في البنود المختارة.</div>');
+  showReport(fm === 'none' ? 'تقرير نواقص الأعضاء الأساسيين' : 'تقرير نواقص الأعضاء وأسرهم', 'البنود المفحوصة: ' + its.map(x => x[1]).join('، '), body);
+  logAudit('تقرير', '—', 'نواقص الأعضاء (' + its.length + ' بند — ' + fm + ')');
+}
+$('mqGo').addEventListener('click', runMq);
+$('mqCancel').addEventListener('click', () => $('mqModal').classList.add('hidden'));
+$('mqModal').addEventListener('click', e => { if (e.target.id === 'mqModal') $('mqModal').classList.add('hidden'); });
+$('mqAll').addEventListener('click', () => document.querySelectorAll('#mqItems input').forEach(i => { i.checked = true; }));
+$('mqNone').addEventListener('click', () => document.querySelectorAll('#mqItems input').forEach(i => { i.checked = false; }));
 // قراءة أكواد الأفراد اللي ليهم صور من السيرفر
 async function loadPhotoIds() {
   const s = await getDocs(collection(db, 'photos'));
@@ -1389,6 +1607,7 @@ async function loadPhotoIds() {
   photosKnown = true;
 }
 async function openReport(type) {
+  if (type === 'memq') { openMq(); return; }
   if (!BUILD[type]) return;
   const fams = filteredFams();
   if (!fams.length && type !== 'birthdays') { toast('مفيش بيانات في الفترة دي', false); return; }
@@ -1535,6 +1754,8 @@ function renderMembers() {
       return `<tr><td dir="ltr">${esc(r.m.sub)}</td><td><img class="av" data-ph="${esc(r.m.sub)}" src="${NO_PHOTO}" alt=""> ${vv(r.m.name)}</td><td>${vv(r.m.rel)}</td><td>${r.g || '—'}</td><td>${r.age == null ? '—' : r.age}</td><td dir="ltr">${vv(r.m.phone)}</td><td>${vv(r.m.games)}</td><td><span class="st st-${ST_CLS[r.st]}">${r.st}</span></td><td class="nw">${waBtn(ph, r.m.rel === 'ابن' ? r.d.mainName : r.m.name)}<button type="button" class="ic" data-open="${esc(r.code)}" title="فتح الأسرة">📂</button></td></tr>`;
     }).join('') || '<tr><td colspan="9" class="hint">مفيش نتائج</td></tr>') + '</tbody></table>';
   fillPhotos($('mtTable'));
+  const _hs = [...$('mtTable').querySelectorAll('thead th')].map(t => t.textContent.replace(/[▲▼]/g, '').trim());
+  $('mtTable').querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { td.dataset.l = _hs[i] || ''; }));
   let total = 0; allFams.forEach(d => { total += (d.members || []).length; });
   $('mtCount').textContent = 'عرض ' + slice.length + ' من ' + rows.length + ' (إجمالي الأفراد ' + total + ')';
   $('mtPager').innerHTML = `<button type="button" class="btn-sm btn-outline" data-pg="-1" ${mt.page <= 1 ? 'disabled' : ''}>› السابق</button><span>صفحة ${mt.page} من ${pages}</span><button type="button" class="btn-sm btn-outline" data-pg="1" ${mt.page >= pages ? 'disabled' : ''}>التالي ‹</button>`;
