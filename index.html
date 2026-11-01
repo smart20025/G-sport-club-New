@@ -2898,7 +2898,7 @@ const enName = m => (m.nameEn && String(m.nameEn).trim()) || (CFG.autoEn ? trNam
 const CFG_KEY = 'g1CardCfgV1';
 const CFG_DEF = {
   showAr: true, showEn: true, autoEn: true, showPhoto: true, showBar: true, showSign: true,
-  barSize: 's', dateFmt: 'ymd', side: 'r', textAlign: 'r', fontScale: 100, title: '', titleSize: 100, titleAlign: 'r', arSize: 100, arAlign: '', enSize: 100, enAlign: '',
+  barSize: 's', dateFmt: 'ymd', side: 'r', textAlign: 'r', fontScale: 100, title: '', titleSize: 100, titleAlign: 'r', titleX: 0, titleY: 0, titleW: 55, arSize: 100, arAlign: '', enSize: 100, enAlign: '',
   photoScale: 100, photoX: 0, photoY: 0, photoZoom: 100, photoFocus: 50, photoFit: 'cover', photoRound: false, sign1: 'رئيس مجلس الادارة', sign2: 'أ/محمد محمد',
   rows: [{ on: true, label: 'رقم المشترك', field: 'sub', text: '', size: 100, align: '' }, { on: true, label: 'تاريخ الانتهاء', field: 'exp', text: '', size: 100, align: '' }]
 };
@@ -2970,7 +2970,8 @@ function cardHtml(m, d, photo) {
   if (tt) {
     const L = tt.length, ts = (+c.titleSize || 100) / 100, f1 = 55 / (L * 0.55);
     const one = f1 >= 3.4, fz = one ? Math.min(5.4, f1) : Math.max(2.4, Math.min(4.4, 55 / (Math.ceil(L / 2) * 0.55)));
-    titleHtml = `<div class="idc-title"><span style="font-size:${(fz * ts).toFixed(2)}cqw;text-align:${al(c.titleAlign)}${one ? ';white-space:nowrap' : ''}">${esc(tt)}</span></div>`;
+    const tw = Math.max(15, Math.min(100, +c.titleW || 55));
+    titleHtml = `<div class="idc-title" style="width:${tw}%;transform:translate(${(+c.titleX || 0).toFixed(1)}cqw,${(+c.titleY || 0).toFixed(1)}cqw)"><span style="font-size:${(fz * ts).toFixed(2)}cqw;text-align:${al(c.titleAlign)}${one ? ';white-space:nowrap' : ''}">${esc(tt)}</span></div>`;
   }
   const [bw0, bh] = BAR[c.barSize] || BAR.s, bw = Math.max(bw0, Math.min(58, 6 + String(m.sub).length * 4.5));
   const bar = c.showBar ? barcodeSvg(m.sub) : '';
@@ -2991,8 +2992,8 @@ function cardHtml(m, d, photo) {
 /* ====== واجهة تبويب الكروت ====== */
 const SAMPLE = { sample: true, m: { sub: '0101010', name: 'محمد محمود', rel: 'عضو', phone: '01000000000', nid: '', job: 'مهندس', games: 'سباحة' }, d: { code: '0101010', expiryDate: '2030-01-01', memberDate: '2026-01-01' } };
 const ALN_OPTS = inh => (inh ? '<option value="">زي العام</option>' : '') + '<option value="r">يمين</option><option value="c">وسط</option><option value="l">شمال</option>';
-const CFG_NUM = new Set(['fontScale', 'titleSize', 'arSize', 'enSize', 'photoScale', 'photoX', 'photoY', 'photoZoom', 'photoFocus']);
-const RV_FMT = { fontScale: v => v + '%', photoScale: v => v + '%', photoZoom: v => v + '%', photoX: v => v, photoY: v => v, photoFocus: v => v + '%' };
+const CFG_NUM = new Set(['titleX', 'titleY', 'titleW', 'fontScale', 'titleSize', 'arSize', 'enSize', 'photoScale', 'photoX', 'photoY', 'photoZoom', 'photoFocus']);
+const RV_FMT = { titleX: v => v, titleY: v => v, titleW: v => v + '%', fontScale: v => v + '%', photoScale: v => v + '%', photoZoom: v => v + '%', photoX: v => v, photoY: v => v, photoFocus: v => v + '%' };
 function syncCfgUi() {
   document.querySelectorAll('#idsMode [data-cfg]').forEach(el => { const k = el.dataset.cfg; if (el.type === 'checkbox') el.checked = !!CFG[k]; else el.value = CFG[k]; });
   document.querySelectorAll('#idsMode [data-for]').forEach(el => { const k = el.dataset.for; el.textContent = (RV_FMT[k] || (v => v))(CFG[k]); });
@@ -3026,7 +3027,13 @@ function renderIds() {
       <div class="field" style="margin-top:6px"><label>📝 عنوان أعلى الكارت (نص حر — سيبه فاضي لو مش عايزه)</label>
         <input type="text" data-cfg="title" maxlength="60" placeholder="مثال: بطاقة عضوية 2026" autocomplete="off">
         <div class="cfg-2" style="margin-top:6px"><input type="number" data-cfg="titleSize" min="40" max="250" step="5" title="الحجم %"><select data-cfg="titleAlign">${ALN_OPTS(false)}</select></div>
-        <div class="hint" style="margin-top:4px">الرقم = حجم العنوان % ، والقايمة = المحاذاة. العنوان بيظهر فوق جنب اللوجو وبيتطبع على كل الكروت.</div></div>
+        <div class="hint" style="margin-top:4px">الرقم = حجم العنوان % ، والقايمة = المحاذاة. العنوان بيتطبع على كل الكروت.</div>
+        <div class="grid" style="margin-top:8px">
+          <div class="field"><label>تحريك أفقي (يمين +) <span class="rv" data-for="titleX"></span></label><input type="range" class="cfg-rng" data-cfg="titleX" min="-60" max="60" step="0.5"></div>
+          <div class="field"><label>تحريك رأسي (لتحت +) <span class="rv" data-for="titleY"></span></label><input type="range" class="cfg-rng" data-cfg="titleY" min="-6" max="60" step="0.5"></div>
+          <div class="field"><label>عرض مساحة العنوان <span class="rv" data-for="titleW"></span></label><input type="range" class="cfg-rng" data-cfg="titleW" min="15" max="100" step="1"></div>
+          <div class="field"><label>&nbsp;</label><button type="button" class="btn-outline" id="titleReset">↺ مكان العنوان الأصلي</button></div>
+        </div></div>
       <div class="cfg-h" style="border-top:none;margin-top:0;padding-top:0">📐 مكان الكلام والخط</div>
       <div class="grid"><div class="field"><label>مكان الكلام على الكارت</label><select data-cfg="side"><option value="r">يمين (الصورة شمال)</option><option value="l">شمال (الصورة يمين)</option></select></div>
         <div class="field"><label>محاذاة النص (للكل)</label><select data-cfg="textAlign">${ALN_OPTS(false)}</select></div></div>
@@ -3169,6 +3176,7 @@ $('idsMode').addEventListener('click', e => {
   }
   switch (t.id) {
     case 'idFind': idSearch(); break;
+    case 'titleReset': Object.assign(CFG, { titleX: 0, titleY: 0, titleW: 55 }); saveCfg(); syncCfgUi(); drawIdCard(); break;
     case 'cfgAdd': CFG.rows.push({ on: true, label: '', field: 'phone', text: '', size: 100, align: '' }); saveCfg(); renderCfgRows(); drawIdCard(); break;
     case 'cfgReset': if (confirm('رجوع كل إعدادات الكارت للافتراضي؟')) { CFG = cloneDef(); saveCfg(); $('idsMode').innerHTML = ''; renderIds(); } break;
     case 'idPrint1': if (idCur && !idCur.sample) printCards([idCur], idCur.m.name + ' - ' + idCur.m.sub); break;
@@ -3204,7 +3212,7 @@ $('idsMode').addEventListener('input', e => {
   const t = e.target;
   if (t.dataset.cfg) {
     const k = t.dataset.cfg;
-    CFG[k] = t.type === 'checkbox' ? t.checked : CFG_NUM.has(k) ? (parseFloat(t.value) || (k === 'photoX' || k === 'photoY' ? 0 : 100)) : t.value;
+    CFG[k] = t.type === 'checkbox' ? t.checked : CFG_NUM.has(k) ? (parseFloat(t.value) || (k === 'photoX' || k === 'photoY' || k === 'titleX' || k === 'titleY' ? 0 : k === 'titleW' ? 55 : 100)) : t.value;
     const rv = document.querySelector('[data-for="' + k + '"]'); if (rv) rv.textContent = (RV_FMT[k] || (v => v))(CFG[k]);
     saveCfg(); redrawCard();
     if (t.dataset.cfg === 'autoEn') renderEnList();
