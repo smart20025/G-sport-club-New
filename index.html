@@ -2898,7 +2898,7 @@ const enName = m => (m.nameEn && String(m.nameEn).trim()) || (CFG.autoEn ? trNam
 const CFG_KEY = 'g1CardCfgV1';
 const CFG_DEF = {
   showAr: true, showEn: true, autoEn: true, showPhoto: true, showBar: true, showSign: true,
-  barSize: 's', dateFmt: 'ymd', side: 'r', textAlign: 'r', fontScale: 100, title: '', titleSize: 100, titleAlign: 'r', titleX: 0, titleY: 0, titleW: 55, arSize: 100, arAlign: '', enSize: 100, enAlign: '',
+  barSize: 's', dateFmt: 'ymd', side: 'r', textAlign: 'r', fontScale: 100, title: '', arWords: '0', enWords: '0', titleSize: 100, titleAlign: 'r', titleX: 0, titleY: 0, titleW: 55, arSize: 100, arAlign: '', enSize: 100, enAlign: '',
   photoScale: 100, photoX: 0, photoY: 0, photoZoom: 100, photoFocus: 50, photoFit: 'cover', photoRound: false, sign1: 'رئيس مجلس الادارة', sign2: 'أ/محمد محمد',
   rows: [{ on: true, label: 'رقم المشترك', field: 'sub', text: '', size: 100, align: '' }, { on: true, label: 'تاريخ الانتهاء', field: 'exp', text: '', size: 100, align: '' }]
 };
@@ -2947,10 +2947,24 @@ function barcodeSvg(v) {
     return s.outerHTML;
   } catch (e) { return ''; }
 }
+// اختصار الاسم لأول n كلمات (ثنائي/ثلاثي/رباعي/خماسي) — "عبد الرحمن" و"El Sayed" بيتحسبوا كلمة واحدة
+function cutName(s, n, lang) {
+  n = parseInt(n) || 0;
+  s = String(s || '').trim();
+  if (!n || !s) return s;
+  const ws = s.split(/\s+/), out = [];
+  for (let i = 0; i < ws.length; i++) {
+    let w = ws[i];
+    const k = lang === 'ar' ? trNorm(w) : w.toLowerCase();
+    if (i + 1 < ws.length && (lang === 'ar' ? (k === 'عبد' || k === 'ابو' || k === 'ام') : (k === 'el' || k === 'abu' || k === 'abd'))) w += ' ' + ws[++i];
+    out.push(w);
+  }
+  return out.slice(0, n).join(' ');
+}
 const BAR = { s: [34, 9.2], m: [41, 11.8], l: [50, 14.5] };
 const TA = { r: 'right', c: 'center', l: 'left' };
 function cardHtml(m, d, photo) {
-  const c = CFG, nm = String(m.name || ''), en = c.showEn ? enName(m) : '';
+  const c = CFG, nm = cutName(String(m.name || ''), c.arWords, 'ar'), en = c.showEn ? cutName(enName(m), c.enWords, 'en') : '';
   const gs = (+c.fontScale || 100) / 100, flip = c.side === 'l';
   const al = a => TA[a] || TA[c.textAlign] || 'right';
   const lines = c.rows.filter(r => r.on).map(r => ({ r, v: fieldVal(r, m, d) })).filter(x => x.v);
@@ -3038,6 +3052,9 @@ function renderIds() {
       <div class="grid"><div class="field"><label>مكان الكلام على الكارت</label><select data-cfg="side"><option value="r">يمين (الصورة شمال)</option><option value="l">شمال (الصورة يمين)</option></select></div>
         <div class="field"><label>محاذاة النص (للكل)</label><select data-cfg="textAlign">${ALN_OPTS(false)}</select></div></div>
       <div class="field"><label>حجم الخط العام <span class="rv" data-for="fontScale"></span></label><input type="range" class="cfg-rng" data-cfg="fontScale" min="60" max="140" step="5"></div>
+      <div class="grid">
+        <div class="field"><label>الاسم العربي — عدد الكلمات</label><select data-cfg="arWords"><option value="0">كامل</option><option value="2">ثنائي</option><option value="3">ثلاثي</option><option value="4">رباعي</option><option value="5">خماسي</option></select></div>
+        <div class="field"><label>الاسم الإنجليزي — عدد الكلمات</label><select data-cfg="enWords"><option value="0">كامل</option><option value="2">ثنائي</option><option value="3">ثلاثي</option><option value="4">رباعي</option><option value="5">خماسي</option></select></div></div>
       <div class="grid"><div class="field"><label>الاسم العربي — الحجم % والمحاذاة</label><div class="cfg-2"><input type="number" data-cfg="arSize" min="40" max="250" step="5"><select data-cfg="arAlign">${ALN_OPTS(true)}</select></div></div>
         <div class="field"><label>الاسم الإنجليزي — الحجم % والمحاذاة</label><div class="cfg-2"><input type="number" data-cfg="enSize" min="40" max="250" step="5"><select data-cfg="enAlign">${ALN_OPTS(true)}</select></div></div></div>
       <div class="cfg-h">🖼 الصورة</div>
