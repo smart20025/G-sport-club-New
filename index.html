@@ -272,7 +272,9 @@ body{align-items:flex-start;justify-content:center;padding:24px 16px}
 .main .ver{margin-top:auto;padding-top:22px}
 @media(max-width:900px){
   body{padding:0}
-  .card.shell{grid-template-columns:1fr;border-radius:0;min-height:100vh}
+  .card.shell{grid-template-columns:minmax(0,1fr);border-radius:0;min-height:100vh;max-width:100vw}
+  .side,.main,.side .tabs,.side-foot{min-width:0;max-width:100%}
+  html,body{overflow-x:hidden;max-width:100vw}
   .side{position:sticky;top:0;z-index:20;max-height:none;overflow:visible;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 12px;border-radius:0;border-inline-end:0;border-bottom:1px solid #fed7aa}
   .side .logo{max-width:70px;margin:0}
   .side .tabs{order:3;flex-basis:100%;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
@@ -869,6 +871,7 @@ onAuthStateChanged(auth, u => {
   else if (!isAdmin && ['dash', 'gate', 'ids'].includes(mode)) setMode('new');
   if (u) {
     if (!gateDir) loadGames();
+    if (isAdmin) loadCfgSrv();
     if (isAdmin || gateDir) startGate();
     if (!unsubFams && !gateDir) unsubFams = onSnapshot(collection(db, 'families'),
        s => { allFams = new Map(s.docs.map(d => [d.id, d.data()])); if (mode === 'dash') renderDash(); if (mode === 'members') renderMembers(); if (mode === 'att') renderRoster(); renderGames(); }, () => {});
@@ -2897,7 +2900,7 @@ const enName = m => (m.nameEn && String(m.nameEn).trim()) || (CFG.autoEn ? trNam
 /* ====== تخصيص الكارت (بيتحفظ على الجهاز) ====== */
 const CFG_KEY = 'g1CardCfgV1';
 const CFG_DEF = {
-  showAr: true, showEn: true, autoEn: true, showPhoto: true, showBar: true, showSign: true,
+  showAr: true, showEn: true, autoEn: true, showPhoto: true, showBg: true, showFrame: true, showBar: true, showSign: true,
   barSize: 's', dateFmt: 'ymd', side: 'r', textAlign: 'r', fontScale: 100, title: '', arWords: '0', enWords: '0', titleSize: 100, titleAlign: 'r', titleX: 0, titleY: 0, titleW: 55, arSize: 100, arAlign: '', enSize: 100, enAlign: '',
   photoScale: 100, photoX: 0, photoY: 0, photoZoom: 100, photoFocus: 50, photoFit: 'cover', photoRound: false, sign1: 'رئيس مجلس الادارة', sign2: 'أ/محمد محمد',
   rows: [{ on: true, label: 'رقم المشترك', field: 'sub', text: '', size: 100, align: '' }, { on: true, label: 'تاريخ الانتهاء', field: 'exp', text: '', size: 100, align: '' }]
@@ -2912,6 +2915,27 @@ function loadCfg() {
 }
 let CFG = loadCfg();
 const saveCfg = () => { try { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); } catch (e) { /* تجاهل */ } };
+// حفظ/تحميل إعدادات الكارت على السيرفر عشان تفضل ثابتة في أي متصفح
+const CFG_DOC = () => doc(db, 'settings', 'cardCfg');
+async function saveCfgSrv() {
+  saveCfg();
+  try {
+    await setDoc(CFG_DOC(), { json: JSON.stringify(CFG), by: (auth.currentUser || {}).email || '', updatedAt: serverTimestamp() });
+    toast('✅ اتحفظت إعدادات الكارت على السيرفر', true);
+    if ($('cfgSrvSt')) $('cfgSrvSt').textContent = '✅ محفوظة على السيرفر ' + new Date().toLocaleTimeString('ar-EG');
+  } catch (e) { toast('❌ ماتحفظتش على السيرفر (تأكد من صلاحيات settings في Firestore)', false, 6000); }
+}
+async function loadCfgSrv() {
+  try {
+    const s = await getDoc(CFG_DOC());
+    if (!s.exists()) return;
+    const o = JSON.parse(s.data().json || 'null');
+    if (!o || typeof o !== 'object') return;
+    CFG = { ...cloneDef(), ...o, rows: Array.isArray(o.rows) ? o.rows : cloneDef().rows };
+    saveCfg();
+    if ($('idQ')) { $('idsMode').innerHTML = ''; renderIds(); if ($('cfgSrvSt')) $('cfgSrvSt').textContent = '✅ اتحملت من السيرفر'; }
+  } catch (e) { /* تجاهل — يفضل المحلي */ }
+}
 // الحقول اللي ينفع تتحط في الكارت: [المفتاح، الاسم، رقمي؟]
 const CF = [['sub', 'كود العضو', 1], ['fam', 'كود الأسرة', 1], ['exp', 'تاريخ الانتهاء', 1], ['join', 'تاريخ الاشتراك', 1], ['status', 'حالة العضوية', 0],
   ['rel', 'الصلة', 0], ['phone', 'التليفون', 1], ['nid', 'الرقم القومي', 1], ['age', 'السن', 1], ['gender', 'النوع', 0],
@@ -2995,8 +3019,9 @@ function cardHtml(m, d, photo) {
   const ptop = 21.97 + (50.19 - ph) / 2 + (+c.photoY || 0), poff = 6.86 + (28.9 - pw) / 2 + (flip ? -(+c.photoX || 0) : (+c.photoX || 0));
   const pst = `${flip ? 'right' : 'left'}:${poff.toFixed(2)}%;top:${ptop.toFixed(2)}%;width:${pw.toFixed(2)}%;height:${ph.toFixed(2)}%${c.photoRound ? ';border-radius:4cqw' : ''}`;
   const pim = `object-fit:${c.photoFit === 'contain' ? 'contain' : 'cover'};object-position:50% ${+c.photoFocus || 50}%;transform:scale(${((+c.photoZoom || 100) / 100).toFixed(2)})`;
-  return `<div class="idc"><div class="idc-in${flip ? ' flip' : ''}"><img class="idc-bgi" src="card-bg.jpg" alt="" onerror="this.remove()">
-    ${c.showPhoto ? `<div class="idc-photo" style="${pst}"><img src="${photo || NO_PHOTO}" style="${pim}" alt=""></div>` : ''}
+  const bgOn = c.showBg !== false, frOn = c.showFrame !== false;
+  return `<div class="idc"${bgOn ? '' : ' style="background:transparent"'}><div class="idc-in${flip ? ' flip' : ''}">${bgOn ? '<img class="idc-bgi" src="card-bg.jpg" alt="" onerror="this.remove()">' : ''}
+    ${c.showPhoto ? `<div class="idc-photo" style="${pst}${frOn ? '' : ';background:transparent'}"><img src="${photo || NO_PHOTO}" style="${pim}" alt=""></div>` : ''}
     <img class="idc-logo" src="card-logo.svg" alt="" onerror="this.onerror=null;this.src='logo.png';this.style.filter='brightness(0) invert(1)';this.style.objectFit='contain'">
     ${titleHtml}
     <div class="idc-info">${fs ? `<div class="idc-name" style="font-size:${(fs * gs * (+c.arSize || 100) / 100).toFixed(2)}cqw;text-align:${al(c.arAlign)}">${esc(nm)}</div>` : ''}${fe ? `<div class="idc-en" style="font-size:${(fe * gs * (+c.enSize || 100) / 100).toFixed(2)}cqw;text-align:${al(c.enAlign)}">${esc(en)}</div>` : ''}${lineHtml}</div>
@@ -3037,7 +3062,8 @@ function renderIds() {
   </div>
   <div>
     <details class="sec" open id="idCfgBox"><summary>🎨 تخصيص الكارت</summary>
-      <div class="cfg-chk">${chk('showAr', 'الاسم بالعربي')}${chk('showEn', 'الاسم بالإنجليزي')}${chk('autoEn', 'ترجمة تلقائية للي ملوش اسم إنجليزي')}${chk('showPhoto', 'الصورة')}${chk('showBar', 'الباركود')}${chk('showSign', 'توقيع رئيس المجلس (أسفل يسار)')}</div>
+      <div class="cfg-chk">${chk('showAr', 'الاسم بالعربي')}${chk('showEn', 'الاسم بالإنجليزي')}${chk('autoEn', 'ترجمة تلقائية للي ملوش اسم إنجليزي')}${chk('showPhoto', 'الصورة')}${chk('showFrame', 'إطار الصورة (الخلفية الكريمي وراها)')}${chk('showBg', 'خلفية الكارت (الصورة والتصميم)')}${chk('showBar', 'الباركود')}${chk('showSign', 'توقيع رئيس المجلس (أسفل يسار)')}</div>
+      <div class="grid" style="margin:8px 0 12px"><button type="button" id="cfgSaveSrv">💾 حفظ الإعدادات (على السيرفر لكل المتصفحات)</button><div class="hint" id="cfgSrvSt" style="align-self:center">لسه ماتحفظتش على السيرفر.</div></div>
       <div class="field" style="margin-top:6px"><label>📝 عنوان أعلى الكارت (نص حر — سيبه فاضي لو مش عايزه)</label>
         <input type="text" data-cfg="title" maxlength="60" placeholder="مثال: بطاقة عضوية 2026" autocomplete="off">
         <div class="cfg-2" style="margin-top:6px"><input type="number" data-cfg="titleSize" min="40" max="250" step="5" title="الحجم %"><select data-cfg="titleAlign">${ALN_OPTS(false)}</select></div>
@@ -3073,7 +3099,7 @@ function renderIds() {
       <label>الحقول تحت الاسم (بالترتيب)</label>
       <div id="cfgRows"></div>
       <div class="grid"><button type="button" class="btn-outline" id="cfgAdd">➕ إضافة حقل</button><button type="button" class="btn-outline" id="cfgReset">↺ رجوع للافتراضي</button></div>
-      <div class="hint" style="margin-top:8px">التخصيص بيتحفظ على الجهاز اللي بتطبع منه. الحقل ممكن يكون من بيانات العضو أو "نص ثابت" (زي: مشترك سنوي). لو سبت العنوان فاضي بيظهر الحقل من غير عنوان. الأحسن ما يزيدش عن 4–5 حقول.</div>
+      <div class="hint" style="margin-top:8px">التخصيص بيتحفظ على المتصفح تلقائيًا، واضغط "💾 حفظ الإعدادات" عشان يتحفظ على السيرفر ويفتح بنفس الشكل في أي متصفح أو جهاز تاني. الحقل ممكن يكون من بيانات العضو أو "نص ثابت" (زي: مشترك سنوي). لو سبت العنوان فاضي بيظهر الحقل من غير عنوان. الأحسن ما يزيدش عن 4–5 حقول.</div>
     </details>
     <details class="sec" id="idEnBox"><summary>🔤 الأسماء الإنجليزية</summary>
       <div class="hint" style="margin-bottom:10px">الاسم المقترح تلقائي (كتابة حروف الاسم العربي بالإنجليزي) وممكن يحتاج تعديل، خصوصًا الأسماء النادرة. الخانات الصفراء مقترحة ولسه ماتحفظتش.</div>
@@ -3195,6 +3221,7 @@ $('idsMode').addEventListener('click', e => {
     case 'idFind': idSearch(); break;
     case 'titleReset': Object.assign(CFG, { titleX: 0, titleY: 0, titleW: 55 }); saveCfg(); syncCfgUi(); drawIdCard(); break;
     case 'cfgAdd': CFG.rows.push({ on: true, label: '', field: 'phone', text: '', size: 100, align: '' }); saveCfg(); renderCfgRows(); drawIdCard(); break;
+    case 'cfgSaveSrv': saveCfgSrv(); break;
     case 'cfgReset': if (confirm('رجوع كل إعدادات الكارت للافتراضي؟')) { CFG = cloneDef(); saveCfg(); $('idsMode').innerHTML = ''; renderIds(); } break;
     case 'idPrint1': if (idCur && !idCur.sample) printCards([idCur], idCur.m.name + ' - ' + idCur.m.sub); break;
     case 'idPrintFam': if (idCur && !idCur.sample) printCards((idCur.d.members || []).map(m => ({ m, d: idCur.d })), 'أسرة ' + idCur.d.code); break;
