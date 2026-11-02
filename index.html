@@ -2900,7 +2900,7 @@ const enName = m => (m.nameEn && String(m.nameEn).trim()) || (CFG.autoEn ? trNam
 /* ====== تخصيص الكارت (بيتحفظ على الجهاز) ====== */
 const CFG_KEY = 'g1CardCfgV1';
 const CFG_DEF = {
-  showAr: true, showEn: true, autoEn: true, showPhoto: true, showBg: true, showFrame: true, showBar: true, showSign: true,
+  showAr: true, showEn: true, autoEn: true, showPhoto: true, showBg: true, showFrame: true, showLogo: true, showBar: true, showSign: true,
   barSize: 's', dateFmt: 'ymd', side: 'r', textAlign: 'r', fontScale: 100, title: '', arWords: '0', enWords: '0', titleSize: 100, titleAlign: 'r', titleX: 0, titleY: 0, titleW: 55, arSize: 100, arAlign: '', enSize: 100, enAlign: '',
   photoScale: 100, photoX: 0, photoY: 0, photoZoom: 100, photoFocus: 50, photoFit: 'cover', photoRound: false, sign1: 'رئيس مجلس الادارة', sign2: 'أ/محمد محمد',
   rows: [{ on: true, label: 'رقم المشترك', field: 'sub', text: '', size: 100, align: '' }, { on: true, label: 'تاريخ الانتهاء', field: 'exp', text: '', size: 100, align: '' }]
@@ -3022,7 +3022,7 @@ function cardHtml(m, d, photo) {
   const bgOn = c.showBg !== false, frOn = c.showFrame !== false;
   return `<div class="idc"${bgOn ? '' : ' style="background:transparent"'}><div class="idc-in${flip ? ' flip' : ''}">${bgOn ? '<img class="idc-bgi" src="card-bg.jpg" alt="" onerror="this.remove()">' : ''}
     ${c.showPhoto ? `<div class="idc-photo" style="${pst}${frOn ? '' : ';background:transparent'}"><img src="${photo || NO_PHOTO}" style="${pim}" alt=""></div>` : ''}
-    <img class="idc-logo" src="card-logo.svg" alt="" onerror="this.onerror=null;this.src='logo.png';this.style.filter='brightness(0) invert(1)';this.style.objectFit='contain'">
+    ${c.showLogo !== false ? `<img class="idc-logo" src="card-logo.svg" alt="" onerror="this.onerror=null;this.src='logo.png';this.style.filter='brightness(0) invert(1)';this.style.objectFit='contain'">` : ''}
     ${titleHtml}
     <div class="idc-info">${fs ? `<div class="idc-name" style="font-size:${(fs * gs * (+c.arSize || 100) / 100).toFixed(2)}cqw;text-align:${al(c.arAlign)}">${esc(nm)}</div>` : ''}${fe ? `<div class="idc-en" style="font-size:${(fe * gs * (+c.enSize || 100) / 100).toFixed(2)}cqw;text-align:${al(c.enAlign)}">${esc(en)}</div>` : ''}${lineHtml}</div>
     ${sign}${bar ? `<div class="idc-bar" style="width:${bw.toFixed(1)}%;height:${bh}%">${bar}</div>` : ''}</div></div>`;
@@ -3062,7 +3062,7 @@ function renderIds() {
   </div>
   <div>
     <details class="sec" open id="idCfgBox"><summary>🎨 تخصيص الكارت</summary>
-      <div class="cfg-chk">${chk('showAr', 'الاسم بالعربي')}${chk('showEn', 'الاسم بالإنجليزي')}${chk('autoEn', 'ترجمة تلقائية للي ملوش اسم إنجليزي')}${chk('showPhoto', 'الصورة')}${chk('showFrame', 'إطار الصورة (الخلفية الكريمي وراها)')}${chk('showBg', 'خلفية الكارت (الصورة والتصميم)')}${chk('showBar', 'الباركود')}${chk('showSign', 'توقيع رئيس المجلس (أسفل يسار)')}</div>
+      <div class="cfg-chk">${chk('showAr', 'الاسم بالعربي')}${chk('showEn', 'الاسم بالإنجليزي')}${chk('autoEn', 'ترجمة تلقائية للي ملوش اسم إنجليزي')}${chk('showPhoto', 'الصورة')}${chk('showFrame', 'إطار الصورة (الخلفية الكريمي وراها)')}${chk('showBg', 'خلفية الكارت (الصورة والتصميم)')}${chk('showLogo', 'لوجو النادي')}${chk('showBar', 'الباركود')}${chk('showSign', 'توقيع رئيس المجلس (أسفل يسار)')}</div>
       <div class="grid" style="margin:8px 0 12px"><button type="button" id="cfgSaveSrv">💾 حفظ الإعدادات (على السيرفر لكل المتصفحات)</button><div class="hint" id="cfgSrvSt" style="align-self:center">لسه ماتحفظتش على السيرفر.</div></div>
       <div class="field" style="margin-top:6px"><label>📝 عنوان أعلى الكارت (نص حر — سيبه فاضي لو مش عايزه)</label>
         <input type="text" data-cfg="title" maxlength="60" placeholder="مثال: بطاقة عضوية 2026" autocomplete="off">
