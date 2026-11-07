@@ -695,6 +695,9 @@ html{-webkit-text-size-adjust:100%}
   <div class="field"><label>مين يظهر في التقرير</label>
     <select id="mqFam"><option value="none">الأعضاء الأساسيين فقط</option><option value="merge">الأساسي + نواقص أسرته في عمود (فحص الأسرة)</option><option value="rows">الأساسي + كل فرد من أسرته في سطر تحته</option><option value="flat">كل الأفراد (كل فرد في سطر مستقل)</option></select>
     <div class="hint">البنود بتتفحص حسب نوع الفرد: الأبناء (رقم قومي، نوع، صورة) — الزوج/الزوجة (كل البنود ما عدا تاريخ الانتهاء) — الإضافي (تليفون، رقم قومي، نوع، صورة). البند غير المنطبق بيظهر "—".</div></div>
+  <div class="field"><label>تقسيم التقرير على الأسر</label>
+    <select id="mqPer"><option value="0">جدول واحد لكل الأعضاء</option><option value="1">كل أسرة في كشف مستقل (ورا بعض)</option><option value="page">كل أسرة في كشف مستقل وفي صفحة لوحدها</option></select>
+    <div class="hint">لما تختار تقسيم الأسر، كل أسرة بتظهر بعنوان (كود الأسرة واسم العضو الأساسي) وجدول بأفرادها، بغض النظر عن اختيار "مين يظهر".</div></div>
   <label>🔍 بنود الفحص (ناقص / كامل) — سيبها فاضية لو عايز كشف بيانات من غير فحص</label>
   <div class="mq-chk" id="mqItems"></div>
   <div class="mq-act"><button type="button" class="btn-outline" id="mqAll">✔ الكل</button><button type="button" class="btn-outline" id="mqNone">✖ مسح</button></div>
@@ -1557,7 +1560,7 @@ const MQ_COLS = [
 const MQ_NUM = new Set(['fam', 'nid', 'birth', 'join', 'exp']);
 const MQ_KEY = 'g1MqCfgV1';
 const MQ_DEF = { items: ['phone', 'nid', 'job', 'qual', 'addr', 'expiry'], mode: 'both', only: '1', sort: 'code', showPhone: true, showCount: true, fam: 'merge',
-  title: '', sub: '', cols: [], blanks: [], tall: false, land: false, showNo: true, showSum: true, showStatus: true };
+  title: '', sub: '', per: '0', cols: [], blanks: [], tall: false, land: false, showNo: true, showSum: true, showStatus: true };
 let MQ = (() => {
   try {
     const s = JSON.parse(localStorage.getItem(MQ_KEY) || 'null');
@@ -1573,7 +1576,7 @@ function openMq() {
   $('mqItems').innerHTML = MQ_ITEMS.map(x => `<label><input type="checkbox" data-mq="${x[0]}"${sel.has(x[0]) ? ' checked' : ''}> ${x[1]}</label>`).join('');
   $('mqCols').innerHTML = MQ_COLS.map(x => `<label><input type="checkbox" data-mqc="${x[0]}"${cs.has(x[0]) ? ' checked' : ''}> ${x[1]}</label>`).join('');
   $('mqMode').value = MQ.mode; $('mqOnly').value = MQ.only; $('mqSort').value = MQ.sort; $('mqFam').value = MQ.fam || 'merge';
-  $('mqTitle').value = MQ.title || ''; $('mqSub').value = MQ.sub || '';
+  $('mqPer').value = MQ.per || '0'; $('mqTitle').value = MQ.title || ''; $('mqSub').value = MQ.sub || '';
   $('mqPhone').checked = !!MQ.showPhone; $('mqCount').checked = !!MQ.showCount; $('mqNo').checked = MQ.showNo !== false;
   $('mqStat').checked = MQ.showStatus !== false; $('mqSum').checked = MQ.showSum !== false; $('mqTall').checked = !!MQ.tall; $('mqLand').checked = !!MQ.land;
   renderMqBlanks();
@@ -1590,7 +1593,7 @@ async function runMq() {
   const colKeys = [...document.querySelectorAll('#mqCols input:checked')].map(i => i.dataset.mqc);
   if ($('mqBlankIn').value.trim()) addMqBlank();
   MQ = { items: keys, cols: colKeys, blanks: MQ.blanks, mode: $('mqMode').value, only: $('mqOnly').value, sort: $('mqSort').value, showPhone: $('mqPhone').checked, showCount: $('mqCount').checked,
-    fam: $('mqFam').value, title: $('mqTitle').value.trim(), sub: $('mqSub').value.trim(), tall: $('mqTall').checked, land: $('mqLand').checked,
+    fam: $('mqFam').value, per: $('mqPer').value, title: $('mqTitle').value.trim(), sub: $('mqSub').value.trim(), tall: $('mqTall').checked, land: $('mqLand').checked,
     showNo: $('mqNo').checked, showSum: $('mqSum').checked, showStatus: $('mqStat').checked };
   try { localStorage.setItem(MQ_KEY, JSON.stringify(MQ)); } catch (e) { /* تجاهل */ }
   const noCheck = !keys.length;
@@ -1604,7 +1607,7 @@ async function runMq() {
     catch (e) { toast('⚠ تعذر فحص الصور فاتشالت من التقرير', false, 6000); its = its.filter(x => x[0] !== 'photo'); }
   }
   $('mqModal').classList.add('hidden');
-  const fm = MQ.fam || 'merge', flat = fm === 'flat', hasCheck = its.length > 0;
+  const per = MQ.per || '0', fm = per !== '0' ? 'flat' : (MQ.fam || 'merge'), flat = fm === 'flat', hasCheck = its.length > 0;
   const ALLR = ['main', 'spouse', 'extra', 'kid'];
   // البنود المنطبقة على كل نوع فرد
   const APPL = { phone: ['main', 'spouse', 'extra'], nid: ALLR, job: ['main', 'spouse'], qual: ['main', 'spouse'], nat: ['main', 'spouse'], addr: ['main', 'spouse'], gender: ALLR, expiry: ['main'], photo: ALLR };
@@ -1653,11 +1656,21 @@ async function runMq() {
     const st = (sub ? 'background:#f8fafc;' : (fm === 'rows' ? 'border-top:2px solid #0f766e;' : '')) + (MQ.tall ? 'height:34px;' : '');
     return `<tr style="${st}">${cells.map((c, i) => `<td${i >= cells.length - blanks.length && blanks.length ? ' style="min-width:70px"' : ''}>${c}</td>`).join('')}</tr>`;
   };
-  const trs = [];
-  rows.forEach((r, i) => {
-    trs.push(mkRow(r, i + 1, false, r));
-    if (fm === 'rows') r.others.filter(o => okN(o.miss.length)).forEach(o => trs.push(mkRow(o, '', true, r)));
-  });
+  const mkTable = rs => {
+    const trs = [];
+    rs.forEach((r, i) => {
+      trs.push(mkRow(r, i + 1, false, r));
+      if (fm === 'rows') r.others.filter(o => okN(o.miss.length)).forEach(o => trs.push(mkRow(o, '', true, r)));
+    });
+    return trs.length ? `<table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs.join('')}</tbody></table>` : '';
+  };
+  let tableHtml;
+  if (per !== '0') {
+    const gm = new Map();
+    rows.forEach(r => { const k = r.d.code; if (!gm.has(k)) gm.set(k, []); gm.get(k).push(r); });
+    const gs = [...gm.values()].sort((x, y) => sortCode(x[0].d, y[0].d));
+    tableHtml = gs.map((rs, gi) => `<div${per === 'page' && gi ? ' style="break-before:page;page-break-before:always"' : ' style="margin-top:14px"'}><h3>أسرة ${esc(rs[0].d.code)} — ${vv(rs[0].d.mainName || (rs[0].d.members || [])[0] && rs[0].d.members[0].name)} <small>(${rs.length} فرد)</small></h3>${mkTable(rs)}</div>`).join('');
+  } else tableHtml = mkTable(rows);
   const total = all.length, complete = all.filter(r => !r.total).length, personsBad = persons.filter(p => p.miss.length).length;
   let kp;
   if (!hasCheck) kp = rpK(rows.length, flat ? 'عدد الأفراد' : 'عدد الأسر') + (fm === 'rows' ? rpK(persons.length, 'إجمالي الأفراد') : '');
@@ -1666,7 +1679,7 @@ async function runMq() {
   const emptyMsg = MQ.only === '1' ? 'ممتاز! مفيش نواقص في البنود المختارة.' : 'مفيش نتائج بالاختيارات دي.';
   const body = (MQ.showSum ? `<div class="rp-kpis">${kp}</div>` : '') +
     (hasCheck && MQ.showSum ? rpS('عدد الناقص في كل بند', TB(['البند', 'عدد الناقص', 'من إجمالي', 'النسبة'], its.map((x, i) => [esc(x[1]), `<b style="color:${cnt[i] ? '#dc2626' : '#16a34a'}">${cnt[i]}</b>`, base[i], pct(cnt[i], base[i]) + '%']))) : '') +
-    (trs.length ? `<table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs.join('')}</tbody></table>` : `<div class="hint">${emptyMsg}</div>`);
+    (tableHtml || `<div class="hint">${emptyMsg}</div>`);
   const kind = MQ.only === '1' ? 'تقرير نواقص' : MQ.only === 'full' ? 'تقرير بيانات كاملة' : 'كشف';
   const who = flat ? 'الأفراد' : fm === 'none' ? 'الأعضاء الأساسيين' : 'الأعضاء وأسرهم';
   const title = MQ.title || (kind + ' ' + who);
