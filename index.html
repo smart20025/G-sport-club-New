@@ -684,21 +684,37 @@ html{-webkit-text-size-adjust:100%}
   <div class="grid"><button type="button" id="waSend">إرسال عبر واتساب</button><button type="button" class="btn-outline" id="waClose">إلغاء</button></div>
 </div></div>
 <div id="mqModal" class="hidden"><div class="mq-box">
-  <h2 style="margin-top:0">🧩 تقرير نواقص الأعضاء الأساسيين</h2>
-  <div class="hint" style="margin-bottom:10px">اختار البنود اللي عايز تفحصها وشكل التقرير، وبعدين اضغط "إنشاء التقرير". اختياراتك بتتحفظ للمرة الجاية.</div>
-  <label>البنود المطلوب فحصها</label>
+  <h2 style="margin-top:0">🧩 تقرير مخصص للأعضاء</h2>
+  <div class="hint" style="margin-bottom:10px">ظبّط التقرير زي ما تحب، وبعدين اضغط "إنشاء التقرير". اختياراتك بتتحفظ للمرة الجاية.</div>
+  <div class="field"><label>عنوان التقرير (بيظهر في الهيدر)</label><input type="text" id="mqTitle" placeholder="سيب فاضي للعنوان التلقائي — أو اكتب عنوانك"></div>
+  <div class="field"><label>سطر فرعي تحت العنوان (اختياري)</label><input type="text" id="mqSub" placeholder="مثال: كشف المتابعة لشهر نوفمبر"></div>
+  <div class="grid">
+    <div class="field"><label>الأعضاء المعروضين</label><select id="mqOnly"><option value="1">الناقصين فقط</option><option value="full">الكاملين فقط</option><option value="0">الكل (كامل وناقص)</option></select></div>
+    <div class="field"><label>الترتيب</label><select id="mqSort"><option value="code">حسب الكود</option><option value="name">حسب الاسم</option><option value="miss">الأكثر نقصًا أولًا</option></select></div>
+  </div>
+  <div class="field"><label>مين يظهر في التقرير</label>
+    <select id="mqFam"><option value="none">الأعضاء الأساسيين فقط</option><option value="merge">الأساسي + نواقص أسرته في عمود (فحص الأسرة)</option><option value="rows">الأساسي + كل فرد من أسرته في سطر تحته</option><option value="flat">كل الأفراد (كل فرد في سطر مستقل)</option></select>
+    <div class="hint">البنود بتتفحص حسب نوع الفرد: الأبناء (رقم قومي، نوع، صورة) — الزوج/الزوجة (كل البنود ما عدا تاريخ الانتهاء) — الإضافي (تليفون، رقم قومي، نوع، صورة). البند غير المنطبق بيظهر "—".</div></div>
+  <label>🔍 بنود الفحص (ناقص / كامل) — سيبها فاضية لو عايز كشف بيانات من غير فحص</label>
   <div class="mq-chk" id="mqItems"></div>
   <div class="mq-act"><button type="button" class="btn-outline" id="mqAll">✔ الكل</button><button type="button" class="btn-outline" id="mqNone">✖ مسح</button></div>
-  <div class="field"><label>شكل عرض النواقص</label>
+  <div class="field"><label>شكل عرض نتيجة الفحص</label>
     <select id="mqMode"><option value="both">أعمدة ✓/✗ + عمود بالناقص بالظبط</option><option value="cols">أعمدة ✓/✗ لكل بند فقط</option><option value="text">عمود واحد بالناقص بالظبط فقط</option></select></div>
-  <div class="grid">
-    <div class="field"><label>الأعضاء المعروضين</label><select id="mqOnly"><option value="1">الناقصين فقط</option><option value="0">الكل (كامل وناقص)</option></select></div>
-    <div class="field"><label>الترتيب</label><select id="mqSort"><option value="code">حسب الكود</option><option value="miss">الأكثر نقصًا أولًا</option></select></div>
+  <label>📋 أعمدة بيانات إضافية (بتظهر القيمة نفسها)</label>
+  <div class="mq-chk" id="mqCols"></div>
+  <div class="mq-act"><button type="button" class="btn-outline" id="mqColsAll">✔ الكل</button><button type="button" class="btn-outline" id="mqColsNone">✖ مسح</button></div>
+  <label>➕ أعمدة فاضية بأسماء من عندك (للكتابة باليد أو الملاحظات)</label>
+  <div style="display:flex;gap:8px;margin-bottom:8px"><input type="text" id="mqBlankIn" placeholder="اسم العمود — مثال: توقيع / ملاحظات / تم السداد" style="flex:1"><button type="button" id="mqBlankAdd" style="padding:8px 14px">إضافة</button></div>
+  <div id="mqBlanks" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+  <div class="mq-chk">
+    <label><input type="checkbox" id="mqNo"> عمود الترقيم (م)</label>
+    <label><input type="checkbox" id="mqPhone"> إظهار التليفون</label>
+    <label><input type="checkbox" id="mqCount"> عدد النواقص</label>
+    <label><input type="checkbox" id="mqStat"> عمود الحالة (كامل/ناقص)</label>
+    <label><input type="checkbox" id="mqSum"> ملخص الأعداد أعلى التقرير</label>
+    <label><input type="checkbox" id="mqTall"> صفوف عالية (للكتابة)</label>
+    <label><input type="checkbox" id="mqLand"> الورقة بالعرض (Landscape)</label>
   </div>
-  <div class="field"><label>أفراد الأسرة (الزوج/الزوجة، الأبناء، العضو الإضافي)</label>
-    <select id="mqFam"><option value="merge">يفحصهم ويسجل نواقصهم على العضو الأساسي (عمود "نواقص باقي الأسرة")</option><option value="rows">يفحصهم ويعرض كل فرد في سطر تحت العضو الأساسي</option><option value="none">العضو الأساسي فقط</option></select>
-    <div class="hint">البنود بتتفحص حسب نوع الفرد: الأبناء (رقم قومي، نوع، صورة) — الزوج/الزوجة (كل البنود ما عدا تاريخ الانتهاء) — الإضافي (تليفون، رقم قومي، نوع، صورة). البند غير المنطبق بيظهر "—".</div></div>
-  <div class="mq-chk"><label><input type="checkbox" id="mqPhone"> إظهار التليفون</label><label><input type="checkbox" id="mqCount"> إظهار عدد النواقص</label></div>
   <div class="hint" style="margin-top:8px">التقرير بيتأثر بفلتر الفترة في لوحة التحكم.</div>
   <div class="mq-foot grid"><button type="button" id="mqGo">📄 إنشاء التقرير</button><button type="button" class="btn-outline" id="mqCancel">إلغاء</button></div>
 </div></div>
@@ -1274,7 +1290,7 @@ const REPORTS = [
   ['games', '⚽', 'كشف الألعاب', 'المشتركين في كل لعبة'],
   ['ages', '🎂', 'الفئات العمرية', 'توزيع الأعمار وقائمة الأبناء'],
   ['monthly', '📅', 'التسجيلات الشهرية', 'جدول ورسم شهري وتراكمي'],
-  ['memq', '🧩', 'نواقص الأعضاء الأساسيين', 'كود واسم وتليفون وعلامة ✓/✗ — وتقدر تخصص البنود'],
+  ['memq', '🧩', 'تقرير مخصص (ناقص / كامل / الكل)', 'اختار الأعضاء والأعمدة والعنوان وأعمدة فاضية بأسمائك'],
   ['quality', '🧹', 'جودة البيانات', 'النواقص مع الأكواد للمراجعة'],
   ['nophoto', '🖼', 'الصور غير المضافة', 'الأعضاء اللي ملهمش صورة: الكود والاسم والعدد'],
   ['birthdays', '🎉', 'أعياد ميلاد الشهر', 'مواليد الشهر الحالي']
@@ -1368,10 +1384,11 @@ function exportCsv() {
 let curReport = null;
 const baseTitle = document.title;
 const rpHead = (title, sub, meta) => `<div class="pf-head"><img src="logo.png" alt=""><div class="pf-title"><h1>${esc(title)}</h1><div class="rp-sub">${esc(sub || '')}</div></div><div class="pf-meta">${meta || `تاريخ الإصدار: ${new Date().toLocaleDateString('en-GB')}<br>${esc(rangeLabel())}<br>أصدره: ${esc((auth.currentUser || {}).email || '')}`}</div></div>`;
-function showReport(title, sub, body, meta) {
+function showReport(title, sub, body, meta, opts) {
   const html = `<div class="pf rp">${rpHead(title, sub, meta)}${body}<div class="rp-end">— نهاية التقرير — G1 Sports Club</div></div>`;
-  curReport = { html, title };
+  curReport = { html, title, land: !!(opts && opts.land) };
   $('rpPaper').innerHTML = html;
+  $('rpPaper').style.width = curReport.land ? '297mm' : '';
   $('rpModal').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
   $('rpScroll').scrollTop = 0;
@@ -1383,7 +1400,9 @@ $('rpPrint').addEventListener('click', () => {
   if (!curReport) return;
   $('printArea').innerHTML = curReport.html;
   document.title = 'G1-' + curReport.title + '-' + ymd(new Date());
-  window.addEventListener('afterprint', () => { document.title = baseTitle; }, { once: true });
+  let ps = null;
+  if (curReport.land) { ps = document.createElement('style'); ps.textContent = '@page{size:A4 landscape;margin:12mm}'; document.head.appendChild(ps); }
+  window.addEventListener('afterprint', () => { document.title = baseTitle; if (ps) ps.remove(); }, { once: true });
   window.print();
 });
 
@@ -1505,7 +1524,7 @@ const BUILD = {
       : '<div class="hint">مفيش أعياد ميلاد الشهر ده.</div>' };
   }
 };
-/* ====== تقرير نواقص الأعضاء الأساسيين (قابل للتخصيص) ====== */
+/* ====== التقرير المخصص للأعضاء (ناقص / كامل / الكل + أعمدة + عنوان) ====== */
 // [المفتاح، الاسم الكامل، الاسم المختصر للعمود، دالة الفحص (true = كامل)]
 const MQ_ITEMS = [
   ['phone', 'التليفون', 'تليفون', m => !!m.phone],
@@ -1518,34 +1537,74 @@ const MQ_ITEMS = [
   ['expiry', 'تاريخ انتهاء العضوية', 'انتهاء', (m, d) => !!d.expiryDate],
   ['photo', 'الصورة', 'صورة', m => photoIds.has(m.sub)]
 ];
+// أعمدة بيانات إضافية: [المفتاح، العنوان، دالة القيمة]
+const MQ_COLS = [
+  ['fam', 'كود الأسرة', (m, d) => d.code],
+  ['rel', 'الصلة', m => m.rel],
+  ['gender', 'النوع', m => m.gender || (parseNid(m.nid || '') || {}).gender],
+  ['age', 'السن', m => { const p = parseNid(m.nid || ''); return p ? p.age : ''; }],
+  ['birth', 'تاريخ الميلاد', m => { const p = parseNid(m.nid || ''); return p ? p.birth.toLocaleDateString('en-GB') : ''; }],
+  ['nid', 'الرقم القومي', m => m.nid],
+  ['job', 'المهنة', m => m.job],
+  ['qual', 'المؤهل', m => m.qual],
+  ['nat', 'الجنسية', m => m.nat],
+  ['addr', 'العنوان', m => m.addr],
+  ['games', 'الألعاب', m => m.games],
+  ['join', 'تاريخ الاشتراك', (m, d) => d.memberDate ? fd(d.memberDate) : ''],
+  ['exp', 'تاريخ الانتهاء', (m, d) => d.expiryDate ? fd(d.expiryDate) : ''],
+  ['status', 'حالة العضوية', (m, d) => d.expiryDate ? memStatus(d) : 'غير محدد']
+];
+const MQ_NUM = new Set(['fam', 'nid', 'birth', 'join', 'exp']);
 const MQ_KEY = 'g1MqCfgV1';
-const MQ_DEF = { items: ['phone', 'nid', 'job', 'qual', 'addr', 'expiry'], mode: 'both', only: true, sort: 'code', showPhone: true, showCount: true, fam: 'merge' };
+const MQ_DEF = { items: ['phone', 'nid', 'job', 'qual', 'addr', 'expiry'], mode: 'both', only: '1', sort: 'code', showPhone: true, showCount: true, fam: 'merge',
+  title: '', sub: '', cols: [], blanks: [], tall: false, land: false, showNo: true, showSum: true, showStatus: true };
 let MQ = (() => {
-  try { const s = JSON.parse(localStorage.getItem(MQ_KEY) || 'null'); if (s && typeof s === 'object') return { ...MQ_DEF, ...s }; } catch (e) { /* تجاهل */ }
+  try {
+    const s = JSON.parse(localStorage.getItem(MQ_KEY) || 'null');
+    if (s && typeof s === 'object') { const o = { ...MQ_DEF, ...s }; o.only = o.only === true ? '1' : o.only === false ? '0' : String(o.only); return o; }
+  } catch (e) { /* تجاهل */ }
   return { ...MQ_DEF };
 })();
+function renderMqBlanks() {
+  $('mqBlanks').innerHTML = MQ.blanks.map((b, i) => `<span class="badge" style="display:inline-flex;align-items:center;gap:6px">${esc(b)} <button type="button" class="ic" data-bdel="${i}" style="padding:0 6px;min-height:24px" title="حذف">✕</button></span>`).join('') || '<span class="hint">مفيش أعمدة فاضية مضافة</span>';
+}
 function openMq() {
-  const sel = new Set(MQ.items);
+  const sel = new Set(MQ.items), cs = new Set(MQ.cols);
   $('mqItems').innerHTML = MQ_ITEMS.map(x => `<label><input type="checkbox" data-mq="${x[0]}"${sel.has(x[0]) ? ' checked' : ''}> ${x[1]}</label>`).join('');
-  $('mqMode').value = MQ.mode; $('mqOnly').value = MQ.only ? '1' : '0'; $('mqSort').value = MQ.sort;
-  $('mqPhone').checked = !!MQ.showPhone; $('mqCount').checked = !!MQ.showCount; $('mqFam').value = MQ.fam || 'merge';
+  $('mqCols').innerHTML = MQ_COLS.map(x => `<label><input type="checkbox" data-mqc="${x[0]}"${cs.has(x[0]) ? ' checked' : ''}> ${x[1]}</label>`).join('');
+  $('mqMode').value = MQ.mode; $('mqOnly').value = MQ.only; $('mqSort').value = MQ.sort; $('mqFam').value = MQ.fam || 'merge';
+  $('mqTitle').value = MQ.title || ''; $('mqSub').value = MQ.sub || '';
+  $('mqPhone').checked = !!MQ.showPhone; $('mqCount').checked = !!MQ.showCount; $('mqNo').checked = MQ.showNo !== false;
+  $('mqStat').checked = MQ.showStatus !== false; $('mqSum').checked = MQ.showSum !== false; $('mqTall').checked = !!MQ.tall; $('mqLand').checked = !!MQ.land;
+  renderMqBlanks();
   $('mqModal').classList.remove('hidden');
+}
+function addMqBlank() {
+  const v = $('mqBlankIn').value.trim();
+  if (!v) return;
+  if (MQ.blanks.length >= 12) { toast('أقصى عدد 12 عمود فاضي', false); return; }
+  MQ.blanks.push(v); $('mqBlankIn').value = ''; renderMqBlanks(); $('mqBlankIn').focus();
 }
 async function runMq() {
   const keys = [...document.querySelectorAll('#mqItems input:checked')].map(i => i.dataset.mq);
-  if (!keys.length) { toast('اختار بند واحد على الأقل', false); return; }
-  MQ = { items: keys, mode: $('mqMode').value, only: $('mqOnly').value === '1', sort: $('mqSort').value, showPhone: $('mqPhone').checked, showCount: $('mqCount').checked, fam: $('mqFam').value };
+  const colKeys = [...document.querySelectorAll('#mqCols input:checked')].map(i => i.dataset.mqc);
+  if ($('mqBlankIn').value.trim()) addMqBlank();
+  MQ = { items: keys, cols: colKeys, blanks: MQ.blanks, mode: $('mqMode').value, only: $('mqOnly').value, sort: $('mqSort').value, showPhone: $('mqPhone').checked, showCount: $('mqCount').checked,
+    fam: $('mqFam').value, title: $('mqTitle').value.trim(), sub: $('mqSub').value.trim(), tall: $('mqTall').checked, land: $('mqLand').checked,
+    showNo: $('mqNo').checked, showSum: $('mqSum').checked, showStatus: $('mqStat').checked };
   try { localStorage.setItem(MQ_KEY, JSON.stringify(MQ)); } catch (e) { /* تجاهل */ }
+  const noCheck = !keys.length;
+  if (noCheck && MQ.only !== '0') { toast('اختار بند فحص واحد على الأقل، أو خلّي "الأعضاء المعروضين" = الكل', false, 6000); return; }
   const fams = filteredFams();
   if (!fams.length) { toast('مفيش بيانات في الفترة دي', false); return; }
   let its = MQ_ITEMS.filter(x => keys.includes(x[0]));
   if (keys.includes('photo')) {
     toast('جاري فحص الصور...', true, 15000);
     try { await loadPhotoIds(); }
-    catch (e) { toast('⚠ تعذر فحص الصور فاتشالت من التقرير', false, 6000); its = its.filter(x => x[0] !== 'photo'); if (!its.length) return; }
+    catch (e) { toast('⚠ تعذر فحص الصور فاتشالت من التقرير', false, 6000); its = its.filter(x => x[0] !== 'photo'); }
   }
   $('mqModal').classList.add('hidden');
-  const fm = MQ.fam || 'merge';
+  const fm = MQ.fam || 'merge', flat = fm === 'flat', hasCheck = its.length > 0;
   const ALLR = ['main', 'spouse', 'extra', 'kid'];
   // البنود المنطبقة على كل نوع فرد
   const APPL = { phone: ['main', 'spouse', 'extra'], nid: ALLR, job: ['main', 'spouse'], qual: ['main', 'spouse'], nat: ['main', 'spouse'], addr: ['main', 'spouse'], gender: ALLR, expiry: ['main'], photo: ALLR };
@@ -1557,52 +1616,77 @@ async function runMq() {
   };
   const all = fams.map(d => {
     const mem = d.members || [], m = mem[0] || {};
-    const others = fm === 'none' ? [] : mem.slice(1).map(o => ({ m: o, ...evalP(o, d, roleOf(o, m)) }));
+    const others = fm === 'none' ? [] : mem.slice(1).map(o => ({ m: o, d, ...evalP(o, d, roleOf(o, m)) }));
     const me = evalP(m, d, 'main');
     return { d, m, ...me, others, total: me.miss.length + others.reduce((s, o) => s + o.miss.length, 0) };
   });
   const persons = all.flatMap(r => [r, ...r.others]);
-  const total = all.length, complete = all.filter(r => !r.total).length;
+  const okN = n => MQ.only === '1' ? n > 0 : MQ.only === 'full' ? n === 0 : true;
+  let rows = flat ? persons.map(p => ({ ...p, total: p.miss.length, others: [] })).filter(r => okN(r.total)) : all.filter(r => okN(r.total));
+  const codeCmp = (a, b) => flat ? String(a.m.sub).localeCompare(String(b.m.sub), undefined, { numeric: true }) : sortCode(a.d, b.d);
+  rows = [...rows].sort(MQ.sort === 'miss' ? (a, b) => b.total - a.total || codeCmp(a, b)
+    : MQ.sort === 'name' ? (a, b) => String(a.m.name || '').localeCompare(String(b.m.name || ''), 'ar') : codeCmp);
   const cnt = its.map((x, i) => persons.filter(p => p.res[i] === false).length);
   const base = its.map((x, i) => persons.filter(p => p.res[i] !== null).length);
-  let rows = MQ.only ? all.filter(r => r.total) : all;
-  rows = [...rows].sort(MQ.sort === 'miss' ? (a, b) => b.total - a.total || sortCode(a.d, b.d) : (a, b) => sortCode(a.d, b.d));
   const yes = '<b style="color:#16a34a">✓</b>', no = '<b style="color:#dc2626">✗</b>', na = '<span style="color:#cbd5e1">—</span>';
-  const showCols = MQ.mode !== 'text', showText = MQ.mode !== 'cols', famCol = fm === 'merge';
-  const heads = ['م', 'كود العضو', 'الاسم', ...(MQ.showPhone ? ['التليفون'] : []), ...(showCols ? its.map(x => x[2]) : []), ...(showText ? ['الناقص بالظبط'] : []), ...(famCol ? ['نواقص باقي الأسرة'] : []), ...(MQ.showCount ? ['عدد النواقص'] : []), 'الحالة'];
+  const showCols = hasCheck && MQ.mode !== 'text', showText = hasCheck && MQ.mode !== 'cols', famCol = fm === 'merge' && hasCheck;
+  const xcols = MQ_COLS.filter(c => MQ.cols.includes(c[0])), blanks = MQ.blanks || [];
+  const heads = [...(MQ.showNo ? ['م'] : []), 'كود العضو', 'الاسم', ...(MQ.showPhone ? ['التليفون'] : []), ...xcols.map(c => c[1]),
+    ...(showCols ? its.map(x => x[2]) : []), ...(showText ? ['الناقص بالظبط'] : []), ...(famCol ? ['نواقص باقي الأسرة'] : []),
+    ...(hasCheck && MQ.showCount ? ['عدد النواقص'] : []), ...(hasCheck && MQ.showStatus ? ['الحالة'] : []), ...blanks.map(b => esc(b))];
   const famText = r => {
     const l = r.others.filter(o => o.miss.length);
     return l.length ? l.map(o => `<div style="margin-bottom:3px"><span class="num">${esc(o.m.sub)}</span> ${esc(o.m.name || '')} <small>(${esc(o.m.rel || '')})</small>: <span style="color:#dc2626">${esc(o.miss.join('، '))}</span></div>`).join('') : '—';
   };
   const mkRow = (p, idx, sub, r) => {
     const n = sub ? p.miss.length : r.total;
-    const cells = [idx, num(p.m.sub), sub ? `↳ ${vv(p.m.name)} <small>(${esc(p.m.rel || '')})</small>` : `<b>${vv(r.d.mainName || p.m.name)}</b>`,
+    const cells = [...(MQ.showNo ? [idx] : []), num(p.m.sub),
+      sub ? `↳ ${vv(p.m.name)} <small>(${esc(p.m.rel || '')})</small>` : `<b>${vv(flat ? p.m.name : (r.d.mainName || p.m.name))}</b>`,
       ...(MQ.showPhone ? [num(p.m.phone)] : []),
+      ...xcols.map(c => { const v = c[2](p.m, r.d); return MQ_NUM.has(c[0]) ? num(v) : vv(v); }),
       ...(showCols ? p.res.map(ok => ok === null ? na : ok ? yes : no) : []),
       ...(showText ? [p.miss.length ? `<span style="color:#dc2626">${esc(p.miss.join('، '))}</span>` : '—'] : []),
       ...(famCol ? [sub ? '' : famText(r)] : []),
-      ...(MQ.showCount ? [n || '—'] : []),
-      n ? '<b style="color:#dc2626">✗ ناقص</b>' : '<b style="color:#16a34a">✓ كامل</b>'];
-    const st = sub ? 'background:#f8fafc' : (fm === 'rows' ? 'border-top:2px solid #0f766e' : '');
-    return `<tr style="${st}">${cells.map(c => `<td>${c}</td>`).join('')}</tr>`;
+      ...(hasCheck && MQ.showCount ? [n || '—'] : []),
+      ...(hasCheck && MQ.showStatus ? [n ? '<b style="color:#dc2626">✗ ناقص</b>' : '<b style="color:#16a34a">✓ كامل</b>'] : []),
+      ...blanks.map(() => '&nbsp;')];
+    const st = (sub ? 'background:#f8fafc;' : (fm === 'rows' ? 'border-top:2px solid #0f766e;' : '')) + (MQ.tall ? 'height:34px;' : '');
+    return `<tr style="${st}">${cells.map((c, i) => `<td${i >= cells.length - blanks.length && blanks.length ? ' style="min-width:70px"' : ''}>${c}</td>`).join('')}</tr>`;
   };
   const trs = [];
   rows.forEach((r, i) => {
     trs.push(mkRow(r, i + 1, false, r));
-    if (fm === 'rows') r.others.filter(o => !MQ.only || o.miss.length).forEach(o => trs.push(mkRow(o, '', true, r)));
+    if (fm === 'rows') r.others.filter(o => okN(o.miss.length)).forEach(o => trs.push(mkRow(o, '', true, r)));
   });
-  const personsBad = persons.filter(p => p.miss.length).length;
-  const body = `<div class="rp-kpis">${rpK(total, 'أسرة (عضو أساسي)')}${rpK(complete, fm === 'none' ? 'بياناتهم كاملة' : 'أسر كاملة بالكامل')}${rpK(total - complete, 'فيها نواقص')}${fm !== 'none' ? rpK(persons.length, 'إجمالي الأفراد المفحوصين') + rpK(personsBad, 'أفراد فيهم نواقص') : ''}</div>` +
-    rpS('عدد الناقص في كل بند', TB(['البند', 'عدد الناقص', 'من إجمالي', 'النسبة'], its.map((x, i) => [esc(x[1]), `<b style="color:${cnt[i] ? '#dc2626' : '#16a34a'}">${cnt[i]}</b>`, base[i], pct(cnt[i], base[i]) + '%']))) +
-    (trs.length ? `<table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs.join('')}</tbody></table>` : '<div class="hint">ممتاز! مفيش نواقص في البنود المختارة.</div>');
-  showReport(fm === 'none' ? 'تقرير نواقص الأعضاء الأساسيين' : 'تقرير نواقص الأعضاء وأسرهم', 'البنود المفحوصة: ' + its.map(x => x[1]).join('، '), body);
-  logAudit('تقرير', '—', 'نواقص الأعضاء (' + its.length + ' بند — ' + fm + ')');
+  const total = all.length, complete = all.filter(r => !r.total).length, personsBad = persons.filter(p => p.miss.length).length;
+  let kp;
+  if (!hasCheck) kp = rpK(rows.length, flat ? 'عدد الأفراد' : 'عدد الأسر') + (fm === 'rows' ? rpK(persons.length, 'إجمالي الأفراد') : '');
+  else if (flat) kp = rpK(persons.length, 'إجمالي الأفراد المفحوصين') + rpK(persons.length - personsBad, 'بياناتهم كاملة') + rpK(personsBad, 'فيهم نواقص');
+  else kp = rpK(total, 'أسرة (عضو أساسي)') + rpK(complete, fm === 'none' ? 'بياناتهم كاملة' : 'أسر كاملة بالكامل') + rpK(total - complete, 'فيها نواقص') + (fm !== 'none' ? rpK(persons.length, 'إجمالي الأفراد المفحوصين') + rpK(personsBad, 'أفراد فيهم نواقص') : '');
+  const emptyMsg = MQ.only === '1' ? 'ممتاز! مفيش نواقص في البنود المختارة.' : 'مفيش نتائج بالاختيارات دي.';
+  const body = (MQ.showSum ? `<div class="rp-kpis">${kp}</div>` : '') +
+    (hasCheck && MQ.showSum ? rpS('عدد الناقص في كل بند', TB(['البند', 'عدد الناقص', 'من إجمالي', 'النسبة'], its.map((x, i) => [esc(x[1]), `<b style="color:${cnt[i] ? '#dc2626' : '#16a34a'}">${cnt[i]}</b>`, base[i], pct(cnt[i], base[i]) + '%']))) : '') +
+    (trs.length ? `<table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs.join('')}</tbody></table>` : `<div class="hint">${emptyMsg}</div>`);
+  const kind = MQ.only === '1' ? 'تقرير نواقص' : MQ.only === 'full' ? 'تقرير بيانات كاملة' : 'كشف';
+  const who = flat ? 'الأفراد' : fm === 'none' ? 'الأعضاء الأساسيين' : 'الأعضاء وأسرهم';
+  const title = MQ.title || (kind + ' ' + who);
+  const sub = MQ.sub || (hasCheck ? 'البنود المفحوصة: ' + its.map(x => x[1]).join('، ') : 'عدد الصفوف: ' + rows.length);
+  showReport(title, sub, body, undefined, { land: MQ.land });
+  logAudit('تقرير', '—', 'مخصص: ' + title + ' (' + its.length + ' بند فحص — ' + fm + ')');
 }
 $('mqGo').addEventListener('click', runMq);
 $('mqCancel').addEventListener('click', () => $('mqModal').classList.add('hidden'));
-$('mqModal').addEventListener('click', e => { if (e.target.id === 'mqModal') $('mqModal').classList.add('hidden'); });
+$('mqModal').addEventListener('click', e => {
+  if (e.target.id === 'mqModal') { $('mqModal').classList.add('hidden'); return; }
+  if (e.target.id === 'mqBlankAdd') { addMqBlank(); return; }
+  const bd = e.target.closest('[data-bdel]');
+  if (bd) { MQ.blanks.splice(+bd.dataset.bdel, 1); renderMqBlanks(); }
+});
+$('mqBlankIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addMqBlank(); } });
 $('mqAll').addEventListener('click', () => document.querySelectorAll('#mqItems input').forEach(i => { i.checked = true; }));
 $('mqNone').addEventListener('click', () => document.querySelectorAll('#mqItems input').forEach(i => { i.checked = false; }));
+$('mqColsAll').addEventListener('click', () => document.querySelectorAll('#mqCols input').forEach(i => { i.checked = true; }));
+$('mqColsNone').addEventListener('click', () => document.querySelectorAll('#mqCols input').forEach(i => { i.checked = false; }));
 // قراءة أكواد الأفراد اللي ليهم صور من السيرفر
 async function loadPhotoIds() {
   const s = await getDocs(collection(db, 'photos'));
@@ -2514,6 +2598,37 @@ async function loadAllPhotos() {
 }
 
 /* ====== بوابة الدخول والخروج ====== */
+/* ====== تنبيهات البوابة: الأنواع والأسباب ====== */
+// [الاسم، الخطورة]
+const ALERT_DEF = {
+  'unknown': ['كود غير مسجل', 'bad'],
+  'dup': ['مسح مكرر', 'warn'],
+  'blocked-expired': ['دخول ممنوع — عضوية منتهية', 'bad'],
+  'expired': ['عضوية منتهية', 'warn'],
+  'expiring': ['عضوية قاربت على الانتهاء', 'warn'],
+  'double-in': ['دخول مكرر (بدون خروج)', 'warn'],
+  'out-without-in': ['خروج بدون دخول', 'warn']
+};
+// شرح عام لكل نوع (بيستخدم في التقرير، وللسجلات القديمة اللي مفيهاش سبب مفصّل)
+const ALERT_WHY = {
+  'unknown': 'الكود الممسوح مش موجود في بيانات الأعضاء (كارت غلط أو ملغي أو باركود اتقرا غلط).',
+  'dup': 'نفس الكارت اتمسح تاني بعد ثواني قليلة من آخر مسح، فالمسح التاني اتجاهل ومتسجلش كحركة.',
+  'blocked-expired': 'العضوية منتهية والنظام مظبوط يمنع الدخول بعضوية منتهية.',
+  'expired': 'العضوية منتهية (الخروج مسموح، أو منع الدخول متقفّل).',
+  'expiring': 'العضوية هتنتهي خلال 30 يوم أو أقل.',
+  'double-in': 'الفرد كان مسجّل "جوه" بالفعل ومفيش خروج متسجل قبل مسح الدخول تاني.',
+  'out-without-in': 'مفيش دخول مسجّل للفرد قبل تسجيل الخروج (دخل من غير مسح الكارت، أو الموجودين اتصفّروا).'
+};
+const RESULT_LBL = { recorded: 'اتسجلت الحركة', blocked: 'اترفض الدخول', ignored: 'اتجاهل (مش حركة)', unknown: 'مفيش حركة اتسجلت' };
+const isMove = r => r.rec !== false;                       // الأحداث اللي مش حركات (مرفوض/مكرر/كود غلط) متتحسبش في العدادات
+const recAlerts = r => (r.alerts && r.alerts.length) ? r.alerts : (r.anomaly ? [r.anomaly] : []);
+const alLabel = c => (ALERT_DEF[c] || [c])[0];
+const alKind = c => (ALERT_DEF[c] || [0, 'warn'])[1];
+const alWhy = r => r.info || recAlerts(r).map(c => ALERT_WHY[c] || '').filter(Boolean).join(' | ');
+let gateEvents = [];
+function logGateEvent(ev) {
+  addDoc(collection(db, 'gate'), ev).catch(err => toast('⚠ التنبيه مااتسجلش في سجل البوابة (' + (err.code || '') + ')', false, 6000));
+}
 const gateDirNow = () => gateDir || (($('gDir') || {}).value || 'in');
 function startGate() {
   stopGate();
@@ -2532,7 +2647,8 @@ function subGateDay() {
   if (unsubGate) unsubGate();
   gateDay = ymd(new Date());
   unsubGate = onSnapshot(query(collection(db, 'gate'), where('day', '==', gateDay)), s => {
-    gateRecs = s.docs.map(d => d.data());
+    gateEvents = s.docs.map(d => d.data());
+    gateRecs = gateEvents.filter(isMove);
     if (mode === 'gate') renderGateStats();
   }, () => {});
 }
@@ -2540,16 +2656,18 @@ function stopGate() {
   if (unsubPres) unsubPres();
   if (unsubGate) unsubGate();
   clearInterval(gateTimer);
-  unsubPres = unsubGate = null; presence = new Map(); gateRecs = [];
+  unsubPres = unsubGate = null; presence = new Map(); gateRecs = []; gateEvents = [];
   if ($('gateMode')) $('gateMode').innerHTML = '';
 }
 const GATE_ADMIN_PANEL = `<details class="sec games-box" id="gReports"><summary>📊 تقارير البوابة (أدمن)</summary>
   <div class="gr-row"><div class="field"><label>من يوم</label><input type="date" id="gFrom"></div><div class="field"><label>إلى يوم</label><input type="date" id="gTo"></div></div>
   <div class="chips" style="margin:0 0 14px"><button type="button" class="ic" data-gq="today">اليوم</button><button type="button" class="ic" data-gq="yest">أمس</button><button type="button" class="ic" data-gq="7">آخر 7 أيام</button><button type="button" class="ic" data-gq="30">آخر 30 يوم</button></div>
   <div class="grid"><button type="button" id="gRpAtt">📄 كشف الحضور اليومي (PDF)</button><button type="button" class="btn-outline" id="gRpBusy">📈 الازدحام وأهدأ الأوقات (PDF)</button></div>
+  <div class="cfg-h">🔔 تقرير التنبيهات</div>
+  <div class="grid"><div class="field"><label>نوع التنبيه</label><select id="gAlType"><option value="">كل التنبيهات</option>${Object.keys(ALERT_DEF).map(k => `<option value="${k}">${ALERT_DEF[k][0]}</option>`).join('')}</select></div><button type="button" id="gRpAlerts" style="align-self:end">🔔 تقرير التنبيهات (PDF)</button></div>
   <div class="cfg-h">🗑 مسح السجلات (أدمن فقط)</div>
   <div class="grid"><button type="button" class="rm" id="gDelRange" style="padding:12px">مسح سجلات الفترة المحددة</button><button type="button" class="rm" id="gDelAll" style="padding:12px">مسح كل سجلات البوابة</button></div>
-  <div class="hint" style="margin-top:8px">المسح بيحذف سجل الحركات بس (مش بيغيّر حالة "الموجودين الآن"). اطبع التقرير الأول لو عايز نسخة قبل المسح.</div>
+  <div class="hint" style="margin-top:8px">المسح بيحذف سجل الحركات والتنبيهات بس (مش بيغيّر حالة "الموجودين الآن"). اطبع التقرير الأول لو عايز نسخة قبل المسح.</div>
 </details>`;
 function renderGate() {
   if (!$('gScan')) {
@@ -2563,6 +2681,7 @@ function renderGate() {
     <div class="g-res" id="gRes"><div class="hint">في انتظار مسح الكارت...</div></div>
     <details class="sec games-box" id="gInside"><summary>👥 الموجودين الآن (<span id="gInN">0</span>)</summary><div id="gInList"></div>${isAdmin ? '<button type="button" class="rm" id="gReset" style="margin-top:10px;padding:8px 14px">🔄 تصفير الموجودين (خروج الكل)</button>' : ''}</details>
     <div class="sec"><h2>🕒 آخر الحركات اليوم</h2><div id="gRecent"></div></div>
+    <details class="sec games-box" id="gAlerts"><summary>🔔 تنبيهات اليوم (<span id="gAlN">0</span>)</summary><div id="gAlList"></div></details>
     ${isAdmin ? GATE_ADMIN_PANEL : ''}`;
     if ($('gFrom')) $('gFrom').value = $('gTo').value = ymd(new Date());
   }
@@ -2581,7 +2700,10 @@ function renderGateStats() {
   $('gInList').innerHTML = ins.sort((a, b) => String(a[1].name).localeCompare(String(b[1].name), 'ar'))
     .map(([sub, p]) => `<div class="fam-row"><span class="badge">${esc(sub)}</span><span>${esc(p.name || '')}</span><span class="fam-rel">${hhmm(recTime(p))}</span></div>`).join('') || '<div class="hint">مفيش حد جوه</div>';
   $('gRecent').innerHTML = [...gateRecs].sort((a, b) => recTime(b) - recTime(a)).slice(0, 12)
-    .map(r => `<div class="fam-row"><span class="st ${r.dir === 'in' ? 'st-ok' : 'st-bad'}">${r.dir === 'in' ? 'دخول' : 'خروج'}</span><span class="badge">${esc(r.sub)}</span><span>${esc(r.name || '')}</span>${r.anomaly ? '<span class="st st-warn">تنبيه</span>' : ''}<span class="fam-rel">${hhmm(recTime(r))}</span></div>`).join('') || '<div class="hint">لسه مفيش حركات النهارده</div>';
+    .map(r => `<div class="fam-row"><span class="st ${r.dir === 'in' ? 'st-ok' : 'st-bad'}">${r.dir === 'in' ? 'دخول' : 'خروج'}</span><span class="badge">${esc(r.sub)}</span><span>${esc(r.name || '')}</span>${recAlerts(r).map(c => `<span class="st st-${alKind(c)}">⚠ ${esc(alLabel(c))}</span>`).join('')}<span class="fam-rel">${hhmm(recTime(r))}</span></div>`).join('') || '<div class="hint">لسه مفيش حركات النهارده</div>';
+  const alr = gateEvents.filter(r => recAlerts(r).length).sort((a, b) => recTime(b) - recTime(a));
+  $('gAlN').textContent = alr.length;
+  $('gAlList').innerHTML = alr.slice(0, 60).map(r => `<div class="fam-row" style="flex-wrap:wrap"><span class="st st-${alKind(recAlerts(r)[0])}">${esc(recAlerts(r).map(alLabel).join(' + '))}</span><span class="badge">${esc(r.sub)}</span><span>${esc(r.name || '')}</span><span class="fam-rel">${hhmm(recTime(r))}</span><div class="hint" style="width:100%">${esc(alWhy(r))}</div></div>`).join('') || '<div class="hint">مفيش تنبيهات النهارده</div>';
 }
 let gateClear = null, audioCtx = null;
 function beep(kind) {
@@ -2630,35 +2752,46 @@ async function onScan(raw) {
   const hit = await gateLookup(v);
   if (!hit) {
     beep('bad');
+    logGateEvent({ sub: v, fam: '', name: '', rel: '', dir: gateDirNow(), day: ymd(new Date()), at: serverTimestamp(), by: (auth.currentUser || {}).email || '', alerts: ['unknown'], info: 'الكود الممسوح "' + v + '" مش موجود في بيانات الأعضاء.', result: 'unknown', rec: false });
     const cand = !gateDir && raw.trim().length >= 3 ? searchPeople(raw.trim()).slice(0, 6) : [];
-    gateShow('bad', '❌ كود غير مسجل', `<div class="hint">الكود: <b dir="ltr">${esc(v)}</b></div>` +
+    gateShow('bad', '❌ كود غير مسجل', `<div class="hint">الكود: <b dir="ltr">${esc(v)}</b></div><div style="margin-top:8px;font-weight:700">⚠ كود غير مسجل<div class="hint" style="font-weight:600">${esc(ALERT_WHY.unknown)}</div></div>` +
       (cand.length ? '<div class="hint" style="margin-top:8px">يمكن تقصد:</div>' + cand.map(x => `<div class="fam-row" style="cursor:pointer" data-pick="${esc(x.m.sub)}"><span class="badge">${esc(x.m.sub)}</span><span>${esc(x.m.name)}</span><span class="fam-rel">${esc(x.m.rel)}</span></div>`).join('') : ''));
     return;
   }
   const { m, d } = hit, sub = m.sub, now = Date.now(), dir = gateDirNow();
   const st = memStatus(d), pr = presence.get(sub), email = (auth.currentUser || {}).email || '';
-  let level = 'ok', note = '', record = true, anomaly = '', title = dir === 'in' ? '✅ تم تسجيل الدخول' : '✅ تم تسجيل الخروج';
+  let level = 'ok', record = true, anomaly = '', result = 'recorded', title = dir === 'in' ? '✅ تم تسجيل الدخول' : '✅ تم تسجيل الخروج';
+  const als = [], addAl = (code, why) => als.push({ code, why });
+  const today = ymd(new Date());
+  const expDays = d.expiryDate ? Math.round((new Date(d.expiryDate + 'T00:00:00') - new Date(today + 'T00:00:00')) / 864e5) : null;
 
   if (now - (lastScan.get(sub) || 0) < SCAN_COOLDOWN) {
-    beep('warn'); record = false; level = 'warn'; title = '⏱ تم مسح الكارت للتو';
-    note = 'اتجاهل المسح المكرر.';
+    beep('warn'); record = false; level = 'warn'; result = 'ignored'; title = '⏱ تم مسح الكارت للتو';
+    addAl('dup', 'الكارت اتمسح تاني بعد ' + Math.max(1, Math.round((now - lastScan.get(sub)) / 1000)) + ' ثانية من آخر مسح — المسح المكرر اتجاهل ومتسجلش كحركة.');
   } else {
     lastScan.set(sub, now);
-    if (dir === 'in' && BLOCK_EXPIRED && st === 'منتهي') { level = 'bad'; record = false; title = '⛔ ممنوع الدخول'; note = 'العضوية منتهية — لم يتم تسجيل الدخول'; }
-    else {
-      if (st === 'منتهي') { level = 'warn'; note = 'العضوية منتهية'; }
-      else if (st === 'ينتهي قريبًا') { level = 'warn'; note = 'العضوية قاربت على الانتهاء'; }
-      if (dir === 'in' && pr && pr.inside) { level = 'warn'; anomaly = 'double-in'; note = (note ? note + ' — ' : '') + 'مسجل دخول بالفعل منذ ' + hhmm(recTime(pr)); }
-      if (dir === 'out' && !(pr && pr.inside)) { level = 'warn'; anomaly = 'out-without-in'; note = (note ? note + ' — ' : '') + 'مفيش دخول مسجل قبل كده'; }
+    if (dir === 'in' && BLOCK_EXPIRED && st === 'منتهي') {
+      level = 'bad'; record = false; result = 'blocked'; title = '⛔ ممنوع الدخول';
+      addAl('blocked-expired', 'العضوية انتهت بتاريخ ' + fd(d.expiryDate) + ' (من ' + Math.abs(expDays) + ' يوم) — اترفض الدخول ومتسجلش حركة.');
+    } else {
+      if (st === 'منتهي') { level = 'warn'; addAl('expired', 'العضوية انتهت بتاريخ ' + fd(d.expiryDate) + ' (من ' + Math.abs(expDays) + ' يوم).'); }
+      else if (st === 'ينتهي قريبًا') { level = 'warn'; addAl('expiring', 'العضوية هتنتهي بتاريخ ' + fd(d.expiryDate) + (expDays === 0 ? ' (النهارده)' : ' (باقي ' + expDays + ' يوم)') + ' — لازم تتجدد.'); }
+      if (dir === 'in' && pr && pr.inside) { level = 'warn'; anomaly = 'double-in'; addAl('double-in', 'مسجّل دخول بالفعل من الساعة ' + hhmm(recTime(pr)) + ' ومفيش خروج متسجل — اتسجل دخول تاني.'); }
+      if (dir === 'out' && !(pr && pr.inside)) { level = 'warn'; anomaly = 'out-without-in'; addAl('out-without-in', 'مفيش دخول مسجل قبل كده للفرد ده (ممكن دخل من غير ما يمسح الكارت، أو الموجودين اتصفّروا) — اتسجل الخروج.'); }
+      if (als.length) title += ' — ⚠ مع تنبيه';
     }
     beep(level);
-    if (record) {
-      const wb = writeBatch(db);
-      wb.set(doc(db, 'presence', sub), { inside: dir === 'in', at: serverTimestamp(), name: m.name, fam: d.code, by: email });
-      wb.set(doc(collection(db, 'gate')), { sub, fam: d.code, name: m.name, rel: m.rel, dir, day: ymd(new Date()), at: serverTimestamp(), by: email, ...(anomaly ? { anomaly } : {}) });
-      wb.commit().catch(err => toast('❌ الحركة مااتسجلتش على السيرفر (' + (err.code || '') + ')', false, 12000));
-    }
   }
+  const alFields = als.length ? { alerts: als.map(a => a.code), info: als.map(a => a.why).join(' | ') } : {};
+  if (record) {
+    const wb = writeBatch(db);
+    wb.set(doc(db, 'presence', sub), { inside: dir === 'in', at: serverTimestamp(), name: m.name, fam: d.code, by: email });
+    wb.set(doc(collection(db, 'gate')), { sub, fam: d.code, name: m.name, rel: m.rel, dir, day: today, at: serverTimestamp(), by: email, ...(anomaly ? { anomaly } : {}), ...alFields, result: 'recorded' });
+    wb.commit().catch(err => toast('❌ الحركة مااتسجلتش على السيرفر (' + (err.code || '') + ')', false, 12000));
+  } else if (als.length) {
+    logGateEvent({ sub, fam: d.code, name: m.name || '', rel: m.rel || '', dir, day: today, at: serverTimestamp(), by: email, ...alFields, result, rec: false });
+  }
+  const alHtml = als.map(a => `<div style="margin-top:8px;font-weight:700">⚠ ${esc(alLabel(a.code))}<div class="hint" style="font-weight:600">${esc(a.why)}</div></div>`).join('');
   const insideNow = s2 => s2 === sub && record ? dir === 'in' : !!(presence.get(s2) || {}).inside;
   const fam = (d.members || []).map(x => {
     const ins = insideNow(x.sub);
@@ -2669,7 +2802,7 @@ async function onScan(raw) {
      <div class="hint">${esc(m.rel)} · كود <b dir="ltr">${esc(sub)}</b></div>
      <div style="margin-top:6px"><span class="st st-${ST_CLS[st]}">${st}</span> <span class="hint">انتهاء: ${esc(d.expiryDate || '—')}</span></div>
      ${m.games ? `<div class="hint" style="margin-top:4px">⚽ ${esc(m.games)}</div>` : ''}
-     ${note ? `<div style="margin-top:8px;font-weight:700">${esc(note)}</div>` : ''}</div></div>
+     ${alHtml}</div></div>
      <div class="hint" style="margin-bottom:4px">أفراد الأسرة (${(d.members || []).length})</div>${fam}`);
 }
 async function resetPresence() {
@@ -2707,6 +2840,7 @@ $('gateMode').addEventListener('click', e => {
     const id = e.target.id;
     if (id === 'gRpAtt') { gateAttReport(); return; }
     if (id === 'gRpBusy') { gateBusyReport(); return; }
+    if (id === 'gRpAlerts') { gateAlertsReport(); return; }
     if (id === 'gDelRange') { gateDelete(false); return; }
     if (id === 'gDelAll') { gateDelete(true); return; }
   }
@@ -2748,7 +2882,7 @@ async function loadGateRecs() {
   const { f, t } = gateRange();
   toast('جاري تجهيز التقرير...', true, 15000);
   try {
-    const recs = await fetchGate(f, t);
+    const recs = (await fetchGate(f, t)).filter(isMove);
     if (!recs.length) { toast('مفيش حركات في الفترة دي', false); return null; }
     toast('✅ جاهز', true, 800);
     return { f, t, recs };
@@ -2830,6 +2964,30 @@ async function gateBusyReport() {
       win.map(h => [hrRange(h), tot[h], fmt1(avg(h)), Math.round(tot[h] * 100 / ins.length) + '%', `<span class="st st-${cls(h)[1]}">${cls(h)[0]}</span>`])));
   showReport('تقرير الازدحام وأهدأ الأوقات — البوابة', x.f === x.t ? dayLabel(x.f) : `من ${fd(x.f)} إلى ${fd(x.t)}`, body, gateMeta(x.f, x.t));
   logAudit('تقرير بوابة', '—', 'الازدحام ' + x.f + (x.f === x.t ? '' : ' ← ' + x.t));
+}
+async function gateAlertsReport() {
+  const { f, t } = gateRange(), type = ($('gAlType') || {}).value || '';
+  toast('جاري تجهيز التقرير...', true, 15000);
+  let all;
+  try { all = await fetchGate(f, t); } catch (e) { toast('❌ تعذر قراءة السجل (' + (e.code || e.message) + ')', false, 8000); return; }
+  const ev = all.filter(r => recAlerts(r).length && (!type || recAlerts(r).includes(type)));
+  if (!ev.length) { toast('مفيش تنبيهات في الفترة دي', false); return; }
+  toast('✅ جاهز', true, 800);
+  const res = r => r.result || 'recorded';
+  const byType = new Map(); ev.forEach(r => recAlerts(r).forEach(c => byType.set(c, (byType.get(c) || 0) + 1)));
+  const totAl = [...byType.values()].reduce((s, n) => s + n, 0);
+  const nRec = ev.filter(r => res(r) === 'recorded').length, nBlk = ev.filter(r => res(r) === 'blocked').length, nIgn = ev.filter(r => ['ignored', 'unknown'].includes(res(r))).length;
+  const people = new Map(); ev.forEach(r => { const p = people.get(r.sub) || { sub: r.sub, name: r.name, n: 0 }; p.n++; people.set(r.sub, p); });
+  const sumRows = [...byType.entries()].sort((a, b) => b[1] - a[1]).map(([c, n], i) => [i + 1, `<b>${esc(alLabel(c))}</b>`, `<b>${n}</b>`, pct(n, totAl) + '%', esc(ALERT_WHY[c] || '')]);
+  const top = [...people.values()].sort((a, b) => b.n - a.n).slice(0, 10);
+  const rows = ev.map((r, i) => [i + 1, `<span class="num">${fd(r.day)} ${hhmm(recTime(r))}</span>`, r.dir === 'in' ? 'دخول' : 'خروج', num(r.sub), vv(r.name),
+    esc(recAlerts(r).map(alLabel).join(' + ')), esc((r.dir === 'in' ? 'محاولة دخول' : 'محاولة خروج') + ' — ' + (RESULT_LBL[res(r)] || '')), esc(alWhy(r)), esc(String(r.by || '').split('@')[0])]);
+  const body = `<div class="rp-kpis">${rpK(ev.length, 'عدد الوقائع')}${rpK(nRec, 'اتسجلت مع تنبيه')}${rpK(nBlk, 'دخول اترفض')}${rpK(nIgn, 'اتجاهلت / كود غلط')}${rpK(people.size, 'أكواد مختلفة')}</div>` +
+    rpS('ملخص أنواع التنبيهات وأسبابها', TB(['م', 'نوع التنبيه', 'العدد', 'النسبة', 'سبب التنبيه'], sumRows)) +
+    (top.length > 1 && top[0].n > 1 ? rpS('أكثر الأكواد تنبيهات', TB(['م', 'الكود', 'الاسم', 'عدد التنبيهات'], top.filter(p => p.n > 1).map((p, i) => [i + 1, num(p.sub), vv(p.name), `<b>${p.n}</b>`]))) : '') +
+    rpS('تفصيل كل التنبيهات (إيه اللي حصل وليه)', TB(['م', 'الوقت', 'البوابة', 'الكود', 'الاسم', 'التنبيه', 'اللي حصل', 'السبب', 'المستخدم'], rows));
+  showReport('تقرير تنبيهات البوابة' + (type ? ' — ' + alLabel(type) : ''), f === t ? dayLabel(f) : `من ${fd(f)} إلى ${fd(t)}`, body, gateMeta(f, t), { land: true });
+  logAudit('تقرير بوابة', '—', 'التنبيهات ' + f + (f === t ? '' : ' ← ' + t));
 }
 async function gateDelete(all) {
   if (!isAdmin) return;
