@@ -293,6 +293,15 @@ body{align-items:flex-start;justify-content:center;padding:24px 16px}
 @media(max-width:560px){.gr-row{grid-template-columns:1fr}}
 .gate-only .side-foot button{width:auto;white-space:nowrap;padding:9px 18px}
 /* ====== نافذة تخصيص تقرير نواقص الأعضاء ====== */
+#genModal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:140;display:flex;align-items:center;justify-content:center;padding:14px}
+#genModal.hidden{display:none}
+.gen-d{border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.gen-d>summary{cursor:pointer;font-weight:700;color:var(--main);font-size:15px}
+.gen-d[open]>summary{margin-bottom:12px}
+.gen-col{display:flex;align-items:center;justify-content:space-between;gap:8px;border:2px solid #e2e8f0;border-radius:10px;padding:5px 10px;margin-bottom:6px}
+.gen-col label{margin:0;font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;flex:1;cursor:pointer}
+.gen-col input{width:auto;margin:0;padding:0;accent-color:var(--main)}
+.gen-col .ic{min-height:30px;padding:0 8px}
 #mqModal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:160;display:flex;align-items:center;justify-content:center;padding:14px}
 #mqModal.hidden{display:none}
 .mq-box{width:100%;max-width:540px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:20px;padding:20px}
@@ -682,6 +691,81 @@ html{-webkit-text-size-adjust:100%}
   <div class="field"><label>القالب</label><select id="waT"><option value="renew">تذكير بتجديد العضوية</option><option value="bday">تهنئة عيد ميلاد</option><option value="game">تذكير بموعد التدريب</option><option value="free">رسالة حرة</option></select></div>
   <div class="field"><label>نص الرسالة (تقدر تعدّله)</label><textarea id="waMsg" rows="6"></textarea></div>
   <div class="grid"><button type="button" id="waSend">إرسال عبر واتساب</button><button type="button" class="btn-outline" id="waClose">إلغاء</button></div>
+</div></div>
+<div id="genModal" class="hidden"><div class="mq-box" style="max-width:700px">
+  <h2 style="margin-top:0">🛠 منشئ التقارير</h2>
+  <div class="hint" style="margin-bottom:12px">اعمل أي تقرير من بيانات الأعضاء: اختار مين يظهر، وأنهي أعمدة، وترتيبها، والشكل، وأضف أعمدة فاضية. التقرير بيطلع فوق التقارير التانية وبيتفتح في معاينة، والمعاينة بتتقفل ترجعلك هنا. اختياراتك بتتحفظ.</div>
+
+  <details class="gen-d" open><summary>📝 العنوان والملاحظة</summary>
+    <div class="field"><label>عنوان التقرير (بيظهر في الهيدر)</label><input type="text" id="genTitle" placeholder="سيب فاضي للعنوان التلقائي"></div>
+    <div class="field"><label>سطر فرعي تحت العنوان</label><input type="text" id="genSub" placeholder="اختياري"></div>
+    <div class="field" style="margin-bottom:0"><label>ملاحظة في آخر التقرير</label><textarea id="genNote" rows="2" placeholder="اختياري"></textarea></div>
+  </details>
+
+  <details class="gen-d" open><summary>👥 مين يظهر في التقرير</summary>
+    <div class="field"><label>كل صف في التقرير يمثل</label>
+      <select id="genUnit"><option value="person">فرد (كل فرد في سطر)</option><option value="family">أسرة (العضو الأساسي بس في سطر)</option></select></div>
+    <label>أنواع الأفراد (لما الصف = فرد)</label>
+    <div class="mq-chk" id="genRoles">
+      <label><input type="checkbox" data-role="main"> الأعضاء الأساسيين</label><label><input type="checkbox" data-role="spouse"> الأزواج / الزوجات</label>
+      <label><input type="checkbox" data-role="kid"> الأبناء</label><label><input type="checkbox" data-role="extra"> الأعضاء الإضافيين</label></div>
+    <div class="field"><label>بحث (اسم / كود / تليفون / رقم قومي)</label><input type="text" id="genQ" placeholder="اختياري"></div>
+    <div class="grid">
+      <div class="field"><label>النوع</label><select id="genGender"><option value="">الكل</option><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select></div>
+      <div class="field"><label>اللعبة</label><select id="genGame"></select></div>
+      <div class="field"><label>السن من</label><input type="number" id="genAgeMin" min="0" inputmode="numeric"></div>
+      <div class="field"><label>السن إلى</label><input type="number" id="genAgeMax" min="0" inputmode="numeric"></div>
+      <div class="field"><label>شهر الميلاد</label><select id="genBMonth"><option value="">الكل</option></select></div>
+      <div class="field"><label>&nbsp;</label><div class="hint">الفلاتر دي بتتطبق فوق فلتر الفترة اللي في الداشبورد.</div></div>
+      <div class="field"><label>تاريخ التسجيل من</label><input type="date" id="genRegFrom"></div>
+      <div class="field"><label>تاريخ التسجيل إلى</label><input type="date" id="genRegTo"></div>
+    </div>
+    <label>حالة العضوية</label>
+    <div class="mq-chk" id="genSt"></div>
+    <label>فلتر "موجود / ناقص" لأي بيان</label>
+    <div class="grid" id="genHas"></div>
+  </details>
+
+  <details class="gen-d" open><summary>🧱 الأعمدة (علّم اللي عايزه ورتّبه بالأسهم)</summary>
+    <div id="genColList"></div>
+    <div class="mq-act"><button type="button" class="btn-outline" id="genColsAll">✔ الكل</button><button type="button" class="btn-outline" id="genColsNone">✖ مسح</button><button type="button" class="btn-outline" id="genColsDef">↺ الافتراضي</button></div>
+    <label>➕ عمود فاضي باسم من عندك</label>
+    <div style="display:flex;gap:8px"><input type="text" id="genBlankIn" placeholder="مثال: توقيع / ملاحظات / تم السداد" style="flex:1"><button type="button" id="genBlankAdd" style="padding:8px 14px">إضافة</button></div>
+    <div class="hint" style="margin-top:6px">العمود الفاضي بيتحط في آخر القايمة، وتقدر تحرّكه بالأسهم لأي مكان.</div>
+  </details>
+
+  <details class="gen-d" open><summary>🎛 الشكل والتجميع والترتيب</summary>
+    <div class="field"><label>شكل التقرير</label>
+      <select id="genLayout"><option value="table">جدول واحد</option><option value="group">أقسام حسب التجميع (كل مجموعة جدول)</option><option value="famsheet">كل أسرة في كشف مستقل</option><option value="stats">ملخص أعداد فقط حسب التجميع</option></select></div>
+    <div class="grid">
+      <div class="field"><label>التجميع حسب</label><select id="genGroup"></select></div>
+      <div class="field"><label>الترتيب حسب</label><select id="genSort"></select></div>
+    </div>
+    <div class="field"><label>اتجاه الترتيب</label><select id="genDir"><option value="1">تصاعدي (أ ← ي / الأصغر ← الأكبر)</option><option value="-1">تنازلي</option></select></div>
+    <div class="mq-chk">
+      <label><input type="checkbox" id="genPage"> كل قسم / أسرة في صفحة لوحدها</label>
+      <label><input type="checkbox" id="genGSum"> جدول أعداد المجموعات في الأول</label>
+    </div>
+  </details>
+
+  <details class="gen-d"><summary>🎨 التنسيق</summary>
+    <div class="field"><label>حجم الخط في الجدول</label><select id="genFont"><option value="s">صغير</option><option value="n">عادي</option><option value="l">كبير</option></select></div>
+    <div class="mq-chk">
+      <label><input type="checkbox" id="genNo"> عمود الترقيم (م)</label>
+      <label><input type="checkbox" id="genSum"> ملخص الأعداد أعلى التقرير</label>
+      <label><input type="checkbox" id="genTotal"> سطر إجمالي عدد الصفوف</label>
+      <label><input type="checkbox" id="genTall"> صفوف عالية (للكتابة)</label>
+      <label><input type="checkbox" id="genLand"> الورقة بالعرض (Landscape)</label>
+    </div>
+  </details>
+
+  <details class="gen-d"><summary>💾 قوالبي المحفوظة</summary>
+    <div class="field"><label>طبّق قالب محفوظ</label><div style="display:flex;gap:8px"><select id="genPre" style="flex:1"></select><button type="button" class="btn-outline" id="genPreDel" style="padding:8px 14px">حذف</button></div></div>
+    <div class="field" style="margin-bottom:0"><label>احفظ الإعدادات الحالية كقالب</label><div style="display:flex;gap:8px"><input type="text" id="genPreName" placeholder="اسم القالب" style="flex:1"><button type="button" id="genPreSave" style="padding:8px 14px">حفظ</button></div></div>
+  </details>
+
+  <div class="mq-foot grid"><button type="button" id="genGo">📄 إنشاء التقرير</button><button type="button" class="btn-outline" id="genCsv">⬇ تصدير Excel (CSV)</button></div>
+  <div style="text-align:center;margin-top:8px"><button type="button" class="btn-outline" id="genCancel" style="padding:8px 18px">إغلاق</button></div>
 </div></div>
 <div id="mqModal" class="hidden"><div class="mq-box">
   <h2 style="margin-top:0">🧩 تقرير مخصص للأعضاء</h2>
@@ -1294,6 +1378,7 @@ const REPORTS = [
   ['ages', '🎂', 'الفئات العمرية', 'توزيع الأعمار وقائمة الأبناء'],
   ['monthly', '📅', 'التسجيلات الشهرية', 'جدول ورسم شهري وتراكمي'],
   ['memq', '🧩', 'تقرير مخصص (ناقص / كامل / الكل)', 'اختار الأعضاء والأعمدة والعنوان وأعمدة فاضية بأسمائك'],
+  ['gen', '🛠', 'منشئ التقارير (Generate Report)', 'أنشئ أي تقرير: فلاتر وأعمدة وترتيب وتجميع وقوالب وأعمدة فاضية'],
   ['quality', '🧹', 'جودة البيانات', 'النواقص مع الأكواد للمراجعة'],
   ['nophoto', '🖼', 'الصور غير المضافة', 'الأعضاء اللي ملهمش صورة: الكود والاسم والعدد'],
   ['birthdays', '🎉', 'أعياد ميلاد الشهر', 'مواليد الشهر الحالي']
@@ -1700,6 +1785,304 @@ $('mqAll').addEventListener('click', () => document.querySelectorAll('#mqItems i
 $('mqNone').addEventListener('click', () => document.querySelectorAll('#mqItems input').forEach(i => { i.checked = false; }));
 $('mqColsAll').addEventListener('click', () => document.querySelectorAll('#mqCols input').forEach(i => { i.checked = true; }));
 $('mqColsNone').addEventListener('click', () => document.querySelectorAll('#mqCols input').forEach(i => { i.checked = false; }));
+/* ====== منشئ التقارير (إضافة جديدة — مستقلة عن التقرير المخصص) ====== */
+const GEN_AGE_ORDER = ['أقل من 6', '6–9', '10–13', '14–17', '18–39', '40 فأكثر'];
+const ST_ORDER = ['ساري', 'ينتهي قريبًا', 'منتهي', 'غير محدد'];
+const ageGroup = a => a == null ? '' : a < 6 ? 'أقل من 6' : a < 10 ? '6–9' : a < 14 ? '10–13' : a < 18 ? '14–17' : a < 40 ? '18–39' : '40 فأكثر';
+const daysLeft = d => d.expiryDate ? Math.round((new Date(d.expiryDate + 'T00:00:00') - new Date(ymd(new Date()) + 'T00:00:00')) / 864e5) : '';
+// [المفتاح]: [الاسم، دالة القيمة]
+const GC = {
+  sub: ['كود الفرد', P => P.m.sub],
+  fam: ['كود الأسرة', P => P.d.code],
+  name: ['الاسم', P => P.m.name],
+  main: ['اسم العضو الأساسي', P => P.d.mainName],
+  rel: ['الصلة', P => P.m.rel],
+  gender: ['النوع', P => P.gender],
+  age: ['السن', P => P.age == null ? '' : P.age],
+  birth: ['تاريخ الميلاد', P => P.birth ? P.birth.toLocaleDateString('en-GB') : ''],
+  ageGroup: ['الفئة العمرية', P => ageGroup(P.age)],
+  nid: ['الرقم القومي', P => P.m.nid],
+  phone: ['التليفون', P => P.m.phone],
+  pphone: ['تليفون الأسرة (العضو الأساسي)', P => parentPhone(P.d)],
+  job: ['المهنة', P => P.m.job],
+  qual: ['المؤهل', P => P.m.qual],
+  nat: ['الجنسية', P => P.m.nat],
+  addr: ['العنوان', P => P.m.addr],
+  games: ['الألعاب', P => P.m.games],
+  sport: ['نوع الرياضة', P => P.m.sport],
+  join: ['تاريخ الاشتراك', P => P.d.memberDate ? fd(P.d.memberDate) : ''],
+  regMonth: ['شهر التسجيل', P => P.d.memberDate ? P.d.memberDate.slice(0, 7) : ''],
+  exp: ['تاريخ الانتهاء', P => P.d.expiryDate ? fd(P.d.expiryDate) : ''],
+  left: ['الأيام المتبقية', P => daysLeft(P.d)],
+  status: ['حالة العضوية', P => P.st],
+  photo: ['الصورة (موجودة ✓ / ناقصة ✗)', P => photoIds.has(P.m.sub) ? '✓' : '✗'],
+  fsize: ['عدد أفراد الأسرة', P => (P.d.members || []).length],
+  kids: ['عدد الأبناء', P => (P.d.members || []).filter(x => x.rel === 'ابن').length],
+  famNames: ['أسماء أفراد الأسرة', P => (P.d.members || []).map(x => x.name).join('، ')]
+};
+const GC_NUM = new Set(['sub', 'fam', 'nid', 'phone', 'pphone', 'birth', 'join', 'exp', 'regMonth']);
+const GC_DEF_ON = ['sub', 'name', 'rel', 'gender', 'age', 'phone', 'games', 'status'];
+const GROUPS = [['', 'بدون تجميع'], ['games', 'اللعبة'], ['rel', 'الصلة'], ['gender', 'النوع'], ['ageGroup', 'الفئة العمرية'], ['status', 'حالة العضوية'],
+  ['regMonth', 'شهر التسجيل'], ['job', 'المهنة'], ['qual', 'المؤهل'], ['nat', 'الجنسية'], ['fam', 'الأسرة']];
+const GHAS_L = [['phone', 'التليفون'], ['nid', 'الرقم القومي (صحيح)'], ['job', 'المهنة'], ['qual', 'المؤهل'], ['nat', 'الجنسية'], ['addr', 'العنوان'],
+  ['gender', 'النوع'], ['games', 'الألعاب'], ['expiry', 'تاريخ الانتهاء'], ['photo', 'الصورة']];
+const GHAS = { phone: P => !!P.m.phone, nid: P => !!P.nid, job: P => !!P.m.job, qual: P => !!P.m.qual, nat: P => !!P.m.nat, addr: P => !!P.m.addr,
+  gender: P => !!P.gender, games: P => !!P.m.games, expiry: P => !!P.d.expiryDate, photo: P => photoIds.has(P.m.sub) };
+const AR_MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+const GEN_KEY = 'g1GenCfgV1', GEN_PRE = 'g1GenPresetsV1';
+const genDefCols = () => [...GC_DEF_ON, ...Object.keys(GC).filter(k => !GC_DEF_ON.includes(k))].map(k => ({ k, on: GC_DEF_ON.includes(k) }));
+const GEN_DEF = { title: '', sub: '', note: '', unit: 'person', roles: { main: true, spouse: true, kid: true, extra: true }, q: '', gender: '', game: '', ageMin: '', ageMax: '', bMonth: '',
+  regFrom: '', regTo: '', st: { 'ساري': true, 'ينتهي قريبًا': true, 'منتهي': true, 'غير محدد': true }, has: {}, cols: null, layout: 'table', group: '', sort: '', dir: '1',
+  page: false, gsum: true, font: 'n', showNo: true, sum: true, tall: false, land: false, total: true };
+function genNorm(cfg) {
+  const o = { ...GEN_DEF, ...cfg };
+  o.roles = { ...GEN_DEF.roles, ...(cfg && cfg.roles) }; o.st = { ...GEN_DEF.st, ...(cfg && cfg.st) }; o.has = { ...((cfg && cfg.has) || {}) };
+  let cols = Array.isArray(o.cols) ? o.cols.filter(c => c && (c.blank ? c.label : GC[c.k])) : genDefCols();
+  const have = new Set(cols.filter(c => !c.blank).map(c => c.k));
+  Object.keys(GC).forEach(k => { if (!have.has(k)) cols.push({ k, on: false }); });
+  o.cols = cols.map(c => ({ ...c }));
+  return o;
+}
+let G = (() => { try { return genNorm(JSON.parse(localStorage.getItem(GEN_KEY) || 'null') || {}); } catch (e) { return genNorm({}); } })();
+const genPresets = () => { try { return JSON.parse(localStorage.getItem(GEN_PRE) || '{}') || {}; } catch (e) { return {}; } };
+
+function genRenderCols() {
+  $('genColList').innerHTML = G.cols.map((c, i) => `<div class="gen-col"><label><input type="checkbox" data-gc="${i}"${c.on ? ' checked' : ''}> ${c.blank ? '▭ ' + esc(c.label) + ' <small>(عمود فاضي)</small>' : esc(GC[c.k][0])}</label>` +
+    `<span><button type="button" class="ic" data-gup="${i}" title="فوق">▲</button> <button type="button" class="ic" data-gdn="${i}" title="تحت">▼</button>${c.blank ? ` <button type="button" class="ic" data-gdel="${i}" title="حذف">✕</button>` : ''}</span></div>`).join('');
+}
+function genRenderPresets(sel) {
+  const names = Object.keys(genPresets());
+  $('genPre').innerHTML = '<option value="">— اختار قالب —</option>' + names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  if (sel) $('genPre').value = sel;
+}
+function genFill() {
+  $('genTitle').value = G.title; $('genSub').value = G.sub; $('genNote').value = G.note; $('genUnit').value = G.unit; $('genQ').value = G.q;
+  document.querySelectorAll('#genRoles input').forEach(i => { i.checked = !!G.roles[i.dataset.role]; });
+  $('genGender').value = G.gender; $('genAgeMin').value = G.ageMin; $('genAgeMax').value = G.ageMax; $('genBMonth').value = G.bMonth;
+  $('genRegFrom').value = G.regFrom; $('genRegTo').value = G.regTo;
+  const gm = [...new Set(games.map(g => g.name))];
+  $('genGame').innerHTML = '<option value="">الكل</option><option value="__none">من غير لعبة</option>' + gm.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  $('genGame').value = G.game;
+  if ($('genGame').value !== G.game) $('genGame').value = '';
+  $('genSt').innerHTML = ST_ORDER.map(s => `<label><input type="checkbox" data-gst="${esc(s)}"${G.st[s] ? ' checked' : ''}> ${s}</label>`).join('');
+  $('genHas').innerHTML = GHAS_L.map(h => `<div class="field" style="margin:0"><label>${h[1]}</label><select data-has="${h[0]}"><option value="">أي حاجة</option><option value="1">موجود</option><option value="0">ناقص</option></select></div>`).join('');
+  document.querySelectorAll('#genHas select').forEach(s => { s.value = G.has[s.dataset.has] || ''; });
+  $('genLayout').value = G.layout;
+  $('genGroup').innerHTML = GROUPS.map(g => `<option value="${g[0]}">${g[1]}</option>`).join(''); $('genGroup').value = G.group;
+  $('genSort').innerHTML = '<option value="">الترتيب الطبيعي (كود الأسرة)</option>' + Object.keys(GC).map(k => `<option value="${k}">${GC[k][0]}</option>`).join(''); $('genSort').value = G.sort;
+  $('genDir').value = G.dir; $('genPage').checked = !!G.page; $('genGSum').checked = !!G.gsum; $('genFont').value = G.font;
+  $('genNo').checked = !!G.showNo; $('genSum').checked = !!G.sum; $('genTotal').checked = !!G.total; $('genTall').checked = !!G.tall; $('genLand').checked = !!G.land;
+  genRenderCols();
+}
+function openGen() {
+  if (!$('genBMonth').options.length || $('genBMonth').options.length < 2) {
+    $('genBMonth').innerHTML = '<option value="">الكل</option>' + AR_MONTHS.map((m, i) => `<option value="${i}">${m}</option>`).join('');
+  }
+  genFill(); genRenderPresets();
+  $('genModal').classList.remove('hidden');
+}
+function genCollect() {
+  G.title = $('genTitle').value.trim(); G.sub = $('genSub').value.trim(); G.note = $('genNote').value.trim(); G.unit = $('genUnit').value; G.q = $('genQ').value.trim();
+  document.querySelectorAll('#genRoles input').forEach(i => { G.roles[i.dataset.role] = i.checked; });
+  G.gender = $('genGender').value; G.game = $('genGame').value; G.ageMin = $('genAgeMin').value; G.ageMax = $('genAgeMax').value; G.bMonth = $('genBMonth').value;
+  G.regFrom = $('genRegFrom').value; G.regTo = $('genRegTo').value;
+  document.querySelectorAll('#genSt input').forEach(i => { G.st[i.dataset.gst] = i.checked; });
+  G.has = {}; document.querySelectorAll('#genHas select').forEach(s => { if (s.value) G.has[s.dataset.has] = s.value; });
+  G.layout = $('genLayout').value; G.group = $('genGroup').value; G.sort = $('genSort').value; G.dir = $('genDir').value;
+  G.page = $('genPage').checked; G.gsum = $('genGSum').checked; G.font = $('genFont').value;
+  G.showNo = $('genNo').checked; G.sum = $('genSum').checked; G.total = $('genTotal').checked; G.tall = $('genTall').checked; G.land = $('genLand').checked;
+  try { localStorage.setItem(GEN_KEY, JSON.stringify(G)); } catch (e) { /* تجاهل */ }
+}
+function genAddBlank() {
+  const v = $('genBlankIn').value.trim();
+  if (!v) return;
+  if (G.cols.filter(c => c.blank).length >= 12) { toast('أقصى عدد 12 عمود فاضي', false); return; }
+  G.cols.push({ k: 'b' + Date.now(), blank: true, label: v, on: true });
+  $('genBlankIn').value = ''; genRenderCols(); $('genBlankIn').focus();
+}
+
+/* ----- تجميع البيانات وفلترتها ----- */
+function genPersons() {
+  const out = [];
+  filteredFams().forEach(d => (d.members || []).forEach((m, idx) => {
+    if (G.unit === 'family' && idx > 0) return;
+    const role = idx === 0 ? 'main' : m.rel === 'ابن' ? 'kid' : m.rel === 'عضو إضافي' ? 'extra' : 'spouse';
+    const n = parseNid(m.nid || '');
+    out.push({ m, d, idx, role, nid: n, gender: m.gender || (n ? n.gender : ''), age: n ? n.age : null, birth: n ? n.birth : null, st: memStatus(d) });
+  }));
+  return out;
+}
+function genKeep(P) {
+  if (G.unit === 'person' && !G.roles[P.role]) return false;
+  if (G.gender && P.gender !== G.gender) return false;
+  if (!G.st[P.st]) return false;
+  if (G.game === '__none') { if (P.m.games) return false; }
+  else if (G.game && !(P.m.games && P.m.games.split(' + ').includes(G.game))) return false;
+  if (G.ageMin !== '' && (P.age == null || P.age < +G.ageMin)) return false;
+  if (G.ageMax !== '' && (P.age == null || P.age > +G.ageMax)) return false;
+  if (G.bMonth !== '' && (!P.birth || P.birth.getMonth() !== +G.bMonth)) return false;
+  const rd = P.d.memberDate || '';
+  if (G.regFrom && (!rd || rd < G.regFrom)) return false;
+  if (G.regTo && (!rd || rd > G.regTo)) return false;
+  for (const k of Object.keys(G.has)) { if (GHAS[k] && GHAS[k](P) !== (G.has[k] === '1')) return false; }
+  if (G.q) {
+    const hay = norm([P.m.name, P.m.sub, P.d.code, P.d.mainName, P.m.phone, P.m.nid].join(' '));
+    if (!hay.includes(norm(G.q))) return false;
+  }
+  return true;
+}
+const gcmpVal = (a, b) => (typeof a === 'number' && typeof b === 'number') ? a - b : String(a).localeCompare(String(b), 'ar', { numeric: true });
+let GEN_GB = '';
+const gkeys = P => GEN_GB === 'games' ? (P.m.games ? P.m.games.split(' + ') : ['بدون لعبة']) : GEN_GB === 'fam' ? [String(P.d.code)] : [String(GC[GEN_GB][1](P) || '') || 'غير محدد'];
+const gLast = k => k === 'غير محدد' || k === 'بدون لعبة';
+function gcmp(a, b) {
+  if (gLast(a) !== gLast(b)) return gLast(a) ? 1 : -1;
+  const ord = GEN_GB === 'ageGroup' ? GEN_AGE_ORDER : GEN_GB === 'status' ? ST_ORDER : null;
+  if (ord) return ord.indexOf(a) - ord.indexOf(b);
+  return String(a).localeCompare(String(b), 'ar', { numeric: true });
+}
+const glabel = (k, rs) => GEN_GB === 'fam' ? 'أسرة ' + k + ' — ' + (rs[0].d.mainName || '') : GEN_GB === 'regMonth' && /^\d{4}-\d{2}$/.test(k) ? k.split('-').reverse().join('/') : k;
+function genGroups(rows) {
+  const m = new Map();
+  rows.forEach(P => gkeys(P).forEach(k => { if (!m.has(k)) m.set(k, []); m.get(k).push(P); }));
+  return [...m.entries()].sort((a, b) => gcmp(a[0], b[0]));
+}
+async function genCompute() {
+  genCollect();
+  if (G.layout === 'famsheet' && G.unit === 'family') { G.unit = 'person'; $('genUnit').value = 'person'; }
+  GEN_GB = G.layout === 'famsheet' ? 'fam' : G.group;
+  const act = G.cols.filter(c => c.on);
+  if (G.layout !== 'stats' && !act.length) { toast('اختار عمود واحد على الأقل', false); return null; }
+  if ((G.layout === 'group' || G.layout === 'stats') && !G.group) { toast('اختار "التجميع حسب" الأول', false); return null; }
+  if (G.unit === 'person' && !Object.values(G.roles).some(Boolean)) { toast('اختار نوع فرد واحد على الأقل', false); return null; }
+  if (!filteredFams().length) { toast('مفيش بيانات في الفترة دي', false); return null; }
+  if (act.some(c => c.k === 'photo') || G.has.photo || G.sort === 'photo') {
+    toast('جاري فحص الصور...', true, 15000);
+    try { await loadPhotoIds(); } catch (e) { toast('❌ تعذر فحص الصور — شيل الصور من الأعمدة/الفلتر وجرب تاني', false, 8000); return null; }
+  }
+  let rows = genPersons().filter(genKeep);
+  if (!rows.length) { toast('مفيش نتائج بالاختيارات دي', false); return null; }
+  const dir = +G.dir || 1;
+  rows.sort((a, b) => {
+    if (G.sort) { const c = gcmpVal(GC[G.sort][1](a), GC[G.sort][1](b)); if (c) return c * dir; }
+    return sortCode(a.d, b.d) * (G.sort ? 1 : dir) || (a.idx - b.idx) * (G.sort ? 1 : dir);
+  });
+  return { rows, act };
+}
+function genSections(rows) {
+  if (G.layout === 'group' || G.layout === 'famsheet') return genGroups(rows).map(([k, rs]) => ({ title: glabel(k, rs), rows: rs }));
+  return [{ title: '', rows }];
+}
+
+/* ----- بناء التقرير ----- */
+function genCell(c, P) {
+  if (c.blank) return '<td style="min-width:70px">&nbsp;</td>';
+  const v = GC[c.k][1](P);
+  let h;
+  if (c.k === 'photo') h = v === '✓' ? '<b style="color:#16a34a">✓</b>' : '<b style="color:#dc2626">✗</b>';
+  else if (c.k === 'status') h = `<b style="color:${{ 'ساري': '#16a34a', 'ينتهي قريبًا': '#b45309', 'منتهي': '#dc2626', 'غير محدد': '#64748b' }[v] || '#334155'}">${esc(v)}</b>`;
+  else if (GC_NUM.has(c.k)) h = num(v);
+  else h = vv(v);
+  return `<td>${h}</td>`;
+}
+function genTable(rows, act) {
+  const fs = G.font === 's' ? ' style="font-size:9px"' : G.font === 'l' ? ' style="font-size:13px"' : '';
+  const heads = [...(G.showNo ? ['م'] : []), ...act.map(c => c.blank ? esc(c.label) : GC[c.k][0])];
+  const trs = rows.map((P, i) => `<tr${G.tall ? ' style="height:34px"' : ''}>${G.showNo ? `<td>${i + 1}</td>` : ''}${act.map(c => genCell(c, P)).join('')}</tr>`).join('');
+  return `<table${fs}><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs}</tbody></table>`;
+}
+function genStatsTable(rows) {
+  const arr = genGroups(rows), lbl = (GROUPS.find(g => g[0] === GEN_GB) || [0, 'المجموعة'])[1];
+  const t = TB([lbl, 'العدد', 'النسبة', 'ذكور', 'إناث'], arr.map(([k, rs]) => [`<b>${esc(glabel(k, rs))}</b>`, `<b>${rs.length}</b>`, pct(rs.length, rows.length) + '%',
+    rs.filter(P => P.gender === 'ذكر').length, rs.filter(P => P.gender === 'أنثى').length]));
+  return t + (GEN_GB === 'games' ? '<div class="hint" style="margin-top:6px">الفرد اللي مشترك في لعبتين بيتحسب في الاتنين، فمجموع النسب ممكن يزيد عن 100%.</div>' : '');
+}
+async function genRun() {
+  const r = await genCompute();
+  if (!r) return;
+  const { rows, act } = r;
+  const ages = rows.filter(P => P.age != null).map(P => P.age);
+  const fams = new Set(rows.map(P => P.d.code)).size;
+  const kp = rpK(rows.length, G.unit === 'family' ? 'عدد الأسر' : 'عدد الأفراد') + (G.unit === 'person' ? rpK(fams, 'عدد الأسر') : '') +
+    rpK(rows.filter(P => P.gender === 'ذكر').length, 'ذكور') + rpK(rows.filter(P => P.gender === 'أنثى').length, 'إناث') +
+    rpK(ages.length ? (ages.reduce((s, x) => s + x, 0) / ages.length).toFixed(1) : '—', 'متوسط السن');
+  let body = G.sum ? `<div class="rp-kpis">${kp}</div>` : '';
+  if (G.layout === 'stats') body += genStatsTable(rows);
+  else {
+    if (G.group && G.gsum && G.layout !== 'famsheet') body += rpS('أعداد المجموعات', genStatsTable(rows));
+    const secs = genSections(rows);
+    body += secs.map((s, i) => (s.title ? `<div${G.page && i ? ' style="break-before:page;page-break-before:always"' : ' style="margin-top:14px"'}><h3>${esc(s.title)} <small>(${s.rows.length})</small></h3>${genTable(s.rows, act)}</div>`
+      : genTable(s.rows, act) + (G.total ? `<div class="hint" style="margin-top:6px">عدد الصفوف: <b>${s.rows.length}</b></div>` : ''))).join('');
+  }
+  if (G.note) body += `<div class="hint" style="margin-top:12px;white-space:pre-wrap">${esc(G.note)}</div>`;
+  const kind = G.layout === 'stats' ? 'إحصائية ' + ((GROUPS.find(g => g[0] === G.group) || [0, ''])[1]) : G.unit === 'family' ? 'كشف الأسر' : 'كشف الأعضاء';
+  const title = G.title || kind;
+  showReport(title, G.sub || ('عدد الصفوف: ' + rows.length), body, undefined, { land: G.land });
+  logAudit('تقرير', '—', 'منشئ التقارير: ' + title + ' (' + rows.length + ' صف — ' + G.layout + ')');
+}
+async function genCsv() {
+  const r = await genCompute();
+  if (!r) return;
+  const { rows, act } = r;
+  const q = v => { v = v == null ? '' : String(v); if (/^\d{9,}$/.test(v)) return '="' + v + '"'; return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const grp = G.layout === 'group' || G.layout === 'famsheet';
+  const secs = G.layout === 'stats' ? [] : genSections(rows);
+  const lines = [];
+  if (G.layout === 'stats') {
+    lines.push([(GROUPS.find(g => g[0] === GEN_GB) || [0, 'المجموعة'])[1], 'العدد', 'النسبة', 'ذكور', 'إناث'].map(q).join(','));
+    genGroups(rows).forEach(([k, rs]) => lines.push([glabel(k, rs), rs.length, pct(rs.length, rows.length) + '%', rs.filter(P => P.gender === 'ذكر').length, rs.filter(P => P.gender === 'أنثى').length].map(q).join(',')));
+  } else {
+    lines.push([...(G.showNo ? ['م'] : []), ...(grp ? ['المجموعة'] : []), ...act.map(c => c.blank ? c.label : GC[c.k][0])].map(q).join(','));
+    secs.forEach(s => s.rows.forEach((P, i) => lines.push([...(G.showNo ? [i + 1] : []), ...(grp ? [s.title] : []), ...act.map(c => c.blank ? '' : GC[c.k][1](P))].map(q).join(','))));
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'report-' + ymd(new Date()) + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  toast('✅ اتنزل ملف Excel (CSV)');
+  logAudit('تصدير', '—', 'منشئ التقارير CSV (' + rows.length + ' صف)');
+}
+
+/* ----- أحداث النافذة ----- */
+$('genGo').addEventListener('click', genRun);
+$('genCsv').addEventListener('click', genCsv);
+$('genCancel').addEventListener('click', () => { genCollect(); $('genModal').classList.add('hidden'); });
+$('genModal').addEventListener('click', e => {
+  const t = e.target;
+  if (t.id === 'genModal') { genCollect(); t.classList.add('hidden'); return; }
+  if (t.id === 'genBlankAdd') { genAddBlank(); return; }
+  const mv = (i, d) => { const j = i + d; if (j < 0 || j >= G.cols.length) return; [G.cols[i], G.cols[j]] = [G.cols[j], G.cols[i]]; genRenderCols(); };
+  const up = t.closest('[data-gup]'), dn = t.closest('[data-gdn]'), del = t.closest('[data-gdel]');
+  if (up) mv(+up.dataset.gup, -1); else if (dn) mv(+dn.dataset.gdn, 1);
+  else if (del) { G.cols.splice(+del.dataset.gdel, 1); genRenderCols(); }
+});
+$('genColList').addEventListener('change', e => { const c = e.target.closest('[data-gc]'); if (c) G.cols[+c.dataset.gc].on = e.target.checked; });
+$('genBlankIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); genAddBlank(); } });
+$('genColsAll').addEventListener('click', () => { G.cols.forEach(c => { c.on = true; }); genRenderCols(); });
+$('genColsNone').addEventListener('click', () => { G.cols.forEach(c => { c.on = false; }); genRenderCols(); });
+$('genColsDef').addEventListener('click', () => { G.cols = genNorm({ cols: [...genDefCols(), ...G.cols.filter(c => c.blank)] }).cols; genRenderCols(); });
+$('genPreSave').addEventListener('click', () => {
+  const n = $('genPreName').value.trim();
+  if (!n) { toast('اكتب اسم للقالب', false); return; }
+  genCollect();
+  const p = genPresets(); p[n] = JSON.parse(JSON.stringify(G));
+  try { localStorage.setItem(GEN_PRE, JSON.stringify(p)); } catch (e) { toast('❌ مقدرتش أحفظ القالب', false); return; }
+  $('genPreName').value = ''; genRenderPresets(n); toast('✅ اتحفظ القالب: ' + n);
+});
+$('genPre').addEventListener('change', () => {
+  const n = $('genPre').value, p = genPresets();
+  if (!n || !p[n]) return;
+  G = genNorm(p[n]); genFill(); genRenderPresets(n); toast('اتطبّق القالب: ' + n);
+});
+$('genPreDel').addEventListener('click', () => {
+  const n = $('genPre').value, p = genPresets();
+  if (!n || !p[n]) { toast('اختار قالب الأول', false); return; }
+  delete p[n];
+  try { localStorage.setItem(GEN_PRE, JSON.stringify(p)); } catch (e) { /* تجاهل */ }
+  genRenderPresets(); toast('اتحذف القالب');
+});
+
 // قراءة أكواد الأفراد اللي ليهم صور من السيرفر
 async function loadPhotoIds() {
   const s = await getDocs(collection(db, 'photos'));
@@ -1708,6 +2091,7 @@ async function loadPhotoIds() {
 }
 async function openReport(type) {
   if (type === 'memq') { openMq(); return; }
+  if (type === 'gen') { openGen(); return; }
   if (!BUILD[type]) return;
   const fams = filteredFams();
   if (!fams.length && type !== 'birthdays') { toast('مفيش بيانات في الفترة دي', false); return; }
