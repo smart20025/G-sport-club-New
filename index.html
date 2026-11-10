@@ -293,6 +293,8 @@ body{align-items:flex-start;justify-content:center;padding:24px 16px}
 @media(max-width:560px){.gr-row{grid-template-columns:1fr}}
 .gate-only .side-foot button{width:auto;white-space:nowrap;padding:9px 18px}
 /* ====== نافذة تخصيص تقرير نواقص الأعضاء ====== */
+#qrModal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:140;display:flex;align-items:center;justify-content:center;padding:14px}
+#qrModal.hidden{display:none}
 #genModal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:140;display:flex;align-items:center;justify-content:center;padding:14px}
 #genModal.hidden{display:none}
 .gen-d{border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;margin-bottom:10px}
@@ -692,6 +694,16 @@ html{-webkit-text-size-adjust:100%}
   <div class="field"><label>نص الرسالة (تقدر تعدّله)</label><textarea id="waMsg" rows="6"></textarea></div>
   <div class="grid"><button type="button" id="waSend">إرسال عبر واتساب</button><button type="button" class="btn-outline" id="waClose">إلغاء</button></div>
 </div></div>
+<div id="qrModal" class="hidden"><div class="mq-box" style="max-width:560px">
+  <h2 style="margin-top:0">🧩 تقرير بالأعمدة اللي أختارها</h2>
+  <div class="hint" style="margin-bottom:12px">علّم الأعمدة اللي عايزها تظهر بس — من غير أي فحص ناقص/كامل. التقرير بيطلع بالأعضاء المعروضين حسب فلاتر الجدول (<b id="qrCount">0</b> صف).</div>
+  <div class="field"><label>عنوان التقرير (اختياري)</label><input type="text" id="qrTitle" placeholder="تقرير الأعضاء"></div>
+  <label>الأعمدة</label>
+  <div class="mq-chk" id="qrCols"></div>
+  <div class="mq-act"><button type="button" class="btn-outline" id="qrAll">✔ الكل</button><button type="button" class="btn-outline" id="qrNone">✖ مسح</button></div>
+  <div class="mq-chk"><label><input type="checkbox" id="qrNo"> عمود الترقيم (م)</label></div>
+  <div class="mq-foot grid"><button type="button" id="qrGo">📄 إنشاء التقرير</button><button type="button" class="btn-outline" id="qrCancel">إلغاء</button></div>
+</div></div>
 <div id="genModal" class="hidden"><div class="mq-box" style="max-width:700px">
   <h2 style="margin-top:0">🛠 منشئ التقارير</h2>
   <div class="hint" style="margin-bottom:12px">اعمل أي تقرير من بيانات الأعضاء: اختار مين يظهر، وأنهي أعمدة، وترتيبها، والشكل، وأضف أعمدة فاضية. التقرير بيطلع فوق التقارير التانية وبيتفتح في معاينة، والمعاينة بتتقفل ترجعلك هنا. اختياراتك بتتحفظ.</div>
@@ -811,7 +823,7 @@ html{-webkit-text-size-adjust:100%}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-         doc, getDoc, setDoc, updateDoc, deleteDoc, arrayUnion, serverTimestamp,
+         doc, getDoc, setDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, serverTimestamp,
          collection, onSnapshot, addDoc, getDocs, query, orderBy, limit, where, writeBatch }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
@@ -932,10 +944,19 @@ function resizeImage(file, max = 600) {
     img.src = url;
   });
 }
-function savePhoto(sub, dataUrl) {
+/* فهرس الصور: مستند واحد صغير settings/photoIndex فيه أكواد اللي ليهم صور (بدل ما نحمّل الصور نفسها عشان نعرف مين عنده صورة) */
+const PHIDX = () => doc(db, 'settings', 'photoIndex');
+function photoIdxSync(ids, add) {
+  if (!ids.length) return Promise.resolve();
+  return setDoc(PHIDX(), { ids: add ? arrayUnion(...ids) : arrayRemove(...ids), updatedAt: serverTimestamp() }, { merge: true })
+    .catch(err => toast('⚠ الصورة اتحفظت لكن فهرس الصور مااتحدّثش (' + (err.code || '') + ') — اعمل "إعادة بناء فهرس الصور" من النسخ الاحتياطي', false, 10000));
+}
+function savePhoto(sub, dataUrl, skipIdx) {
   photos.set(sub, dataUrl || '');
+  if (dataUrl) photoIds.add(sub); else photoIds.delete(sub);
   const ref = doc(db, 'photos', sub);
-  return dataUrl ? setDoc(ref, { data: dataUrl, updatedAt: serverTimestamp() }) : deleteDoc(ref);
+  const p = dataUrl ? setDoc(ref, { data: dataUrl, updatedAt: serverTimestamp() }) : deleteDoc(ref);
+  return skipIdx ? p : p.then(() => { photoIdxSync([sub], !!dataUrl); });
 }
 function fillPhotos(root) {
   root.querySelectorAll('img[data-ph]').forEach(async im => { im.src = (await getPhoto(im.dataset.ph)) || NO_PHOTO; });
@@ -2083,11 +2104,64 @@ $('genPreDel').addEventListener('click', () => {
   genRenderPresets(); toast('اتحذف القالب');
 });
 
+/* ====== زرار "تقرير بالأعمدة اللي أختارها" في جدول الأعضاء ====== */
+const QR_KEY = 'g1QrCfgV1';
+let QR = (() => {
+  try {
+    const s = JSON.parse(localStorage.getItem(QR_KEY) || 'null');
+    if (s && Array.isArray(s.cols)) return { title: s.title || '', cols: s.cols.filter(k => GC[k]), no: s.no !== false };
+  } catch (e) { /* تجاهل */ }
+  return { title: '', cols: ['sub', 'name', 'rel', 'gender', 'age', 'phone', 'games', 'status'], no: true };
+})();
+function openQr() {
+  const on = new Set(QR.cols);
+  $('qrCols').innerHTML = Object.keys(GC).map(k => `<label><input type="checkbox" data-qc="${k}"${on.has(k) ? ' checked' : ''}> ${esc(GC[k][0])}</label>`).join('');
+  $('qrTitle').value = QR.title; $('qrNo').checked = QR.no;
+  $('qrCount').textContent = memberRows().length;
+  $('qrModal').classList.remove('hidden');
+}
+async function runQr() {
+  const keys = [...document.querySelectorAll('#qrCols input:checked')].map(i => i.dataset.qc);
+  if (!keys.length) { toast('اختار عمود واحد على الأقل', false); return; }
+  QR = { title: $('qrTitle').value.trim(), cols: keys, no: $('qrNo').checked };
+  try { localStorage.setItem(QR_KEY, JSON.stringify(QR)); } catch (e) { /* تجاهل */ }
+  const rows = memberRows();
+  if (!rows.length) { toast('مفيش أعضاء بالفلاتر دي', false); return; }
+  if (keys.includes('photo')) {
+    toast('جاري فحص الصور...', true, 15000);
+    try { await loadPhotoIds(); } catch (e) { toast('❌ تعذر فحص الصور — شيل عمود الصورة وجرب تاني', false, 8000); return; }
+  }
+  $('qrModal').classList.add('hidden');
+  const act = keys.map(k => ({ k }));
+  const Ps = rows.map(r => { const n = parseNid(r.m.nid || ''); return { m: r.m, d: r.d, idx: (r.d.members || []).indexOf(r.m), nid: n, gender: r.g, age: r.age, birth: n ? n.birth : null, st: r.st }; });
+  const heads = [...(QR.no ? ['م'] : []), ...keys.map(k => GC[k][0])];
+  const trs = Ps.map((P, i) => `<tr>${QR.no ? `<td>${i + 1}</td>` : ''}${act.map(c => genCell(c, P)).join('')}</tr>`).join('');
+  const body = `<table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs}</tbody></table><div class="hint" style="margin-top:6px">عدد الصفوف: <b>${Ps.length}</b></div>`;
+  const title = QR.title || 'تقرير الأعضاء';
+  showReport(title, 'عدد الصفوف: ' + Ps.length + ' — حسب فلاتر جدول الأعضاء', body, undefined, { land: keys.length > 8 });
+  logAudit('تقرير', '—', 'تقرير أعمدة مختارة: ' + title + ' (' + Ps.length + ' صف — ' + keys.length + ' عمود)');
+}
+$('qrGo').addEventListener('click', runQr);
+$('qrCancel').addEventListener('click', () => $('qrModal').classList.add('hidden'));
+$('qrModal').addEventListener('click', e => { if (e.target.id === 'qrModal') $('qrModal').classList.add('hidden'); });
+$('qrAll').addEventListener('click', () => document.querySelectorAll('#qrCols input').forEach(i => { i.checked = true; }));
+$('qrNone').addEventListener('click', () => document.querySelectorAll('#qrCols input').forEach(i => { i.checked = false; }));
+
 // قراءة أكواد الأفراد اللي ليهم صور من السيرفر
-async function loadPhotoIds() {
+// بيرجّع true لو اتقرا من الفهرس (سريع)، و false لو اضطر يفحص كل الصور (وبيبني الفهرس لو أدمن)
+async function loadPhotoIds(force) {
+  if (!force) {
+    try {
+      const x = await getDoc(PHIDX());
+      if (x.exists() && x.data().built && Array.isArray(x.data().ids)) { photoIds = new Set(x.data().ids); photosKnown = true; return true; }
+    } catch (e) { /* مفيش فهرس أو مفيش صلاحية: نفحص الصور كلها */ }
+  }
   const s = await getDocs(collection(db, 'photos'));
   photoIds = new Set(s.docs.filter(d => d.data().data).map(d => d.id));
   photosKnown = true;
+  if (!isAdmin) return false;
+  try { await setDoc(PHIDX(), { ids: [...photoIds], built: 1, updatedAt: serverTimestamp() }); return true; }
+  catch (e) { return false; }
 }
 async function openReport(type) {
   if (type === 'memq') { openMq(); return; }
@@ -2218,7 +2292,7 @@ function buildMembersShell() {
       <select id="mtSize"><option value="25">25 / صفحة</option><option value="50">50 / صفحة</option><option value="100">100 / صفحة</option></select>
     </div>
     <div class="mt-info"><span id="mtCount"></span>
-      <span class="dbar-b"><button type="button" class="btn-sm btn-outline" id="mtReset">↺ مسح الفلاتر</button><button type="button" class="btn-sm btn-outline" id="mtCsv">⬇ Excel</button><button type="button" class="btn-sm" id="mtPdf">📄 PDF</button></span>
+      <span class="dbar-b"><button type="button" class="btn-sm btn-outline" id="mtReset">↺ مسح الفلاتر</button><button type="button" class="btn-sm btn-outline" id="mtCsv">⬇ Excel</button><button type="button" class="btn-sm" id="mtPdf">📄 PDF</button><button type="button" class="btn-sm" id="mtQr">🧩 تقرير بأعمدتي</button></span>
     </div>
     <div class="mt-wrap" id="mtTable"></div>
     <div class="pager" id="mtPager"></div></div>`;
@@ -2278,6 +2352,7 @@ $('membersMode').addEventListener('click', e => {
       'G1-members-filtered-' + ymd(new Date()) + '.csv');
     toast('✅ تم تصدير ' + rows.length + ' فرد'); return;
   }
+  if (t.id === 'mtQr') { openQr(); return; }
   if (t.id === 'mtPdf') {
     const rows = memberRows();
     if (!rows.length) { toast('مفيش نتائج للطباعة', false); return; }
@@ -2430,6 +2505,8 @@ async function backupRestore(file) {
       ops.slice(i, i + 400).forEach(([ref, val]) => wb.set(ref, val));
       await wb.commit();
     }
+    for (let i = 0; i < phs.length; i += 400) await photoIdxSync(phs.slice(i, i + 400).map(p => p.id), true);
+    phs.forEach(p => photoIds.add(p.id));
     if (gl) { await setDoc(doc(db, 'settings', 'games'), { list: gl }); games = gl; renderGames(); }
     logAudit('استرجاع نسخة', '—', data.families.length + ' أسرة، ' + att.length + ' سجل حضور');
     toast('✅ تم الاسترجاع: ' + data.families.length + ' أسرة', true, 8000);
@@ -2915,6 +2992,19 @@ $('bkPhotos').addEventListener('click', async () => {
 });
 /* ====== رفع صور الأعضاء من ملف ZIP (أدمن) ====== */
 $('bkPhotos').insertAdjacentHTML('afterend',
+  '<button type="button" class="btn-outline" id="phIdxBtn" style="margin-top:10px">🔄 إعادة بناء فهرس الصور</button>' +
+  '<div class="hint" style="margin-top:8px">الفهرس بيخلّي فحص الصور في التقارير فوري. اضغط الزرار ده مرة لو الفهرس مش متحدّث (بياخد وقت لأنه بيفحص كل الصور مرة واحدة).</div>');
+$('phIdxBtn').addEventListener('click', async () => {
+  if (!isAdmin) return;
+  const b = $('phIdxBtn'); b.disabled = true; toast('جاري إعادة بناء فهرس الصور...', true, 60000);
+  try {
+    const ok = await loadPhotoIds(true);
+    toast(ok ? '✅ الفهرس اتبنى: ' + photoIds.size + ' صورة' : '⚠ الصور اتفحصت (' + photoIds.size + ') لكن الفهرس مااتكتبش — راجع قواعد settings', ok, 9000);
+    logAudit('فهرس الصور', '—', photoIds.size + ' صورة');
+  } catch (e) { toast('❌ فشل إعادة البناء (' + (e.code || e.message) + ')', false, 9000); }
+  b.disabled = false;
+});
+$('bkPhotos').insertAdjacentHTML('afterend',
   '<button type="button" id="phZipBtn" style="margin-top:10px">📦 رفع صور الأعضاء من ZIP</button>' +
   '<input type="file" id="phZipFile" accept=".zip,application/zip" class="hidden">' +
   '<div class="hint" style="margin-top:8px">اسم كل صورة = رقم العضوية، مثال: 1025.jpg أو 1025-B.jpg أو 1025-C.jpg. الصورة الجديدة بتكتب فوق القديمة.</div>');
@@ -2948,7 +3038,7 @@ async function photosFromZip(file) {
   if (!ok.size) { toast('❌ مفيش صور مطابقة لأرقام الأعضاء جوه الملف', false, 8000); return; }
   if (!confirm('هيتم رفع ' + ok.size + ' صورة' + (bad.length ? ' (و' + bad.length + ' ملف اتجاهل)' : '') + '.\nأي عضو عنده صورة قديمة هتتكتب فوقها. متأكد؟')) return;
 
-  const queue = [...ok.entries()], fail = [];
+  const queue = [...ok.entries()], fail = [], added = [];
   let done = 0;
   const worker = async () => {
     while (queue.length) {
@@ -2956,14 +3046,15 @@ async function photosFromZip(file) {
       try {
         const blob = await it.entry.async('blob');
         const data = await resizeImage(blob);      // تصغير لـ 600px عشان حجم الداتا
-        await savePhoto(sub, data);
-        photoIds.add(sub);
+        await savePhoto(sub, data, true);
+        added.push(sub);
       } catch (err) { fail.push([it.base, 'فشل الرفع: ' + (err.code || err.message || '')]); }
       done++;
       toast('جاري الرفع... ' + done + ' / ' + ok.size, true, 60000);
     }
   };
   await Promise.all(Array.from({ length: 5 }, worker));   // 5 صور في نفس الوقت
+  for (let i = 0; i < added.length; i += 400) await photoIdxSync(added.slice(i, i + 400), true);   // تحديث الفهرس مرة واحدة
 
   const okCount = ok.size - fail.length, problems = [...bad, ...fail];
   logAudit('رفع صور ZIP', '—', okCount + ' صورة اترفعت، ' + problems.length + ' مشكلة');
@@ -2992,6 +3083,17 @@ async function loadAllPhotos() {
   s.docs.forEach(d => photos.set(d.id, d.data().data || ''));
   photoIds = new Set(s.docs.filter(d => d.data().data).map(d => d.id));
   photosKnown = true;
+  if (isAdmin) setDoc(PHIDX(), { ids: [...photoIds], built: 1, updatedAt: serverTimestamp() }).catch(() => {});
+}
+// بيحمّل صور الأكواد المطلوبة بس (بدل كل الصور) باستخدام الفهرس
+async function loadPhotosFor(subs) {
+  const uniq = [...new Set(subs)].filter(x => !photos.has(x));
+  if (!uniq.length) return;
+  let indexed = false;
+  try { await loadPhotoIds(); indexed = true; } catch (e) { indexed = false; }
+  if (indexed) uniq.forEach(x => { if (!photoIds.has(x)) photos.set(x, ''); });
+  const q = indexed ? uniq.filter(x => photoIds.has(x)) : [...uniq];
+  await Promise.all(Array.from({ length: 8 }, async () => { while (q.length) await getPhoto(q.shift()); }));
 }
 
 /* ====== بوابة الدخول والخروج ====== */
@@ -3752,7 +3854,7 @@ async function printCards(list, title) {
   if (!list.length) { toast('مفيش كروت للطباعة', false); return; }
   if (typeof JsBarcode === 'undefined' && CFG.showBar) toast('⚠ مكتبة الباركود مااتحمّلتش، الكروت هتطلع من غير باركود', false, 6000);
   toast('جاري تجهيز ' + list.length + ' كارت...', true, 15000);
-  try { if (list.length > 6) await loadAllPhotos(); else await Promise.all(list.map(x => getPhoto(x.m.sub))); } catch (e) { /* نكمل من غير صور */ }
+  try { await loadPhotosFor(list.map(x => x.m.sub)); } catch (e) { /* نكمل من غير صور */ }
   const layout = $('idLayout').value;
   const st = document.createElement('style'); st.id = 'idPageStyle'; st.textContent = PAGE_CSS[layout] || PAGE_CSS.card;
   document.head.appendChild(st);
@@ -3785,7 +3887,7 @@ $('idsMode').addEventListener('click', e => {
       [...allFams.values()].sort(sortCode).forEach(d => (d.members || []).forEach(m => { if (scope === 'main' && m.sub !== d.code) return; list.push({ m, d }); }));
       (async () => {
         let l = list;
-        if (scope === 'photo') { try { await loadAllPhotos(); } catch (er) { toast('❌ تعذر قراءة الصور', false); return; } l = list.filter(x => photoIds.has(x.m.sub)); }
+        if (scope === 'photo') { try { await loadPhotoIds(); } catch (er) { toast('❌ تعذر قراءة الصور', false); return; } l = list.filter(x => photoIds.has(x.m.sub)); }
         if (l.length > 8 && !confirm('هيتم تجهيز ' + l.length + ' كارت للطباعة. متأكد؟')) return;
         printCards(l);
       })();
