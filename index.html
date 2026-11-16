@@ -174,8 +174,15 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .att-row input{width:20px;height:20px;padding:0;accent-color:var(--main)}
 .add-row2{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:10px}
 textarea{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12px;font-size:15px;background:#f8fafc;outline:none;resize:vertical}
-#waModal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:160;display:flex;align-items:center;justify-content:center;padding:20px}
+#waModal,#bwModal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:160;display:flex;align-items:center;justify-content:center;padding:20px}
 .wa-box{width:100%;max-width:420px;background:#fff;border-radius:20px;padding:24px}
+.bw-box{width:100%;max-width:660px;max-height:92vh;overflow:auto;background:#fff;border-radius:20px;padding:24px}
+.bw-list{max-height:270px;overflow:auto;border:1px solid #e2e8f0;border-radius:12px;margin:8px 0}
+.bw-row{display:flex;gap:10px;align-items:center;padding:7px 12px;border-bottom:1px solid #f1f5f9;font-size:14px;cursor:pointer}
+.bw-row:last-child{border-bottom:0}
+.bw-row.done{background:#ecfdf5}
+.bw-row .bw-n{flex:1}
+.bw-row .bw-p{color:#64748b;font-size:12px}
 .av{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#e2e8f0;flex-shrink:0;vertical-align:middle}
 .av.lg{width:72px;height:72px}
 /* ====== البوابة ====== */
@@ -376,7 +383,7 @@ html{-webkit-text-size-adjust:100%}
   #gScan{font-size:18px!important;padding:12px}
   .toast{width:92%;padding:12px 16px;font-size:14px}
   #login .box{padding:20px}
-  .wa-box,.mq-box{padding:16px;border-radius:16px}
+  .wa-box,.mq-box,.bw-box{padding:16px;border-radius:16px}
   .mq-foot{bottom:-16px}
   /* جدول الأعضاء يتحول لكروت */
   .mt thead{display:none}
@@ -693,6 +700,23 @@ html{-webkit-text-size-adjust:100%}
   <div class="field"><label>القالب</label><select id="waT"><option value="renew">تذكير بتجديد العضوية</option><option value="bday">تهنئة عيد ميلاد</option><option value="game">تذكير بموعد التدريب</option><option value="free">رسالة حرة</option></select></div>
   <div class="field"><label>نص الرسالة (تقدر تعدّله)</label><textarea id="waMsg" rows="6"></textarea></div>
   <div class="grid"><button type="button" id="waSend">إرسال عبر واتساب</button><button type="button" class="btn-outline" id="waClose">إلغاء</button></div>
+</div></div>
+<div id="bwModal" class="hidden"><div class="bw-box">
+  <h2 style="margin-top:0">📣 رسالة واتساب جماعية (مسودات)</h2>
+  <div class="grid">
+    <div class="field"><label>القالب</label><select id="bwT"><option value="renew">تذكير بتجديد العضوية</option><option value="bday">تهنئة عيد ميلاد</option><option value="game">تذكير بموعد التدريب</option><option value="free">رسالة حرة</option></select></div>
+    <div class="field"><label>طريقة الفتح</label><select id="bwMode"><option value="app">تطبيق واتساب على الكمبيوتر (الأفضل للمسودات)</option><option value="web">واتساب ويب</option></select></div>
+  </div>
+  <div class="field"><label>نص الرسالة — اكتب <b dir="ltr">{name}</b> مكان اسم العضو</label><textarea id="bwMsg" rows="5"></textarea></div>
+  <div class="hint" id="bwPrev"></div>
+  <div class="mt-info"><span id="bwCount"></span><span class="dbar-b"><button type="button" class="btn-sm btn-outline" id="bwAll">✔ الكل</button><button type="button" class="btn-sm btn-outline" id="bwNone">✖ لا أحد</button><button type="button" class="btn-sm btn-outline" id="bwReset">↺ إعادة الحالة</button></span></div>
+  <input type="text" id="bwQ" placeholder="بحث بالاسم داخل القائمة" autocomplete="off">
+  <div class="bw-list" id="bwList"></div>
+  <label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="bwDedupe" checked> رسالة واحدة لكل رقم تليفون (دمج المكرر)</label>
+  <div class="field"><label>الفاصل بين كل رسالة والتالية في الوضع التلقائي (ثواني)</label><input type="number" id="bwSec" value="4" min="2" max="30"></div>
+  <div class="hint">الرسائل بتتفتح في واتساب <b>مسودة جاهزة من غير إرسال</b>، وبعدين تدوس Enter في كل محادثة. في أول مرة المتصفح هيسألك تسمح بفتح واتساب — اختار "السماح دايمًا" عشان الوضع التلقائي يكمّل.</div>
+  <div class="grid"><button type="button" id="bwNext">▶ جهّز التالية</button><button type="button" id="bwAuto" class="btn-outline">⚡ جهّز الكل تلقائيًا</button></div>
+  <button type="button" class="btn-outline" id="bwClose" style="margin-top:8px;width:100%">إغلاق</button>
 </div></div>
 <div id="qrModal" class="hidden"><div class="mq-box" style="max-width:560px">
   <h2 style="margin-top:0">🧩 تقرير بالأعمدة اللي أختارها</h2>
@@ -2255,6 +2279,76 @@ $('waSend').addEventListener('click', () => {
   $('waModal').classList.add('hidden');
 });
 
+/* ====== رسالة واتساب جماعية (مسودات) ====== */
+const BW = { list: [], q: '', timer: null };
+function bwBuild() {
+  const dedupe = $('bwDedupe').checked, seen = new Set(), old = new Map(BW.list.map(x => [x.n, x]));
+  let noPhone = 0, dup = 0;
+  BW.list = [];
+  memberRows().forEach(r => {
+    const n = waNumber(r.m.phone || parentPhone(r.d));
+    if (!n) { noPhone++; return; }
+    if (dedupe && seen.has(n)) { dup++; return; }
+    seen.add(n);
+    const name = r.m.rel === 'ابن' ? r.d.mainName : r.m.name, prev = old.get(n);
+    BW.list.push({ n, name: name || '', code: r.m.sub, on: prev ? prev.on : true, done: prev ? prev.done : false });
+  });
+  BW.noPhone = noPhone; BW.dup = dup;
+}
+const bwMsgFor = it => $('bwMsg').value.replace(/\{(name|الاسم)\}/g, it.name);
+function bwRender() {
+  const q = norm(BW.q), sel = BW.list.filter(x => x.on);
+  $('bwList').innerHTML = BW.list.map((x, i) => (q && !norm(x.name).includes(q)) ? '' :
+    `<label class="bw-row${x.done ? ' done' : ''}" data-i="${i}"><input type="checkbox" ${x.on ? 'checked' : ''}><span class="bw-n">${vv(x.name)}</span><span class="bw-p" dir="ltr">${esc(x.n)}</span><span>${x.done ? '✅' : ''}</span></label>`).join('')
+    || '<div class="hint" style="padding:12px">مفيش أعضاء بأرقام صالحة في النتيجة الحالية</div>';
+  const left = sel.filter(x => !x.done).length;
+  $('bwCount').textContent = `المحدد ${sel.length} من ${BW.list.length} — باقي ${left}` + (BW.noPhone ? ` — بدون رقم صالح ${BW.noPhone}` : '') + (BW.dup ? ` — مكرر ${BW.dup}` : '');
+  const first = sel.find(x => !x.done) || sel[0];
+  $('bwPrev').innerHTML = first ? '<b>معاينة:</b> ' + esc(bwMsgFor(first)).replace(/\n/g, '<br>') : '';
+  $('bwNext').textContent = left ? `▶ جهّز التالية (${left})` : '✔ خلّصت كل المحدد';
+  $('bwNext').disabled = !left;
+}
+function bwOpen() {
+  BW.list = []; BW.q = ''; $('bwQ').value = '';
+  $('bwT').value = 'renew'; $('bwMsg').value = WA_T.renew;
+  bwBuild(); bwRender();
+  $('bwModal').classList.remove('hidden');
+}
+function bwStop() {
+  if (BW.timer) { clearInterval(BW.timer); BW.timer = null; }
+  $('bwAuto').textContent = '⚡ جهّز الكل تلقائيًا';
+}
+function bwStep() {
+  const it = BW.list.find(x => x.on && !x.done);
+  if (!it) { bwStop(); bwRender(); toast('✅ كل الرسائل اتجهزت — راجعها وادوس Enter في واتساب'); return false; }
+  const url = ($('bwMode').value === 'web' ? 'https://web.whatsapp.com/send?phone=' : 'whatsapp://send?phone=') + it.n + '&text=' + encodeURIComponent(bwMsgFor(it));
+  if ($('bwMode').value === 'web') window.open(url, 'g1_wa_bulk');
+  else { const a = document.createElement('a'); a.href = url; document.body.appendChild(a); a.click(); a.remove(); }
+  it.done = true; bwRender();
+  return true;
+}
+$('bwT').addEventListener('change', () => { $('bwMsg').value = WA_T[$('bwT').value] || ''; bwRender(); });
+$('bwMsg').addEventListener('input', bwRender);
+$('bwQ').addEventListener('input', e => { BW.q = e.target.value; bwRender(); });
+$('bwDedupe').addEventListener('change', () => { bwBuild(); bwRender(); });
+$('bwList').addEventListener('change', e => {
+  const row = e.target.closest('.bw-row'); if (!row) return;
+  BW.list[+row.dataset.i].on = e.target.checked; bwRender();
+});
+$('bwAll').addEventListener('click', () => { const q = norm(BW.q); BW.list.forEach(x => { if (!q || norm(x.name).includes(q)) x.on = true; }); bwRender(); });
+$('bwNone').addEventListener('click', () => { const q = norm(BW.q); BW.list.forEach(x => { if (!q || norm(x.name).includes(q)) x.on = false; }); bwRender(); });
+$('bwReset').addEventListener('click', () => { BW.list.forEach(x => { x.done = false; }); bwRender(); });
+$('bwNext').addEventListener('click', bwStep);
+$('bwAuto').addEventListener('click', () => {
+  if (BW.timer) { bwStop(); return; }
+  if (!BW.list.some(x => x.on && !x.done)) return;
+  const ms = Math.max(2, Math.min(30, +$('bwSec').value || 4)) * 1000;
+  $('bwAuto').textContent = '⏹ إيقاف';
+  if (bwStep()) BW.timer = setInterval(bwStep, ms);
+  else bwStop();
+});
+$('bwClose').addEventListener('click', () => { bwStop(); $('bwModal').classList.add('hidden'); });
+
 /* ====== جدول الأعضاء المتقدم ====== */
 const mt = { q: '', gender: '', age: '', game: '', rel: '', status: '', sort: 'code', dir: 1, page: 1, size: 25 };
 function memberRows() {
@@ -2292,7 +2386,7 @@ function buildMembersShell() {
       <select id="mtSize"><option value="25">25 / صفحة</option><option value="50">50 / صفحة</option><option value="100">100 / صفحة</option></select>
     </div>
     <div class="mt-info"><span id="mtCount"></span>
-      <span class="dbar-b"><button type="button" class="btn-sm btn-outline" id="mtReset">↺ مسح الفلاتر</button><button type="button" class="btn-sm btn-outline" id="mtCsv">⬇ Excel</button><button type="button" class="btn-sm" id="mtPdf">📄 PDF</button><button type="button" class="btn-sm" id="mtQr">🧩 تقرير بأعمدتي</button></span>
+      <span class="dbar-b"><button type="button" class="btn-sm btn-outline" id="mtReset">↺ مسح الفلاتر</button><button type="button" class="btn-sm btn-outline" id="mtCsv">⬇ Excel</button><button type="button" class="btn-sm" id="mtPdf">📄 PDF</button><button type="button" class="btn-sm" id="mtQr">🧩 تقرير بأعمدتي</button><button type="button" class="btn-sm" id="mtBw">📣 رسالة جماعية</button></span>
     </div>
     <div class="mt-wrap" id="mtTable"></div>
     <div class="pager" id="mtPager"></div></div>`;
@@ -2353,6 +2447,7 @@ $('membersMode').addEventListener('click', e => {
     toast('✅ تم تصدير ' + rows.length + ' فرد'); return;
   }
   if (t.id === 'mtQr') { openQr(); return; }
+  if (t.id === 'mtBw') { bwOpen(); return; }
   if (t.id === 'mtPdf') {
     const rows = memberRows();
     if (!rows.length) { toast('مفيش نتائج للطباعة', false); return; }
